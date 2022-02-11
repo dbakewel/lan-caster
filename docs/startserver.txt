@@ -1,0 +1,12 @@
+Help on module startserver:
+
+NAME
+    startserver - startserver module.
+
+DESCRIPTION
+    Parses command line arguments, loads server module,
+    creates Server instance, and call run() on Server.
+
+FUNCTIONS
+    startServer()
+

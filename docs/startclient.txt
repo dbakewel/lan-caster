@@ -1,0 +1,14 @@
+pygame 2.1.2 (SDL 2.0.16, Python 3.6.7)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+Help on module startclient:
+
+NAME
+    startclient - startclient module.
+
+DESCRIPTION
+    Parses command line arguments, loads client module,
+    creates Client instance, and call run() on Client.
+
+FUNCTIONS
+    startClient()
+

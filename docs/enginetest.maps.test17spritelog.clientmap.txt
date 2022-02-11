@@ -1,0 +1,473 @@
+pygame 2.1.2 (SDL 2.0.16, Python 3.6.7)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+Help on module enginetest.maps.test17spritelog.clientmap in enginetest.maps.test17spritelog:
+
+NAME
+    enginetest.maps.test17spritelog.clientmap - ClientMap for Engine Test Map.
+
+CLASSES
+    engine.clientmap.ClientMap(engine.map.Map)
+        ClientMap
+    
+    class ClientMap(engine.clientmap.ClientMap)
+     |  Log sprite data to screen.
+     |  
+     |  Method resolution order:
+     |      ClientMap
+     |      engine.clientmap.ClientMap
+     |      engine.map.Map
+     |      builtins.dict
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  blitTileObject(self, destImage, offset, tileObject)
+     |      Extend engine.clientmap.ClientMap.blitTileObject()
+     |      
+     |      If tileObject is the player sprite then render a text 
+     |      log of the it to the to screen before the tile is 
+     |      rendered.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.clientmap.ClientMap:
+     |  
+     |  __init__(self, tilesets, mapDir)
+     |      Set defaults, sort data, and allocate images (pygame surfaces) for rendering.
+     |  
+     |  blitBottomImage(self, destImage, offset)
+     |      Blit together all the visible layers BELOW the sprite layer.
+     |      
+     |      Store in self['bottomImage']. self['bottomImage'] can then be used for faster 
+     |      screen updates rather than doing all the work of blitting these layers together
+     |      every frame.
+     |      
+     |      Note object layer "sprites" will not be rendered since is is
+     |      provided by the server and must be rendered separately with a direct
+     |      call to blitObjectList()
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |  
+     |  blitLabelText(self, destImage, offset, object)
+     |      Blit labelText if labelText found in object
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          object (dict): Tiled Object
+     |  
+     |  blitLayer(self, destImage, offset, layer)
+     |      Blit layer onto destImage.
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          layer (dict): Tiled layer from self['layers']
+     |  
+     |  blitMap(self, destImage, offset, sprites)
+     |      Render map onto destImage.
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          sprites (list): List of Tiled objects. While most layers are static
+     |              on the client, a new sprite layer can be sent from the server
+     |              each step.
+     |  
+     |  blitObjectList(self, destImage, offset, objectList)
+     |      Blit each object in objectList.
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          objectList (list of Tiled objects): [(dict),(dict),...]
+     |  
+     |  blitObjectListLabelText(self, destImage, offset, objectList)
+     |      Call blitLabelText() for all objects in objectList.
+     |  
+     |  blitObjectListSpeechText(self, destImage, offset, objectList)
+     |      Call blitSpeechText() for all objects in objectList.
+     |  
+     |  blitRectObject(self, destImage, offset, rectObject, fillColor=(0, 0, 0, 0), borderColor=(0, 0, 0, 255), borderThickness=1, roundCorners=0)
+     |      Draw a Rectangle Object onto destImage
+     |  
+     |  blitRoundObject(self, destImage, offset, roundObject, fillColor=(0, 0, 0, 0), borderColor=(0, 0, 0, 255), borderThickness=1)
+     |      Draw a Circle or Ellipse Object onto destImage
+     |  
+     |  blitSpeechText(self, destImage, offset, object)
+     |      Blit speechText if speechText found in object
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          object (dict): Tiled Object
+     |  
+     |  blitTextObject(self, destImage, offset, textObject, mapRelative=True)
+     |      Blit text from Tiled object.
+     |      
+     |      Supports several font styles, alignments, and wrapping.
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          textObject (dict): Tiled Object containing object['text']
+     |          mapRelative (bool): If True then use map coordinates, else use 
+     |              destImage/screen coordinates. Normally user interface elements
+     |              that are relative to the screen (not the map) use mapRelative=False
+     |  
+     |  blitTileGrid(self, destImage, offset, grid)
+     |      Blit tile grid onto destImage.
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          grid (list of int): A list ints ([0,0,5,27,2,...]) where each
+     |              int is the map global tile id (gid) to render into that grid
+     |              position. The length of the list must match the number of tiles
+     |              that make up the map. Tile order is top left corner first, then
+     |              move right to end of row and then move down to next row (right-down).
+     |              Note, a gid of 0 means do not render a tile in that position.
+     |  
+     |  blitTopImage(self, destImage, offset)
+     |      Blit together all the visible layers ABOVE the sprite layer.
+     |      
+     |      Store in self['topImage']. self['topImage'] can then be used for faster
+     |      screen updates rather than doing all the work of blitting these layers 
+     |      together every frame.
+     |      
+     |      Note object layer named "sprites" will not be rendered since
+     |      they are provided by the server and must be rendered separately with a direct
+     |      call to blitObjectList()
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |  
+     |  setLayerVisablityMask(self, layerVisabilityMask)
+     |      If layer visibility changes then mark top and bottom images as invalid.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.map.Map:
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  addObject(self, object, objectList=False)
+     |      Add a Tiled object to an object list.
+     |      
+     |      Used to add Tiled objects (e.g. sprites) to the object list of a layer.
+     |      The default objectList is self['sprites'].
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          objectList (dict): An objectList from a layer on this map.
+     |  
+     |  checkKeys(self, object, props)
+     |      Check if all props are keys in object.
+     |      
+     |      This can be used by a method to check if an object has all the
+     |      data required. If data is missing then a warning
+     |      is logged that suggests where the data may be missing from.
+     |      
+     |      Args:
+     |          object (dict): Tiled object 
+     |          props (list): A list of keys. e.g. ["prop-deltaX", "anchorX"]
+     |      
+     |      Returns:
+     |          bool: True if all props are in object else False
+     |  
+     |  checkObject(self, object)
+     |      Check that object has required keys.
+     |      
+     |      Ensure object meets all basic criteria that are required by the server.
+     |      If an empty object ({}) is passed then it is populated with default
+     |      values until it meets the minimum requirements of a Tiled object.
+     |      
+     |      The minimum object contains:
+     |      {
+     |          'name': (str)
+     |          'type': (str)
+     |          'x': (float)
+     |          'y': (float)
+     |          'width': (float)
+     |          'height': (float)
+     |          'anchorX': (float)
+     |          'anchorY': (float)
+     |          'mapName': (str) The last map the object was on (or is still on).
+     |      
+     |          Only for tile objects have the following:
+     |          'gid': (int) Map Global Tile ID.
+     |          'tilesetName': (str) Tile Tileset Name.
+     |          'tilesetTileNumber': (int) Tileset Tile Number.
+     |      }
+     |      
+     |      Args:
+     |          object (dict)
+     |      
+     |      Returns:
+     |          object (dict): Object is both edited in place and also returned.
+     |  
+     |  convertTiledColor(self, tiledColor)
+     |      Convert Tiled HEX format
+     |      
+     |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame 
+     |      needs '#RRGGBBAA' so flip alpha to the end.
+     |  
+     |  convertTiledProps(self, object)
+     |      Convert Tiled properties to easy to use format.
+     |      
+     |      If 'properties' is in object then remove it and
+     |      add prop-<name> to object for each property in
+     |      'properties'.
+     |      
+     |      Args:
+     |          object (dict): An object to evaluate.
+     |  
+     |  findGid(self, tilesetSearchName, tilesetTileSearchNumber)
+     |      Converts a tileset specific tile number to a Gid of this map.
+     |      
+     |      This requires that tilesetSearchName is a tileset in this map!
+     |      
+     |      Args:
+     |          tilesetSearchName (str): The name of a tileset.
+     |          tilesetTileSearchNumber (int): A tile number from tilesetSearchName
+     |      
+     |      Returns:
+     |          tileGid (int): A map global tile number.
+     |  
+     |  findObject(self, x=None, y=None, name=False, type=False, objectList=False, exclude=False, returnAll=False)
+     |      Find a Tiled object that matches ALL criteria provided.
+     |      
+     |      Args:
+     |          x (float), y (float): Find object that contains (x, y)
+     |          name (str): Find object with object['name'] == name
+     |          type (str): Find object with object['type'] == type
+     |          objectList (dict): a list of objects to search. default is self['sprites']
+     |          exclude (dict): a Tiled object. Skip this object while searching. Normally used
+     |              to ensure an object does not find itself.
+     |          returnAll (bool): Return a list of all matching objects, else return only the first
+     |              matching object found.
+     |      
+     |      Returns: (one of the following)
+     |          object (dict): A single Tiled object if a matching object was found and returnAll==False.
+     |          False (bool): If no object was found and returnAll==False.
+     |          objects (list): A possibly empty list of matching Tiled objects if returnAll==True.
+     |  
+     |  findTile(self, tileGid)
+     |      Converts Tiled Gid for this map to a specific tileset name and tileset tile number.
+     |      
+     |      Args:
+     |          tileGid (int): a map global tile number.
+     |      
+     |      Returns:
+     |          tilesetName (str): name of tileset which contians tileGid
+     |          tilesetTileNumber (int): tileNumber relative to tilesetName
+     |  
+     |  getLayerVisablityMask(self)
+     |      LAYER VISABILITY MECHANIC: Return bit mask for the visibility of all layers in self['layers']
+     |      
+     |      Returns:
+     |          layerVisabilityMask (int): bitmask where left most bit relates
+     |              the visibility of layerIndex 0, the next bit relates to
+     |              layerIndex 1, and so on.
+     |  
+     |  getLayerVisablitybyIndex(self, layerIndex)
+     |      LAYER VISABILITY MECHANIC: Return true if layer is set to visible else return False.
+     |      
+     |      Args:
+     |          layerIndex (int)
+     |      
+     |      Returns:
+     |          bool
+     |  
+     |  getLayerVisablitybyName(self, layerName)
+     |      LAYER VISABILITY MECHANIC: Return true if layer is set to visible else return False.
+     |      
+     |      Args:
+     |          layerName (str)
+     |      
+     |      Returns:
+     |          bool
+     |  
+     |  removeObject(self, object, objectList=False)
+     |      Remove a Tiled object from an object list.
+     |      
+     |      Used to remove Tiled objects (e.g. sprites) from the object list of a layer.
+     |      The default objectList is self['sprites'].
+     |      
+     |      Note, this does not alter object['mapName'] since the object could be in
+     |      other objectLists on this map.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          objectList (dict): An objectList from a layer on this map.
+     |  
+     |  removeObjectFromAllLayers(self, object)
+     |      Remove a Tiled object from all layers of this map.
+     |      
+     |      Used to remove Tiled objects (e.g. sprites) from the object list
+     |      of all layers on this map.
+     |      
+     |      Note, this does not alter object['mapName'] since the object could
+     |      be in the middle of being processed by a step loop that needs that
+     |      data.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |  
+     |  setLayerVisablitybyIndex(self, layerIndex, visable)
+     |      LAYER VISABILITY MECHANIC: Show/Hide layer by index.
+     |      
+     |      Args:
+     |          layerIndex (str): The index of a layer in self['layers'].
+     |          visable (bool): True == visible.
+     |  
+     |  setLayerVisablitybyName(self, layerName, visable)
+     |      LAYER VISABILITY MECHANIC: Show/Hide layer by name.
+     |      
+     |      Args:
+     |          layerName (str): The name of a layer as defined in Tiled.
+     |          visable (bool): True == visible.
+     |  
+     |  setMapChanged(self, changed=True)
+     |      flag the map has changed (True) or not changed (False).
+     |      
+     |      This is used to determine if the server needs to send an
+     |      update to clients.
+     |  
+     |  setObjectLocationByAnchor(self, object, anchorX, anchorY)
+     |      Set an objects location using its anchor point.
+     |      
+     |      Updates an object anchor point and then sets it x, y to match.
+     |      
+     |      Args:
+     |          object (dict): A Tiled Object
+     |          x (float)
+     |          y (float)
+     |  
+     |  setObjectLocationByXY(self, object, x, y)
+     |      Set an objects location using its top/left corner.
+     |      
+     |      Updates an object x,y and then sets it anchor point to match.
+     |      Do not use without good reason. Most objects should have their
+     |      location set by setObjectLocationByAnchor()
+     |      
+     |      Args:
+     |          object (dict): A Tiled Object
+     |          x (float)
+     |          y (float)
+     |  
+     |  setObjectMap(self, object, destMap)
+     |      Move a Tiled object to a differnt map.
+     |      
+     |      Remove object from all known layers on this map and add
+     |      it to the same layers on destMap.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          destMap (engine.map.Map)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from engine.map.Map:
+     |  
+     |  __dict__
+     |      dictionary for instance variables (if defined)
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.dict:
+     |  
+     |  __contains__(self, key, /)
+     |      True if D has a key k, else False.
+     |  
+     |  __delitem__(self, key, /)
+     |      Delete self[key].
+     |  
+     |  __eq__(self, value, /)
+     |      Return self==value.
+     |  
+     |  __ge__(self, value, /)
+     |      Return self>=value.
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __getitem__(...)
+     |      x.__getitem__(y) <==> x[y]
+     |  
+     |  __gt__(self, value, /)
+     |      Return self>value.
+     |  
+     |  __iter__(self, /)
+     |      Implement iter(self).
+     |  
+     |  __le__(self, value, /)
+     |      Return self<=value.
+     |  
+     |  __len__(self, /)
+     |      Return len(self).
+     |  
+     |  __lt__(self, value, /)
+     |      Return self<value.
+     |  
+     |  __ne__(self, value, /)
+     |      Return self!=value.
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setitem__(self, key, value, /)
+     |      Set self[key] to value.
+     |  
+     |  __sizeof__(...)
+     |      D.__sizeof__() -> size of D in memory, in bytes
+     |  
+     |  clear(...)
+     |      D.clear() -> None.  Remove all items from D.
+     |  
+     |  copy(...)
+     |      D.copy() -> a shallow copy of D
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Returns a new dict with keys from iterable and values equal to value.
+     |  
+     |  get(...)
+     |      D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+     |  
+     |  items(...)
+     |      D.items() -> a set-like object providing a view on D's items
+     |  
+     |  keys(...)
+     |      D.keys() -> a set-like object providing a view on D's keys
+     |  
+     |  pop(...)
+     |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+     |      If key is not found, d is returned if given, otherwise KeyError is raised
+     |  
+     |  popitem(...)
+     |      D.popitem() -> (k, v), remove and return some (key, value) pair as a
+     |      2-tuple; but raise KeyError if D is empty.
+     |  
+     |  setdefault(...)
+     |      D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+     |  
+     |  update(...)
+     |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+     |      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+     |      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+     |      In either case, this is followed by: for k in F:  D[k] = F[k]
+     |  
+     |  values(...)
+     |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes inherited from builtins.dict:
+     |  
+     |  __hash__ = None
+

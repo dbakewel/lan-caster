@@ -1,0 +1,17 @@
+[Unit]
+Description=LAN-Caster Connector Service
+Wants=network-online.target
+After=network-online.target
+
+
+[Service]
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=python3 src/startconnector.py
+WorkingDirectory=/home/lan-caster/lan-caster
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=lan-caster
+
+[Install]
+WantedBy=multi-user.target

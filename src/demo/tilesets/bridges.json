@@ -1,0 +1,14 @@
+{ "columns":6,
+ "image":"..\/images\/bridges.png",
+ "imageheight":224,
+ "imagewidth":192,
+ "margin":0,
+ "name":"bridges",
+ "spacing":0,
+ "tilecount":42,
+ "tiledversion":"1.7.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.6"
+}

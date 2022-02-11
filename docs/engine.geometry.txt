@@ -1,0 +1,46 @@
+Help on module engine.geometry in engine:
+
+NAME
+    engine.geometry - Geometry Utility Functions.
+
+DESCRIPTION
+    This module provides several using geometry functions that can be used
+    with Tiled objects and object lists.
+    
+    Note, all angles below are in radians, starting a 3 oclock and increasing clockwise.
+    You can convert between degrees and radians in your code as follows:
+    
+        import math
+        r = math.radians(d)
+        d = math.degrees(r)
+
+FUNCTIONS
+    angle(x1, y1, x2, y2)
+        Returns angle from (x1,y1) and (x2,y2) in radians.
+    
+    angleLable(a)
+        Returns the label ('Up', 'Down', 'Left', 'Right') of angle a
+    
+    distance(x1, y1, x2, y2)
+        Returns distance between (x1,y1) and (x2,y2)
+    
+    normalizeAngle(a)
+        Returns angle a in the normalized range of 0 - 2pi. Angle a must be in radians.
+    
+    objectContains(object, x, y)
+        Returns True if x,y is inside object's x, y, width, and height else returns False.
+    
+    objectsContains(objectList, x, y)
+        Returns True if x,y is inside any object's x,y,width,height in objectList
+    
+    project(x, y, rad, dis)
+        Returns point (x',y') where angle from (x,y) to (x',y')
+        is rad and distance from (x,y) to (x',y') is dis.
+    
+    sortRightDown(listOfGameObs, maxWidth, useAnchor=True)
+        Sort list of game objects by y and then x. Do sort in place but list is also returned in 
+        case it is needed.
+        
+        Schwartzian Transform is used to speed up sort.
+        https://gawron.sdsu.edu/compling/course_core/python_intro/intro_lecture_files/fastpython.html#setgetdel
+

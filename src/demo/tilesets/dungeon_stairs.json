@@ -1,0 +1,14 @@
+{ "columns":4,
+ "image":"..\/images\/dungeon_stairs.png",
+ "imageheight":64,
+ "imagewidth":256,
+ "margin":0,
+ "name":"dungeon_stairs",
+ "spacing":0,
+ "tilecount":4,
+ "tiledversion":"1.7.2",
+ "tileheight":64,
+ "tilewidth":64,
+ "type":"tileset",
+ "version":"1.6"
+}

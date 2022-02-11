@@ -1,0 +1,14 @@
+{ "columns":12,
+ "image":"..\/images\/mountains.png",
+ "imageheight":288,
+ "imagewidth":384,
+ "margin":0,
+ "name":"mountains",
+ "spacing":0,
+ "tilecount":108,
+ "tiledversion":"1.7.2",
+ "tileheight":32,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.6"
+}

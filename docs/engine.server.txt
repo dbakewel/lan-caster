@@ -1,0 +1,463 @@
+Help on module engine.server in engine:
+
+NAME
+    engine.server - Game Server.
+
+CLASSES
+    builtins.dict(builtins.object)
+        Server
+    
+    class Server(builtins.dict)
+     |  The Server Class.
+     |  
+     |  The Server class is responsible for:
+     |      1) Opening the game network interface and allowing players to
+     |         join the game;
+     |      2) Initiating game logic: step maps forward, global game logic
+     |         such as detect end game;
+     |      3) Send updated map data to players for the map they are on;
+     |      4) Receiving messages from players and storing the data for 
+     |         processing by the step logic.
+     |      5) Receive and process test and connector messages if those
+     |         features are turned on.
+     |  
+     |  Server attributes are stored in dictionary form (self['attribute_name'] rather
+     |  than self.attribute_name). All attributes can be seen by turning on -verbose
+     |  and looking in the output of the server.
+     |  
+     |  The Server class is designed to be a singleton (only one instance) and stores
+     |  a reference to itself in the module global variable engine.server.SERVER. Any game
+     |  code that is part of the server can access the Server instance using:
+     |      import engine.server
+     |      engine.server.SERVER...
+     |  
+     |  The Server class is intended to be sub-classed and extended by the game. 
+     |  
+     |  To sub-class, add a server.py file under the game folder:
+     |      src/<your_game_name>/server.py
+     |  
+     |  In the sub-classed server.py inherit from engine.server as follows:
+     |      import engine.server
+     |      class Server(engine.server.Server):
+     |  
+     |  See src/demo/server.py for an example.
+     |  
+     |  Method resolution order:
+     |      Server
+     |      builtins.dict
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self, args)
+     |      Init the Server class.
+     |      
+     |      Set up the Server data, open server network ip:port, register with 
+     |      connector (if required), load Tiled data (maps and tilesets),
+     |      and find player start locations.
+     |      
+     |      Args:
+     |          args: output from argparse. see startserver.py
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  addPlayer(self, ip, port, ipport, msg)
+     |      Add a client as a new player. Assumes client is not already a player (not yet in self['players']).
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |  
+     |  delPlayerActionText(self, playerNumber)
+     |      Update the player so they do not have any actionText.
+     |      
+     |      Args:
+     |          playerNumber (int): A players playerNumber
+     |  
+     |  delPlayerMarqueeText(self, playerNumber)
+     |      Update the player so they do not have any marqueeText.
+     |      
+     |      Args:
+     |          playerNumber (int): A players playerNumber
+     |  
+     |  getAddServerMsg(self)
+     |      Creates an addServer msg that can be sent to the connector.
+     |      
+     |      Returns:
+     |          dict: A correctly filled out addServer msg.
+     |  
+     |  getPlayerChanged(self, player)
+     |      Return True if player has changed since last call to self.resetPlayerChanged() else returns False.
+     |      
+     |      Args:
+     |          player (dict): A player from self['players']
+     |      
+     |      Returns:
+     |          boolean
+     |  
+     |  getStepMsg(self, player)
+     |      Creates a step msg that can be sent to a player.
+     |      
+     |      Args:
+     |          player (dict): A player from self['players']
+     |      
+     |      Returns:
+     |          dict: A correctly filled out step msg.
+     |  
+     |  msgConnectInfo(self, ip, port, ipport, msg)
+     |      Process msg of type connectInfo.
+     |      
+     |      If server is using connector 
+     |      (self['registerName'] != False) then send a udpPunchThrough to the
+     |      client public ip/port. Do this even if it looks like client and
+     |      and server are on the same LAN or same host. It does not matter
+     |      if this msg reaches the client, only that it opens the server's
+     |      LAN NAT so msgs are allowed from the client to the server.
+     |      The client can then find the best path (localhost/lan/wan) to
+     |      reach the server.
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  msgJoinRequest(self, ip, port, ipport, msg)
+     |      Process msg of type joinRequest.
+     |      
+     |      If the game is not full then add the
+     |      add the new player to the game.
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      Returns:
+     |          dict: A joinReply msg if the player was added to the game else an Error msg.
+     |              Regardless, this msg will be sent back to the client.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  msgPlayerAction(self, ip, port, ipport, msg)
+     |      Process msg of type playerAction.
+     |      
+     |      Sets the sprite action so the sprite's 
+     |      action will be processed (or discarded if not action is available) during 
+     |      the next step.
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  msgPlayerMove(self, ip, port, ipport, msg)
+     |      Process msg of type playerMove.
+     |      
+     |      Sets the destination and speed in the player sprite.
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  msgServerAdded(self, ip, port, ipport, msg)
+     |      Process msg of type serverAdded.
+     |      
+     |      These are sent from the connector in reply
+     |      to addServer msgs sent by self.sendConnectorKeepAlive(). These msgs can be
+     |      safety ignored.
+     |  
+     |  msgServerDeleted(self, ip, port, ipport, msg)
+     |      Process msg of type serverDeleted.
+     |      
+     |      These are sent from the connector in reply
+     |      to delServer msgs sent by self.msgJoinRequest(). These msgs can be
+     |      safety ignored.
+     |  
+     |  msgTestPlayerJump(self, ip, port, ipport, msg)
+     |      Process msg of type playerJump.
+     |      
+     |      If the server is in test mode then
+     |      change the player location to the DestX, DestY in the msg.
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  msgTestPlayerNextMap(self, ip, port, ipport, msg)
+     |      Process msg of type playerNextMap.
+     |      
+     |      If in test mode, moves the player
+     |      to next map (based on map names sorted alphabetically).
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  msgTestTogglePlayerMoveChecking(self, ip, port, ipport, msg)
+     |      Process msg of type playerMoveChecking.
+     |      
+     |      If in test mode, toggles the boolean
+     |      state of self['playerMoveCheck']. When False, players will be able move in
+     |      areas that are normally out of bounds
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
+     |  resetPlayerChanged(self, player)
+     |      Update player so calls to self.getPlayerChanged will return False until the player is changed again.
+     |      
+     |      Args:
+     |          player (dict): A player from self['players']
+     |  
+     |  run(self)
+     |      Main server loop.
+     |      
+     |      This loop is controlled to run once every 1/fps seconds.
+     |      Every loop it received msgs from players, takes one step forward in time,
+     |      sends updated step messages to players, and keeps the connector data
+     |      current (if required). It also prints server busy messages on a regular
+     |      interval.
+     |  
+     |  sendConnectorKeepAlive(self)
+     |      Keep server data in connector from timing out.
+     |      
+     |      If we are using the connector (self['registerName'] != False) then
+     |      send addServer msgs to the connector at a regular interval until
+     |      all players have joined the game. This will ensure the connector
+     |      does not remove this server data based the connectors timeout. This
+     |      also keeps the UDP punch through in the server's LAN NAT open so
+     |      the connector can send msgs. 
+     |      
+     |      This method should be called regularly (in main loop) after the
+     |      addServer msgs has been accepted by the connector.
+     |  
+     |  sendStepMsgs(self)
+     |      Send step msgs.
+     |      
+     |      Send a step msg to each player, but only if the map the
+     |      player is on has changed or the player has changed.
+     |  
+     |  setPlayerActionText(self, playerNumber, actionText)
+     |      Update the player's actionText to actionText.
+     |      
+     |      Args:
+     |          playerNumber (int): A player's playerNumber
+     |          actionText (str): A string to display to the user in the action text box.
+     |  
+     |  setPlayerMarqueeText(self, playerNumber, marqueeText)
+     |      Update the player's marqueeText to marqueeText.
+     |      
+     |      Args:
+     |          playerNumber (int): A player's playerNumber
+     |          marqueeText (str): A string to display to the user in the marquee text box.
+     |  
+     |  stepServer(self)
+     |      Take the game one "step" forward in time.
+     |      
+     |      This should be called once every 1/fps seconds by the main server loop. 
+     |      Three tasks are performed:
+     |          1) call self.stepServerStart()
+     |          2) call map.stepMap() for each map that has at least one player on it.
+     |             Perform these calls in order of maps names sorted alphabetically.
+     |          3) call self.stepServerEnd()
+     |  
+     |  stepServerEnd(self)
+     |      Server logic for the end of a step.
+     |      
+     |      Placeholder that can be overridden in sub-classes to perform any game
+     |      logic for the end of a step. This is any logic that is not map 
+     |      specific and is called after all map step processing is performed.
+     |  
+     |  stepServerStart(self)
+     |      Server logic for the start of a step.
+     |      
+     |      Placeholder that can be overridden in sub-classes to perform any game
+     |      logic for the start of a step. This is any logic that is not map 
+     |      specific and is called before any map step processing is performed.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __dict__
+     |      dictionary for instance variables (if defined)
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.dict:
+     |  
+     |  __contains__(self, key, /)
+     |      True if D has a key k, else False.
+     |  
+     |  __delitem__(self, key, /)
+     |      Delete self[key].
+     |  
+     |  __eq__(self, value, /)
+     |      Return self==value.
+     |  
+     |  __ge__(self, value, /)
+     |      Return self>=value.
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __getitem__(...)
+     |      x.__getitem__(y) <==> x[y]
+     |  
+     |  __gt__(self, value, /)
+     |      Return self>value.
+     |  
+     |  __iter__(self, /)
+     |      Implement iter(self).
+     |  
+     |  __le__(self, value, /)
+     |      Return self<=value.
+     |  
+     |  __len__(self, /)
+     |      Return len(self).
+     |  
+     |  __lt__(self, value, /)
+     |      Return self<value.
+     |  
+     |  __ne__(self, value, /)
+     |      Return self!=value.
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __setitem__(self, key, value, /)
+     |      Set self[key] to value.
+     |  
+     |  __sizeof__(...)
+     |      D.__sizeof__() -> size of D in memory, in bytes
+     |  
+     |  clear(...)
+     |      D.clear() -> None.  Remove all items from D.
+     |  
+     |  copy(...)
+     |      D.copy() -> a shallow copy of D
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Returns a new dict with keys from iterable and values equal to value.
+     |  
+     |  get(...)
+     |      D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+     |  
+     |  items(...)
+     |      D.items() -> a set-like object providing a view on D's items
+     |  
+     |  keys(...)
+     |      D.keys() -> a set-like object providing a view on D's keys
+     |  
+     |  pop(...)
+     |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+     |      If key is not found, d is returned if given, otherwise KeyError is raised
+     |  
+     |  popitem(...)
+     |      D.popitem() -> (k, v), remove and return some (key, value) pair as a
+     |      2-tuple; but raise KeyError if D is empty.
+     |  
+     |  setdefault(...)
+     |      D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+     |  
+     |  update(...)
+     |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+     |      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+     |      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+     |      In either case, this is followed by: for k in F:  D[k] = F[k]
+     |  
+     |  values(...)
+     |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes inherited from builtins.dict:
+     |  
+     |  __hash__ = None
+
+FUNCTIONS
+    quit(signal=None, frame=None)
+        Quit the server process.
+        
+        Designed to be used with the signal module to catch and shutdown when user hits Ctrl-C
+        but can also be called by other code to shutdown gracefully.
+        
+        Args:
+            signal (int): Signal number.
+            frame : stack frame
+        
+        Returns:
+            Does not return. Exits python.
+

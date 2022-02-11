@@ -1,0 +1,52 @@
+Help on module engine.log in engine:
+
+NAME
+    engine.log - Logging Module
+
+DESCRIPTION
+    Prints messages to command line window in a standard format.
+
+FUNCTIONS
+    dictToStr(object, depth=3)
+        return a human readable string version of a Dictionary object.
+    
+    log(msg, level='INFO', depth=3)
+        Print msg to standard output.
+        
+        format: LogLevel Time Function: msg
+        
+        level should be one of DEBUG, VERBOSE, INFO, WARNING, ERROR, or FAILURE.
+        Use log level as follows:
+            DEBUG: Very detailed information, such as network messages.
+            VERBOSE: Detailed information about normal function of program.
+            INFO: Information about the normal functioning of the program. (default log level).
+            WARNING: Something unexpected happened but normal program flow can continue.
+            ERROR: Can not continue as planned.
+            FAILURE: program will need to quit or initialize.
+        
+        Args:
+            msg (str): The log message to print
+            level (str): Log level of the msg. DEBUG and VERBOSE will only be printed if
+                turned on using setLog Level.
+            depth (int): When logging objects, this is the depth of nested objects to print.
+    
+    objectToDict(o)
+        return a Dictionary version of a python object with all methods and private attributes removed.
+    
+    objectToStr(o, depth=3)
+        return a readable string version of a python object with all methods and private attributes removed.
+    
+    setLogFile(filename=False)
+        Turn writing to file on or off. Off by default.
+    
+    setLogLevel(debug=False, verbose=False)
+        Set the log levels that will be printed.
+        
+        Turn DEBUG and VERBOSE printing on or off. Both are off by default.
+        Note, debug = True will set verbose = True.
+
+DATA
+    LOGDEBUG = False
+    LOGFILE = False
+    LOGVERBOSE = False
+

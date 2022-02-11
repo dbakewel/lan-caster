@@ -1,0 +1,61 @@
+{ "compressionlevel":-1,
+ "height":6,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 9, 9, 1, 2, 2, 1, 9, 9, 1, 2, 2, 1, 9, 9, 1, 1, 1, 1, 9, 9, 9, 9, 9, 9, 9],
+         "height":6,
+         "id":1,
+         "name":"Tile Layer 1",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":6,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":2,
+         "name":"staticText",
+         "objects":[
+                {
+                 "height":21.553,
+                 "id":1,
+                 "name":"",
+                 "rotation":0,
+                 "text":
+                    {
+                     "fontfamily":"MS Shell Dlg 2",
+                     "halign":"center",
+                     "text":"Small Map Test",
+                     "wrap":true
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":118.74,
+                 "x":34.3621844434093,
+                 "y":40.6175381928273
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":3,
+ "nextobjectid":2,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.7.2",
+ "tileheight":32,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"..\/..\/tilesets\/fantasy-tileset.json"
+        }],
+ "tilewidth":32,
+ "type":"map",
+ "version":"1.6",
+ "width":6
+}

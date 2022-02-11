@@ -1,0 +1,36 @@
+Help on module engine.time in engine:
+
+NAME
+    engine.time - Game Time
+
+DESCRIPTION
+    This module replaces the python built in time module and
+    adds a DELTA offset to the perf_counter function. This is
+    used by the client to sync it's time with the server. 
+    With this, the client can evaluate time outs set by the
+    server.
+
+FUNCTIONS
+    perf_counter()
+        Returns float of current time in seconds.
+        
+        This is is not clock time and is only relative to itself.
+        
+        Returns:
+            counter (float): time in seconds.
+    
+    set(serverTime)
+        Sets DELTA to add to time to sync with serverTime.
+        
+        Args:
+            serverTime (float): server time in seconds.
+    
+    sleep(sec)
+        Function does not return until sec seconds have passed.
+        
+        Args:
+            sec (float): seconds to sleep.
+
+DATA
+    DELTA = 0
+
