@@ -135,6 +135,7 @@ class Map(dict):
         layers and objects loaded from tiled need some data conversion and clean up to be useful
         '''
         for layer in self['layers']:
+            self.convertTiledProps(layer)
             if layer['type'] == "tilelayer":
                 if "compression" in layer:
                     log(f"Map {self['name']} contains a compressed tile layer (only CSV format is supported).", "FAILURE")
