@@ -40,32 +40,26 @@ class Messages(dict):
             # note, all msgs require their type to be included: eg. {'type': 'quitting'}
             'joinRequest': {
                 'game': ['str', 1, 32],
-                'playerDisplayName': ['str', 1, 16],
-                'gameData_o': 'list'
+                'playerDisplayName': ['str', 1, 16]
                 },
             'joinReply': {
                 'playerNumber': 'int',
                 'serverSec': 'float',
-                'testMode': 'bool',
-                'gameData_o': 'list'
+                'testMode': 'bool'
                 },
             'quitting': {},
             'playerMove': {
                 'moveDestX': 'int',
-                'moveDestY': 'int',
-                'gameData_o': 'list'
+                'moveDestY': 'int'
                 },
-            'playerAction': {
-                'gameData_o': 'list'
-                },
+            'playerAction': {},
             'step': {
                 'gameSec': 'float',
                 'mapName': ['str', 1, 32],
                 'layerVisabilityMask': 'int',
                 'sprites': 'list',
                 'actionText_o': ['str', 1, 256],
-                'marqueeText_o': ['str', 1, 512],
-                'gameData_o': 'list'
+                'marqueeText_o': ['str', 1, 512]
                 },
             'Error': {
                 'result': 'str'
