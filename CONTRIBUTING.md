@@ -1,4 +1,6 @@
-# How to contribute
+[ [ABOUT](README.md) | [SETUP and RUN](SETUP.md) | [CREATE A GAME](CREATE.md) | [TUTORIALS](TUTORIALS.md) | **CONTRIBUTING** ]
+
+# Contributing to LAN-Caster
 
 I'm really glad you're reading this, because this will help us help you. We hope you like LAN-Caster and want to hear from you. The guidelines below help us communicate and work together smoothly.
 

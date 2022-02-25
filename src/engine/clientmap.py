@@ -145,7 +145,7 @@ class ClientMap(engine.map.Map):
     def blitBottomImage(self, destImage, offset):
         """Blit together all the visible layers BELOW the sprite layer.
 
-        Store in self['bottomImage']. self['bottomImage'] can then be used for faster 
+        Store in self['bottomImage']. self['bottomImage'] can then be used for faster
         screen updates rather than doing all the work of blitting these layers together
         every frame.
 
@@ -191,7 +191,7 @@ class ClientMap(engine.map.Map):
         """Blit together all the visible layers ABOVE the sprite layer.
 
         Store in self['topImage']. self['topImage'] can then be used for faster
-        screen updates rather than doing all the work of blitting these layers 
+        screen updates rather than doing all the work of blitting these layers
         together every frame.
 
         Note object layer named "sprites" will not be rendered since
@@ -422,7 +422,7 @@ class ClientMap(engine.map.Map):
             deskImage (pygame Surface)
             offset (int, int): Render entire map offset by (x, y) onto destImage
             textObject (dict): Tiled Object containing object['text']
-            mapRelative (bool): If True then use map coordinates, else use 
+            mapRelative (bool): If True then use map coordinates, else use
                 destImage/screen coordinates. Normally user interface elements
                 that are relative to the screen (not the map) use mapRelative=False
         """

@@ -58,7 +58,7 @@ class Client(dict):
         import engine.client
         engine.client.CLIENT...
 
-    The Client class is intended to be sub-classed and extended by the game. 
+    The Client class is intended to be sub-classed and extended by the game.
 
     To sub-class, add a client.py file under the game folder:
         src/<game name>/client.py
@@ -73,7 +73,7 @@ class Client(dict):
     def __init__(self, args):
         """Init the Client class.
 
-        Set up the Client data, open client network ip:port, join the server, 
+        Set up the Client data, open client network ip:port, join the server,
         open the game window, load Tiled data (maps and tilesets)
         """
         global CLIENT
@@ -235,11 +235,11 @@ class Client(dict):
     ########################################################
 
     def run(self):
-        '''Main client loop. 
+        '''Main client loop.
 
         This loop is controlled to run once every 1/fps seconds.
         Every loop it received msgs from the server, updates the screen, and
-        processes user input events. It also prints server busy messages on 
+        processes user input events. It also prints server busy messages on
         a regular interval.
         '''
 
@@ -280,7 +280,7 @@ class Client(dict):
     ########################################################
 
     def msgStep(self, ip, port, ipport, msg):
-        """Process msg of type step. 
+        """Process msg of type step.
 
         Store step msg and invalidate the screen timer.
 
@@ -342,7 +342,7 @@ class Client(dict):
     ########################################################
 
     def updateScreen(self):
-        """Update the window. 
+        """Update the window.
 
         Only update window if step data has been received from the
         server and the screen valid timer is in the past.
@@ -418,7 +418,7 @@ class Client(dict):
         """Render User Interface to Window.
 
         Render any non-map items, such as player specific data or gui elements.
-        These are rendered relative to the screen, not the map. (e.g. bottom 
+        These are rendered relative to the screen, not the map. (e.g. bottom
         of screen, not bottom of map)
         """
 
@@ -499,7 +499,7 @@ class Client(dict):
     def processEvents(self):
         """ Process User Input.
 
-        Get and process input events from user, such as keyboard, 
+        Get and process input events from user, such as keyboard,
         mouse, and window events.
         """
         for event in pygame.event.get():

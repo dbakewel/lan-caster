@@ -44,7 +44,7 @@ class Server(dict):
         2) Initiating game logic: step maps forward, global game logic
            such as detect end game;
         3) Send updated map data to players for the map they are on;
-        4) Receiving messages from players and storing the data for 
+        4) Receiving messages from players and storing the data for
            processing by the step logic.
         5) Receive and process test and connector messages if those
            features are turned on.
@@ -59,7 +59,7 @@ class Server(dict):
         import engine.server
         engine.server.SERVER...
 
-    The Server class is intended to be sub-classed and extended by the game. 
+    The Server class is intended to be sub-classed and extended by the game.
 
     To sub-class, add a server.py file under the game folder:
         src/<your_game_name>/server.py
@@ -74,7 +74,7 @@ class Server(dict):
     def __init__(self, args):
         """Init the Server class.
 
-        Set up the Server data, open server network ip:port, register with 
+        Set up the Server data, open server network ip:port, register with
         connector (if required), load Tiled data (maps and tilesets),
         and find player start locations.
 
@@ -310,8 +310,8 @@ class Server(dict):
     def msgPlayerAction(self, ip, port, ipport, msg):
         """Process msg of type playerAction.
 
-        Sets the sprite action so the sprite's 
-        action will be processed (or discarded if not action is available) during 
+        Sets the sprite action so the sprite's
+        action will be processed (or discarded if not action is available) during
         the next step.
 
         This method is designed to be called from self['socket'].recvReplyMsgs().
@@ -443,7 +443,7 @@ class Server(dict):
     def msgConnectInfo(self, ip, port, ipport, msg):
         """Process msg of type connectInfo.
 
-        If server is using connector 
+        If server is using connector
         (self['registerName'] != False) then send a udpPunchThrough to the
         client public ip/port. Do this even if it looks like client and
         and server are on the same LAN or same host. It does not matter
@@ -500,7 +500,7 @@ class Server(dict):
         all players have joined the game. This will ensure the connector
         does not remove this server data based the connectors timeout. This
         also keeps the UDP punch through in the server's LAN NAT open so
-        the connector can send msgs. 
+        the connector can send msgs.
 
         This method should be called regularly (in main loop) after the
         addServer msgs has been accepted by the connector.
@@ -518,7 +518,7 @@ class Server(dict):
         """Creates an addServer msg that can be sent to the connector.
 
         Returns:
-            dict: A correctly filled out addServer msg. 
+            dict: A correctly filled out addServer msg.
         """
         return {
             'type': 'addServer',
@@ -560,7 +560,7 @@ class Server(dict):
             player (dict): A player from self['players']
 
         Returns:
-            dict: A correctly filled out step msg. 
+            dict: A correctly filled out step msg.
         """
         map = self['maps'][player['sprite']['mapName']]
         msg = {
@@ -586,7 +586,7 @@ class Server(dict):
     def stepServer(self):
         """Take the game one "step" forward in time.
 
-        This should be called once every 1/fps seconds by the main server loop. 
+        This should be called once every 1/fps seconds by the main server loop.
         Three tasks are performed:
             1) call self.stepServerStart()
             2) call map.stepMap() for each map that has at least one player on it.
@@ -616,7 +616,7 @@ class Server(dict):
         """Server logic for the start of a step.
 
         Placeholder that can be overridden in sub-classes to perform any game
-        logic for the start of a step. This is any logic that is not map 
+        logic for the start of a step. This is any logic that is not map
         specific and is called before any map step processing is performed.
         """
         pass
@@ -625,7 +625,7 @@ class Server(dict):
         """Server logic for the end of a step.
 
         Placeholder that can be overridden in sub-classes to perform any game
-        logic for the end of a step. This is any logic that is not map 
+        logic for the end of a step. This is any logic that is not map
         specific and is called after all map step processing is performed.
         """
         pass

@@ -9,7 +9,7 @@ import engine.time as time
 
 class ServerMap(engine.servermap.ServerMap):
     """DELETE TIMER MECHANIC
-        
+
         If a holdable to dropped on the map then delete it
         from the game in 5 seconds unless it is picked up
         again. Also show a countdown in the holdable's
@@ -22,7 +22,7 @@ class ServerMap(engine.servermap.ServerMap):
         """DELETE TIMER MECHANIC: Extend engine.servermap.ServerMap.setHoldable()
 
         Remove delAfter timer if it exists. This stops the
-        delete countdown timer from a sprite when it is 
+        delete countdown timer from a sprite when it is
         picked up.
 
         Removes attributes from sprite: delAfter

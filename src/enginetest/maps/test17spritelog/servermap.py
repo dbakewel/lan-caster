@@ -6,8 +6,8 @@ import engine.servermap
 
 class ServerMap(engine.servermap.ServerMap):
     """TALK MECHANIC
-    
-        Adds a trigger with type == talk which 
+
+        Adds a trigger with type == talk which
         sets speech text in the sprite.
 
         Uses Mechanics: speech text

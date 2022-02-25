@@ -52,10 +52,10 @@ def loadTilesets(game, loadImages):
     Args:
         game (str): The game name (game folder name). Tilesets will
             be loaded from <game>/tilesets/
-        loadImages (bool): If loadImages is True then also loads 
+        loadImages (bool): If loadImages is True then also loads
             tileset images.
 
-    Returns: 
+    Returns:
         dict: dictionary of tileset objects, with the key being the tileset name:
             {'tileset1name': tileset1object, 'tileset2name': tileset2object, ....}
     '''
@@ -92,13 +92,13 @@ def loadMaps(tilesets, game, maptype):
             be loaded from <game>/maps/
         maptype (str): Must be either "ServerMap" or "ClientMap".
 
-    Returns: 
+    Returns:
         dict: dictionary of map objects, with the key being the map name:
         {'map1name': map1object, 'map2name': map2object, ....}
 
-    
+
     '''
-    
+
     if maptype == "ServerMap":
         moduleName = "servermap"
     elif maptype == "ClientMap":

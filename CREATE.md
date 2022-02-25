@@ -1,16 +1,15 @@
-[ [ABOUT](README.md) | [SETUP and RUN](SETUP.md) | **CREATE A GAME** | [TUTORIALS](TUTORIALS.md) ]
+[ [ABOUT](README.md) | [SETUP and RUN](SETUP.md) | **CREATE A GAME** | [TUTORIALS](TUTORIALS.md) | [CONTRIBUTING](CONTRIBUTING.md) ]
 
 # LAN-Caster - Create a Game
 
-Most information on creating a game is provided in the [tutorials](TUTORIALS.md) on in code comments.
+Most information on creating a game is provided in the [tutorials](TUTORIALS.md) or in code comments.
 This document covers only a few general topics.
 
 ## File Organization
 
-A new game requires a new folder to be added under the src/ folder. The new folder name will be the name of
-the game (used with the -game flag). For example, sssume a new game is being created call "elmo". 
-The game will have 
-two maps: house and outside. For graphics a simple tileset image called basictiles.png
+A new game requires a folder to be added under the src/ folder. The new folder name will be the name of
+the game (used with the -game command line argument). For example, assume a new game is being created call "elmo". 
+The game will have two maps: house and outside. For graphics a simple tileset image called basictiles.png
 will be used.
 
 Minimum file structure for elmo:
@@ -31,8 +30,9 @@ Minimum file structure for elmo:
 ```
   * only files that are added for elmo are shown.
 
-A more fully filled out file structure for elmo adds more tilesets, extended game classes for server, servermap, client and clientmap, and extended servermap class for the house map. Also, a credits.md file
-is added to give credit to the creator of the game and the creators of any assets. Finally a custom
+A more fully filled out file structure for elmo adds more tilesets, extended game classes for server, servermap, client 
+and clientmap, and extended servermap class for the house map. Also, a credits.md file
+is added to give credit to the creator of the game and the creators of any assets (fonts and images). Finally a custom
 font has been added.
 ```
     lan-caster/
@@ -66,41 +66,38 @@ Tiled is used to create the map and tileset JSON files. LAN-Caster has been test
 https://www.mapeditor.org/download.html. LAN-Caster only supports a subset of Tiled features as described below.
 
 #### Supported Tiled Features
-Map format:
+Map format and feature support:
   * Orientation: Orthogonal
   * Tile layer format: CSV
   * Tile render order: Right Down
   * Map size: Fixed
   * Save as type: JSON (.json)
+  * Layer types: tile, object
+  * Layer visibility
 
-Layer types: tile, object
-
-Layer visibility is supported.
-
-Tileset Type: Based on Tileset Image
-
-For Tiled object (on object layers) the following are supported:
+Tiled objects (on map object layers) support:
   * Attributes: name, type, x, y, width, height, gid
   * Object Types: rectangle, point, ellipse, tile, and text
 
-Tile animations.
+Tileset format and features supported:
+  * Tileset Type: Based on Tileset Image
+  * Tile animations
 
 Custom properties in: maps, layers, objects, tilesets, and tiles.
 
 #### Unsupported Tiled Features
 Map and tileset types not listed above are not supported.
 
-Layer types: image, group
+Map Layer types: image, group
 
-For Tiled object (on object layers) the following are NOT supported:
+Tiled objects (on map object layers) do NOT support:
   * Attributes: flip, rotation, id, visible
   * Object Types: polygon
 
-Duplicate custom property names within the same element.
+Duplicate custom property names within the same element are not supported.
 
 #### Other Tiled Feature Support
-Other features of of Tiled may have limited support or are
-simply ignored by LAN-Caster.
+Other features of of Tiled may have limited support or are simply ignored by LAN-Caster.
 
 ## Extending LAN-Caster
 
@@ -116,7 +113,7 @@ inherit from the corresponding file in the engine folder:
   * servermap.py
   * tileset.py
 
-The following files can be placed in the maps folder and will only apply
+The following files can be placed in a map folder and will only apply
 to that one map. These files will be used in place of the corresponding file from the game and engine
 folders. Normally these files should inherit from the corresponding file
 in the game folder but they can also inherit directly from the engine folder:

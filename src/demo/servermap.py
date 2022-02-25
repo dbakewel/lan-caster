@@ -15,7 +15,7 @@ class ServerMap(engine.servermap.ServerMap):
 
     BOMB AREA MECHANIC
         Allow players to blow up the rocks blocking the mapDoor that
-        links the middle of the start map to the middle of the 
+        links the middle of the start map to the middle of the
         under map. There are two bomb areas, one at the 'top' of
         the mapDoor on the start map and one on the 'bottom' of
         the mapDoor on the under map.
@@ -27,7 +27,7 @@ class ServerMap(engine.servermap.ServerMap):
             holdable, layer visibility.
 
     THROW AREA MECHANIC
-        Allow sprites of type == holdable to be thrown. If a 
+        Allow sprites of type == holdable to be thrown. If a
         sprite is holding a holdable and the sprite is in a
         trigger of type == throwArea then the holdable can
         be thrown using an action. The direction and distance
@@ -38,7 +38,7 @@ class ServerMap(engine.servermap.ServerMap):
             holdable.
 
     SPEED MULTIPLIER MECHANIC
-        Change the sprite's moveSpeed while inside a trigger of 
+        Change the sprite's moveSpeed while inside a trigger of
         type == speedMultiplier. This is used in the demo game
         to implement the slowing down of the player while
         walking through mud.
@@ -53,9 +53,9 @@ class ServerMap(engine.servermap.ServerMap):
     RESPAWN POINT MECHANIC
         While a sprite is inside a trigger of type == saveRespawnPoint
         save the location of the player inside the sprite. The sprite
-        can be sent back to this location at a later time. 
-        The idea is to save the last safe point the sprite was 
-        at. If the sprite is killed then it can be respawned back to 
+        can be sent back to this location at a later time.
+        The idea is to save the last safe point the sprite was
+        at. If the sprite is killed then it can be respawned back to
         this point.
 
     """
@@ -68,8 +68,8 @@ class ServerMap(engine.servermap.ServerMap):
         """BOMB AREA MECHANIC: init method.
 
         Only if on the start and under map:
-            Remove and store the map doors and inBounds objects that 
-            are covered by rocks. These will get put back when the bomb 
+            Remove and store the map doors and inBounds objects that
+            are covered by rocks. These will get put back when the bomb
             is set off in triggerBombArea()
 
         Note, this is hard coded to the two bomb areas in the game.
@@ -138,7 +138,7 @@ class ServerMap(engine.servermap.ServerMap):
         """THROW AREA MECHANIC: trigger method.
 
         If the sprite is holding a holdable and has requested
-        an action then drop holdable and set it moving as 
+        an action then drop holdable and set it moving as
         defined by the throwArea properties.
 
         Trigger Properties:
@@ -170,12 +170,12 @@ class ServerMap(engine.servermap.ServerMap):
     def checkMove(self, object, x, y):
         """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkMove().
 
-        Allow things that have bee thrown to go out of bounds so they 
+        Allow things that have bee thrown to go out of bounds so they
         can be thrown over water. The way the throw zones are set up in
         the demo game ensures that objects can't be thrown off the map
         or other places they should not be thrown.
         """
-        
+
         if "moveSpeed" in object and object['moveSpeed'] == self['THROWSPEED']:
             return True
 
@@ -187,7 +187,7 @@ class ServerMap(engine.servermap.ServerMap):
 
     def triggerSpeedMultiplier(self, trigger, sprite):
         """SPEED MULTIPLIER MECHANIC: trigger method.
-        
+
         Change the sprite's moveSpeed based on speedMultiplier
         trigger property. This trigger will fire before stepMove
         methods are called so it will take effect this step.
@@ -272,11 +272,11 @@ class ServerMap(engine.servermap.ServerMap):
 
     def setSpriteLocationByRespawnPoint(self, sprite):
         """RESPAWN POINT MECHANIC: Move sprite to respawn point.
-        
+
         Move sprite to respawn point if one was previously stored.
         This may move the sprite to a different map.
 
-        If no respawn point was previously stored in the sprite then 
+        If no respawn point was previously stored in the sprite then
         do nothing and log a warning.
         """
 
@@ -295,7 +295,7 @@ class ServerMap(engine.servermap.ServerMap):
     def triggerSaveRespawnPoint(self, trigger, sprite):
         """RESPAWN POINT MECHANIC: trigger method.
 
-        Save the sprite's current location as the its respawn point. 
+        Save the sprite's current location as the its respawn point.
         """
         self.setRespawnPoint(sprite)
 

@@ -83,7 +83,7 @@ class ClientTileset(engine.tileset.Tileset):
             effectiveTileNumber (int)
             validUntil (float): time after which effective tileNumber will change.
         """
-        
+
         validUntil = sys.float_info.max  # how long the effectiveTileNumber is valid for in seconds
 
         # CHARACTER TILE

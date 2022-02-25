@@ -9,14 +9,14 @@ import engine.server
 class StepMap(engine.map.Map):
     '''Class which implements stepping the game forward in time.
 
-    The StepMap class is responsible for calling the game logic, located 
+    The StepMap class is responsible for calling the game logic, located
     in sub-classes, which takes the game forward one step in time. It
     does this by finding methods that match the naming format and then
-    calling those methods in a very specific order during each step. 
-    Using the various methods name formats, a sub-classes can implement 
+    calling those methods in a very specific order during each step.
+    Using the various methods name formats, a sub-classes can implement
     many different game mechanics.
 
-    The method name formats StepMap looks for are as follows. Except 
+    The method name formats StepMap looks for are as follows. Except
     for init<MechanicName>() the methods are called in this order
     during each step:
 
@@ -27,8 +27,8 @@ class StepMap(engine.map.Map):
         2) stepSpriteStart<MechanicName>(sprite): Called for every object
             on the sprite layer.
 
-        3) trigger<MechanicName>(trigger, sprite): Called for every trigger 
-            and sprite combination where the sprite anchor point is inside 
+        3) trigger<MechanicName>(trigger, sprite): Called for every trigger
+            and sprite combination where the sprite anchor point is inside
             the trigger.
 
         4) stepMove<MechanicName>(sprite): Called for every object
@@ -39,12 +39,12 @@ class StepMap(engine.map.Map):
 
         6) stepMapEnd<MechanicName>(): Called once at the end of each step.
 
-    <MechanicName> is replaced with the name of the game mechanic 
+    <MechanicName> is replaced with the name of the game mechanic
     being implemented.
 
     Besides implementing the step methods above, a game mechanic
     may need to extend, override, or implement other methods.
-    See examples of implementing game mechanics in engine.servermap and 
+    See examples of implementing game mechanics in engine.servermap and
     the various servermaps of the enginetest and demo games.
 
     The Server normally only calls the engine.stepmap.StepMap.StepMap()
@@ -53,7 +53,7 @@ class StepMap(engine.map.Map):
 
     Also, the Server class normally calls stepServerStart() before the
     all the maps process there steps and calls stepServerEnd() after
-    all maps have processed their steps. 
+    all maps have processed their steps.
     See engine.server.Server.stepServer() for details.
     '''
 
@@ -186,15 +186,15 @@ class StepMap(engine.map.Map):
         return otherMethodsStr + "\n" + stepMethodsStr
 
     def addStepMethodPriority(self, stepMethodType, stepMethodName, priority):
-        """Set the prioriy of a step method. 
+        """Set the prioriy of a step method.
 
-        This is normally used by subclass init* methods to prioritize step 
+        This is normally used by subclass init* methods to prioritize step
         methods before finding and sorting them.
 
         Args:
             stepMethodType (str): One of self['stepMethodPriority']
             stepMethodName (str): A method name that starts with stepMethodType
-            priority (int): The priority of stepMethodName.Lower number is 
+            priority (int): The priority of stepMethodName.Lower number is
                 higher priority.
         """
         if stepMethodType not in self['stepMethodPriority']:
@@ -245,10 +245,10 @@ class StepMap(engine.map.Map):
     def stepTriggers(self, sprite):
         """Process all triggers for a sprite.
 
-        Find all triggers (objects on the trigger layer) that contain this 
+        Find all triggers (objects on the trigger layer) that contain this
         sprite's anchor and call the corresponding trigger* method.
-        
-        The search excludes the sprite itself from the search 
+
+        The search excludes the sprite itself from the search
         since objects may be on the sprite and trigger layer at the
         same time.
 
@@ -288,7 +288,7 @@ class StepMap(engine.map.Map):
     def getTriggerMethodName(self, trigger):
         """Given a trigger name, return the name of a trigger's method.
 
-        Convert a trigger type (eg. trigger['type'] == "mapDoor") to method 
+        Convert a trigger type (eg. trigger['type'] == "mapDoor") to method
         name (eg. "triggerMapDoor")
 
         Args:

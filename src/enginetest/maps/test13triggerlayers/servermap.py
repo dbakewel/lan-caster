@@ -6,7 +6,7 @@ import engine.servermap
 
 class ServerMap(engine.servermap.ServerMap):
     """LAYER SHOW MECHANIC
-    
+
         Only show a layer during steps that a sprite
         is inside a trigger.
 
@@ -16,10 +16,10 @@ class ServerMap(engine.servermap.ServerMap):
     def stepMapStartLayerShow(self):
         """LAYER SHOW MECHANIC: stepMapStart method.
 
-        Hide all layers that in listed in layerShow 
+        Hide all layers that in listed in layerShow
         trigger properties.
 
-        This needs to be done every step since we don't 
+        This needs to be done every step since we don't
         know if a sprite is inside a trigger yet during
         this step.
         """

@@ -22,8 +22,8 @@ class Map(dict):
     the server and client:
 
     LAYER VISABILITY MECHANIC
-        The layer visibility mechanic allows layers that were loaded from the Tiled 
-        map file to be shown or hidden. Normally the server and servermap set layer 
+        The layer visibility mechanic allows layers that were loaded from the Tiled
+        map file to be shown or hidden. Normally the server and servermap set layer
         visiblity and send it to the client in a step message as a bitmask. The
         client can then use that bitmask to match its visible layers to those
         on the server.
@@ -31,7 +31,7 @@ class Map(dict):
 
     def __init__(self, tilesets, mapDir):
         """Load map file and do data conversion.
-        
+
         Note, all Tiled properites will be converted into an easier to access form.
             from: {object['properties'][{name: name1, value: value1}],[...]}
             to: {object.prop-name1=value1,...}
@@ -172,7 +172,7 @@ class Map(dict):
     def convertTiledColor(self, tiledColor):
         """Convert Tiled HEX format
 
-        Tiled hex colors with alpha are '#AARRGGBB' format but pygame 
+        Tiled hex colors with alpha are '#AARRGGBB' format but pygame
         needs '#RRGGBBAA' so flip alpha to the end.
         """
         if isinstance(tiledColor, str) and len(tiledColor) == 9 and tiledColor.startswith('#'):
@@ -235,13 +235,13 @@ class Map(dict):
 
     def findGid(self, tilesetSearchName, tilesetTileSearchNumber):
         """Converts a tileset specific tile number to a Gid of this map.
-        
+
         This requires that tilesetSearchName is a tileset in this map!
 
         Args:
             tilesetSearchName (str): The name of a tileset.
             tilesetTileSearchNumber (int): A tile number from tilesetSearchName
-        
+
         Returns:
             tileGid (int): A map global tile number.
         """
@@ -293,7 +293,7 @@ class Map(dict):
 
         Note, this does not alter object['mapName'] since the object could be in
         other objectLists on this map.
-    
+
         Args:
             object (dict): Tiled object
             objectList (dict): An objectList from a layer on this map.
@@ -314,7 +314,7 @@ class Map(dict):
         Note, this does not alter object['mapName'] since the object could
         be in the middle of being processed by a step loop that needs that
         data.
-    
+
         Args:
             object (dict): Tiled object
         """
@@ -512,7 +512,7 @@ class Map(dict):
 
         Remove object from all known layers on this map and add
         it to the same layers on destMap.
-        
+
         Args:
             object (dict): Tiled object
             destMap (engine.map.Map)
@@ -547,7 +547,7 @@ class Map(dict):
         is logged that suggests where the data may be missing from.
 
         Args:
-            object (dict): Tiled object 
+            object (dict): Tiled object
             props (list): A list of keys. e.g. ["prop-deltaX", "anchorX"]
 
         Returns:
@@ -568,7 +568,6 @@ class Map(dict):
                 else:
                     log(f"Missing key {p} in {name}", "WARNING")
         return result
-
 
     ########################################################
     # LAYER VISABILITY MECHANIC
@@ -645,7 +644,7 @@ class Map(dict):
                 layerIndex 1, and so on.
 
         Returns:
-            bool: True if the layerVisabilityMask mask was different from 
+            bool: True if the layerVisabilityMask mask was different from
                 the mask that was already set.
         """
         if self['layerVisabilityMask'] == layerVisabilityMask:

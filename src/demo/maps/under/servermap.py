@@ -11,9 +11,9 @@ class ServerMap(demo.servermap.ServerMap):
 
     This class implements mechanics:
 
-    SAW 
+    SAW
         This mechanic slides a saw horizontally and if a sprite
-        is hit by the saw then they are sent to their respawn 
+        is hit by the saw then they are sent to their respawn
         point.
 
         Uses Mechanics: move linear, respawn point, speed multiplier
@@ -35,9 +35,9 @@ class ServerMap(demo.servermap.ServerMap):
     def initSaws(self):
         """SAW: init method.
 
-        copy (by reference) all sprites of type == saw from the 
-        sprite layer to the trigger layer. Type "saw" will act 
-        as both a sprite and a trigger. Note, when we move the 
+        copy (by reference) all sprites of type == saw from the
+        sprite layer to the trigger layer. Type "saw" will act
+        as both a sprite and a trigger. Note, when we move the
         sprite the trigger will also move, because it is the
         same object.
         """
@@ -53,7 +53,7 @@ class ServerMap(demo.servermap.ServerMap):
     def stepSpriteStartSaw(self, sprite):
         """SAW: stepSpriteStart method.
 
-        If saw has stopped then start it moving again 
+        If saw has stopped then start it moving again
         but in the reverse direction.
         """
 
@@ -78,7 +78,7 @@ class ServerMap(demo.servermap.ServerMap):
         """SAW: trigger method.
 
         The sprite has been hit by a saw. Move the sprite back
-        to it's respawun point. This assumes sprite has been 
+        to it's respawun point. This assumes sprite has been
         through a respawn point. The game design up to the saw
         should ensure sprite has a respawn point assigned.
 
@@ -90,7 +90,7 @@ class ServerMap(demo.servermap.ServerMap):
         # That saw probably hurt so sprite should say something.
         text = random.choice((
             "ARRRH!",
-            "*&^@%", 
+            "*&^@%",
             "Bad Idea!",
             "Good thing I have public health care."
             ))
@@ -98,7 +98,7 @@ class ServerMap(demo.servermap.ServerMap):
 
     def triggerSpeedMultiplier(self, trigger, sprite):
         """SAW: Extend trigger method from speedMultiplier Mechanic.
-        
+
         Filter out saws so they do not have their speed changed.
         """
         if sprite['type'] != "saw":

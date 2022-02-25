@@ -9,9 +9,9 @@ import demo.clientmap
 
 class ClientMap(demo.clientmap.ClientMap):
     """Extends demo.clientmap.ClientMap
-    
-    This class makes the map render as black except where players 
-    are standing. Where players are standing it is as if they are 
+
+    This class makes the map render as black except where players
+    are standing. Where players are standing it is as if they are
     holding a lantern, brighter closer to the player.
     """
 

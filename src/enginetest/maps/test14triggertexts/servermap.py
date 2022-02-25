@@ -7,13 +7,14 @@ import engine.server
 
 class ServerMap(engine.servermap.ServerMap):
     """TEXT MECHANIC
-    
-        Adds triggers that can add/remove all kinds of text 
+
+        Adds triggers that can add/remove all kinds of text
         for the sprite and player.
 
         Uses Mechanics: player action test, player speech text
             label text, marquee text.
     """
+
     def triggerAddText(self, trigger, sprite):
         """TEXT MECHANIC: trigger method
 
@@ -21,7 +22,7 @@ class ServerMap(engine.servermap.ServerMap):
 
         Trigger Properties:
             prop-text: The text to set.
-            prop-textType: The type of text to set: speech, 
+            prop-textType: The type of text to set: speech,
                 action, label, marquee
         """
         if not self.checkKeys(trigger, ["prop-text", "prop-textType"]):

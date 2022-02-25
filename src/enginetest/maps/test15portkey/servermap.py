@@ -7,7 +7,7 @@ import engine.servermap
 class ServerMap(engine.servermap.ServerMap):
     """PORTKEY MECHANIC
 
-        A portkey is like a mapDoor but is a visible sprite 
+        A portkey is like a mapDoor but is a visible sprite
         and requires the player to request an action before
         they will go through the mapDoor.
 
@@ -17,7 +17,7 @@ class ServerMap(engine.servermap.ServerMap):
     def initPortkey(self):
         """PORTKEY MECHANIC: init method.
 
-        Portkey sprites need to be triggers copy 
+        Portkey sprites need to be triggers copy
         (by reference) sprites to trigger layer.
         """
         for portkey in self.findObject(type="portkey", returnAll=True):
@@ -26,8 +26,8 @@ class ServerMap(engine.servermap.ServerMap):
     def triggerPortkey(self, portkey, sprite):
         """PORTKEY MECHANIC: trigger method.
 
-        Portkey acts as a mapdoor but also requires a 
-        user to request an action. Requires the same 
+        Portkey acts as a mapdoor but also requires a
+        user to request an action. Requires the same
         properties as a mapdoor.
         """
         if "action" in sprite:

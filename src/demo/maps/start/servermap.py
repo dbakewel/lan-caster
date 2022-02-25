@@ -11,7 +11,7 @@ class ServerMap(demo.servermap.ServerMap):
 
     LOCKED MAPDOOR MECHANIC
         The locked mapDoor mechanic will change type to
-        a mapDoor trigger when the sprite is holding a 
+        a mapDoor trigger when the sprite is holding a
         holdable with a specific name. It will optionally
         also hide and show a layer so the graphic can
         change from a locked door to an unlocked door.
@@ -34,9 +34,9 @@ class ServerMap(demo.servermap.ServerMap):
             unlocks: The name of a holdable that will unlock the door.
             lockedText: The speech text for the sprite to say while
                 the door is locked.
-            hidelayer: The name of the layer to hide when 
+            hidelayer: The name of the layer to hide when
                 door is unlocked. (optional)
-            showlayer:The name of the layer to show when 
+            showlayer:The name of the layer to show when
                 door is unlocked. (optional)
         """
 

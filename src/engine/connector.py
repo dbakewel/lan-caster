@@ -32,7 +32,7 @@ class Connector(dict):
     """The Connector Class.
 
     The Connector can be used to allow game servers and clients to connect
-    without having to know each other's IP addresses. Rather a simple 
+    without having to know each other's IP addresses. Rather a simple
     serverName is used.
 
     The Connector class is responsible for:
@@ -48,9 +48,9 @@ class Connector(dict):
         1) Server sends addServer message to connector. This provides the server
            information to the connector and also create a UDP punch through so
            the connector can send data back to there server. The server needs
-           to send additional addServer messages at a regular interval (e.g. 10s) to 
+           to send additional addServer messages at a regular interval (e.g. 10s) to
            keep the UDP punch through active and to stop the connector from
-           removing the server information based on a timeout. 
+           removing the server information based on a timeout.
         2) Each client can now send a getConnetInfo msg to the connector. The
            connector will combine the server and client ips into a connectInfo
            msg and send it to both the server and client.
@@ -58,7 +58,7 @@ class Connector(dict):
            UDP punch through to the client so client msgs can reach the server.
         4) When the client receives a connectInfo message it will send a
            joinRequest to the server using each server IP until one connects.
-        5) When all users have joined the game, the server can send a 
+        5) When all users have joined the game, the server can send a
            delServer msg to the connector.
     """
 
@@ -121,7 +121,7 @@ class Connector(dict):
     ########################################################
 
     def msgAddServer(self, ip, port, ipport, msg):
-        """Add serverName from self['serverlist']. 
+        """Add serverName from self['serverlist'].
 
         This message would normally be sent by a server so that
         clients can request connectInfo for the server.
@@ -169,7 +169,7 @@ class Connector(dict):
                 return {'type': 'Error', 'result': f"A server with that name is already registered. Choose a different name."}
 
     def msgDelServer(self, ip, port, ipport, msg):
-        """Remove serverName from self['serverlist']. 
+        """Remove serverName from self['serverlist'].
 
         This message would normally be sent by a server that no
         longer wants clients to join it's game.
@@ -205,9 +205,9 @@ class Connector(dict):
             return {'type': 'Error', 'result': f"Server is not registered."}
 
     def msgGetConnetInfo(self, ip, port, ipport, msg):
-        """Process msg of type getConnectInfo. 
+        """Process msg of type getConnectInfo.
 
-        This message would normally be sent by a client that knows the 
+        This message would normally be sent by a client that knows the
         server name they wish to connect to but need the connection info
         (ip addresses) so they can connect.
 

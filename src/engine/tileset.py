@@ -18,7 +18,7 @@ class Tileset(dict):
 
     def __init__(self, tilesetFile):
         """Load tileset file and do data conversion.
-        
+
         Note, all Tiled properites will be converted into an easier to access form.
             from: {object['properties'][{name: name1, value: value1}],[...]}
             to: {object.prop-name1=value1,...}
@@ -48,7 +48,7 @@ class Tileset(dict):
         self['tilecount'] = ts['tilecount']
         self['imagefile'] = ts['image']
 
-        # convert tiled object properties 
+        # convert tiled object properties
         if "properties" in ts:
             for prop in ts['properties']:
                 self["prop-" + prop['name']] = prop['value']
@@ -56,7 +56,7 @@ class Tileset(dict):
         self['tiles'] = {}
         if "tiles" in ts:
             for tile in ts['tiles']:
-                # convert tiled object properties 
+                # convert tiled object properties
                 if "properties" in tile:
                     for prop in tile['properties']:
                         tile["prop-" + prop['name']] = prop['value']
@@ -77,7 +77,7 @@ class Tileset(dict):
 
     def getAnchorX(self, tileNumber):
         """Return X anchor point of tileNumber.
-        
+
         Search for most specific anchorX for tileNumber. Look first for
         "anchorX" property in the tile itself, then for "anchorX" property
         in the tileset. If nothing is found then assume the anchoX is in
@@ -98,12 +98,12 @@ class Tileset(dict):
 
     def getAnchorY(self, tileNumber):
         """Return Y anchor point of tileNumber.
-        
+
         Search for most specific anchorY for tileNumber. Look first for
         "anchorY" property in the tile itself, then for "anchorY" property
         in the tileset. If nothing is found then assume the anchoY is in
         the middle of the the tile.
-        
+
         Args:
             tileNumber (int)
 

@@ -91,7 +91,7 @@ def project(x, y, rad, dis):
 
 def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
     '''
-    Sort list of game objects by y and then x. Do sort in place but list is also returned in 
+    Sort list of game objects by y and then x. Do sort in place but list is also returned in
     case it is needed.
 
     Schwartzian Transform is used to speed up sort.

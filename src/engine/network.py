@@ -28,12 +28,12 @@ class Socket:
 
         Args:
             messages (engine.messages.Messages object): Used for message validation.
-            msgProcessor (class instance): Class instance that contains methods for 
+            msgProcessor (class instance): Class instance that contains methods for
                 msg types that will be received by recvReplyMsgs(). If a msg has
                 type "joinRequest" then msgProcessor should have a method of the form
                 "msgJoinRequest(self, ip, port, ipport, msg)".
-            sourceIP (str): The IP address to bind to. This is the IP the socket will listen on. This 
-                must be 127.0.0.1 (locahost), 0.0.0.0 (all interfaces), or a valid IP address on the 
+            sourceIP (str): The IP address to bind to. This is the IP the socket will listen on. This
+                must be 127.0.0.1 (locahost), 0.0.0.0 (all interfaces), or a valid IP address on the
                 computer.
             sourcePort (int): The port to bind to.
             sourcePortSearch (bool): If true and sourcePort is not available then search for a
@@ -424,14 +424,14 @@ class Socket:
     def recvReplyMsgs(self):
         """Process all messages in socket recv buffer.
 
-        For each msg waiting to be received, invoke the corresponding callback 
+        For each msg waiting to be received, invoke the corresponding callback
         method in the msgProcessor.
 
         e.g. if msg of type "joinRequest" is received then call:
             msgProcessor.msgJoinReploy(ip, port, ipport, msg)
 
-        if the callback method returns a reply msg then send the 
-        reply msg back to the IP/Port that send us the message. 
+        if the callback method returns a reply msg then send the
+        reply msg back to the IP/Port that send us the message.
         """
         msgQ = []
         more = True

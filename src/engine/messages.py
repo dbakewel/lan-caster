@@ -34,7 +34,7 @@ class Messages(dict):
 
     def __init__(self):
         """Define valid messages"""
-        
+
         self['messageDefinitions'] = {
             # valid msg types and a dict their of required/optional msg fields (optional end with _o)
             # note, all msgs require their type to be included: eg. {'type': 'quitting'}

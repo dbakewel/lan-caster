@@ -21,7 +21,7 @@ class Server(engine.server.Server):
             3) gameOver: Game objective is complete.
 
         self['quitAfter'] which tells the server when to quit. Set
-            when mode == gameOver so players will have time to see the 
+            when mode == gameOver so players will have time to see the
             game has been won before everything quits.
         """
 
@@ -64,7 +64,7 @@ class Server(engine.server.Server):
 
     def addPlayer(self, ip, port, ipport, msg):
         """Extends addPlayer()
-        
+
         Show game opening marqueeTest until all players have joined the
         game and then set mode to "gameOn" and change the marqueeTest.
         """
@@ -86,10 +86,10 @@ class Server(engine.server.Server):
 
     def stepServerStart(self):
         """Extends stepServerStart()
-        
+
         If the mode is gameOn then evaluate if all
         players have made it to the stone circle. If they have then
-        change mode to gameOver and set the timer to shutdown the 
+        change mode to gameOver and set the timer to shutdown the
         server.
 
         If the mode is gameOver then check if the quitAfter is in the

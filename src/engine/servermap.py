@@ -29,23 +29,23 @@ class ServerMap(engine.stepmap.StepMap):
     ACTION MECHANIC
         Allows a sprite to request to perform some action during
         the next step. This request is only valid for one step.
-        The action mechanic does nothing on it own. Other game 
+        The action mechanic does nothing on it own. Other game
         mechanics can consume the action and perform some function.
 
     SPEECH TEXT MECHANIC
-        Used by other game mechanics to show text above a 
+        Used by other game mechanics to show text above a
         sprite. Speech text only last one step or until
         a specific time after which it is removed.
 
     LABEL TEXT MECHANIC
-        Used by other game mechanics to show text below a 
+        Used by other game mechanics to show text below a
         sprite. Label text remains until changed.
 
     PLAYER ACTION TEXT MECHANIC
         Used by other game mechanics to display available action
         to a player. (what will probably happen if player hits
-        the action button.) This is removed at the start of 
-        each step and can only be set once per step (other 
+        the action button.) This is removed at the start of
+        each step and can only be set once per step (other
         attempts to set will be ignored.)
 
     PLAYER MARQUEE TEXT MECHANIC
@@ -62,12 +62,12 @@ class ServerMap(engine.stepmap.StepMap):
         """MOVE LINEAR MECHANIC: stepMove method.
 
         If the sprite is moving then move it towards it's destination. If it
-        can't move any longer (all movement would be invalid) or it has reached 
+        can't move any longer (all movement would be invalid) or it has reached
         it's destination then stop the sprite.
 
         Add attributes to sprite: direction
         """
-        
+
         # if sprite is moving
         if "moveDestX" in sprite and "moveDestY" in sprite and "moveSpeed" in sprite:
 
@@ -124,7 +124,7 @@ class ServerMap(engine.stepmap.StepMap):
         """MOVE LINEAR MECHANIC: Check if a location for an object is valid.
 
         Determines is (x, y) would be a valid anchor point for object while
-        taking several things into account, including map size, inBounds layer, 
+        taking several things into account, including map size, inBounds layer,
         and outOfBounds layer.
 
         Priority of evaluation is as follows:
@@ -198,8 +198,8 @@ class ServerMap(engine.stepmap.StepMap):
                 moved to.
 
         If the sprite is relocated then this method returns True which
-        stops other triggers from being processed for this sprite during 
-        the rest of this step. This makes sense since the sprite is no 
+        stops other triggers from being processed for this sprite during
+        the rest of this step. This makes sense since the sprite is no
         longer in the same location.
 
         Returns:
@@ -243,11 +243,11 @@ class ServerMap(engine.stepmap.StepMap):
         """HOLDABLE MECHANIC: init method.
 
         holdable sprites need to be included in Tiled data on
-        the sprites layer. This methods copies (by reference) 
+        the sprites layer. This methods copies (by reference)
         sprites of type == "holdable" to the triggers layer. They
         are them on BOTH layers at the same time.
         """
-        
+
         for holdable in self.findObject(type="holdable", returnAll=True):
             self.addObject(holdable, objectList=self['triggers'])
 
@@ -259,7 +259,7 @@ class ServerMap(engine.stepmap.StepMap):
 
         The sprite's anchor is inside the trigger.
 
-        if the sprite is not holding anything now then: 
+        if the sprite is not holding anything now then:
             1) pick up holdable if the sprite has requested an action else
             2) tell the sprite the pick up action is possible.
         """
@@ -275,10 +275,10 @@ class ServerMap(engine.stepmap.StepMap):
 
         Drop holdable if sprite has holding and action is requested by user.
         """
-        
+
         if "holding" in sprite:
             if "action" in sprite:
-                self.delSpriteAction(sprite) # consume sprite action
+                self.delSpriteAction(sprite)  # consume sprite action
                 self.delHoldable(sprite)
             else:
                 self.setSpriteActionText(sprite, f"Available Action: Drop {sprite['holding']['name']}")
@@ -328,7 +328,7 @@ class ServerMap(engine.stepmap.StepMap):
 
     def setSpriteAction(self, sprite):
         """ACTION MECHANIC: flag sprite that it should perform one action.
-        
+
         This is normally set in a player sprite after the server
         receives a playerAction message from client. Other game
         mechanics can look for an action request and perform
@@ -336,7 +336,7 @@ class ServerMap(engine.stepmap.StepMap):
 
         This should be set before a steps starts or very early
         in a step since it will be removed at the end of the step
-        and all step code should have a chance to see the action 
+        and all step code should have a chance to see the action
         has been requested.
 
         Add attributes to sprite: action
@@ -347,9 +347,9 @@ class ServerMap(engine.stepmap.StepMap):
         """ACTION MECHANIC: clear sprite flag from sprite.
 
         This should be called whenever some code does something
-        because of the action (the action is consumed). It 
+        because of the action (the action is consumed). It
         should also be called at the end of the step is nothing
-        could consume the action since action requests only 
+        could consume the action since action requests only
         last one step.
 
         Remove attributes to sprite: action
@@ -371,14 +371,14 @@ class ServerMap(engine.stepmap.StepMap):
     def setSpriteSpeechText(self, sprite, speechText, speechTextDelAfter=0):
         """SPEECH TEXT MECHANIC: add speechText to sprite.
 
-        Add attributes to sprite: 
+        Add attributes to sprite:
             speechText
             speechTextDelAfter (optional)
 
         Args:
             speechText (str): The text the sprite is speaking.
             speechTextDelAfter (float): time after which speechText will be
-                removed. Default is to remove at start of next step. 
+                removed. Default is to remove at start of next step.
         """
         old = False
         if "speachText" in sprite:

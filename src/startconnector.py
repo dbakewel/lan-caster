@@ -1,6 +1,6 @@
 """startconnector module.
 
-Parses command line arguments, creates Connector 
+Parses command line arguments, creates Connector
 instance, and call run() on Connector.
 """
 

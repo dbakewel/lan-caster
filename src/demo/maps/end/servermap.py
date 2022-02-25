@@ -15,8 +15,8 @@ class ServerMap(demo.servermap.ServerMap):
         Allow players to trigger the lever mechanic if they
         are standing in a magic area and are holding the
         magic want holdable.
-        
-        Uses Mechanics: action, lever, holdable, 
+
+        Uses Mechanics: action, lever, holdable,
             player action text, player speech text
 
     LEVER MECHANIC
@@ -27,7 +27,7 @@ class ServerMap(demo.servermap.ServerMap):
         This mechanic requires very specific set up in Tiled of
         layers and objects on both the start and end map.
 
-        Uses Mechanics: action, layer visibility, 
+        Uses Mechanics: action, layer visibility,
             player action text
     """
 
@@ -66,7 +66,7 @@ class ServerMap(demo.servermap.ServerMap):
 
     def triggerLever(self, trigger, sprite):
         """LEVER MECHANIC: trigger method.
-        
+
         Move the lever one step to the right and show/hide
         layers to the correct bridge appears/disappears. Objects
         on the inBounds layer must also be added/removed.
@@ -111,7 +111,7 @@ class ServerMap(demo.servermap.ServerMap):
                     self.setLayerVisablitybyName("bridge1", False)
                     start.setLayerVisablitybyName("bridge2", False)
                     self.setLayerVisablitybyName("bridge3", True)
-                    
+
                     b2ib = start.findObject(name="bridge2InBounds", objectList=start['inBounds'])
                     # The very first time we use the lever there will not be bridge2InBounds in
                     # the inBounds so we need to check to see if we found anything.

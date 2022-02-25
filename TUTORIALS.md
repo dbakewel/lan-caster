@@ -1,22 +1,21 @@
-[ [ABOUT](README.md) | [SETUP and RUN](SETUP.md) | [CREATE A GAME](CREATE.md) | **TUTORIALS** ]
+[ [ABOUT](README.md) | [SETUP and RUN](SETUP.md) | [CREATE A GAME](CREATE.md) | **TUTORIALS** | [CONTRIBUTING](CONTRIBUTING.md) ]
 
 # LAN-Caster - Tutorials (UNDER DEVELOPMENT)
 
-The following videos provide an overview of how to use LAN-Caster to build your own game. Also, see comments in the
-LAN-Caster code and docs folder.
+The following videos provide an overview of how to use LAN-Caster to build your own game.
 
-videos coming soon...
 ### Videos to add:
 
 * Engine Overview
 ```
 General purpose, enhancement, and limitations of the engine
-What the engine can do (see test-engine)
+What the engine can do (see enginetest)
 How the engine can be expanded (see demo)
 architecture: 
   Input data (Tiled): maps and tilesets
-  server (game logic), 
-  clients/players (input and display), 
+  server and clients
+    server side(game logic, steps and mechanics), 
+    clients/players side (input and display), 
   LAN networking
 ```
 
@@ -47,12 +46,13 @@ layer types
 tilesets
 tile layers
 object layers
-well defined (known or spcial) layers
+well defined (known or special) layers
   sprites
+  anchor points vs x y
 layer order (using black layer to help)
 ```
 
-* Engine Client
+* Engine Client and ClientMap Class
 ```
 designed to be a single instance class
 map and tileset and clienttileset classes
@@ -71,7 +71,7 @@ main loop
   loop timing (fps)
 ```
 
-* Engine game mechanics (ServerMap Class)
+* Engine ServerMap Class (stepping and game mechanics)
 ```
 servermap class
   init

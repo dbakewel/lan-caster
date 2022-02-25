@@ -11,8 +11,8 @@ class ClientMap(engine.clientmap.ClientMap):
     def blitTileObject(self, destImage, offset, tileObject):
         """Extend engine.clientmap.ClientMap.blitTileObject()
 
-        If tileObject is the player sprite then render a text 
-        log of the it to the to screen before the tile is 
+        If tileObject is the player sprite then render a text
+        log of the it to the to screen before the tile is
         rendered.
         """
         if tileObject['type'] == "player":

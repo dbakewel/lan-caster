@@ -12,7 +12,7 @@ class ClientMap(engine.clientmap.ClientMap):
 
     def __init__(self, tilesets, mapDir):
         """Extends ___init__ and updates text defaults."""
-        
+
         super().__init__(tilesets, mapDir)
 
         # defaults for map text

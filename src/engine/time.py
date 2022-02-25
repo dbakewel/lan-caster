@@ -2,7 +2,7 @@
 
 This module replaces the python built in time module and
 adds a DELTA offset to the perf_counter function. This is
-used by the client to sync it's time with the server. 
+used by the client to sync it's time with the server.
 With this, the client can evaluate time outs set by the
 server.
 """

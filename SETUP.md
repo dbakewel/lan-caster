@@ -1,4 +1,4 @@
-[ [ABOUT](README.md) | **SETUP and RUN** | [CREATE A GAME](CREATE.md) | [TUTORIALS](TUTORIALS.md) ]
+[ [ABOUT](README.md) | **SETUP and RUN** | [CREATE A GAME](CREATE.md) | [TUTORIALS](TUTORIALS.md) | [CONTRIBUTING](CONTRIBUTING.md) ]
 
 # LAN-Caster - Setup and Run
 
@@ -44,10 +44,6 @@ The rundemo script will start 4 processes on the local computer: 1 server and 3 
 
 ## Running on Separate Computers
 
-By default LAN-Caster only listens on localhost 127.0.0.1 which does not allow messages to be sent or received between computers. To listen on all network interfaces, and allow messages from other computers, use ```-ip 0.0.0.0``` on server and clients. 
-
-> Note, if you want to run LAN-Caster across a network then the ports you choose must be open in the OS and network firewalls for two way UDP traffic. By default, LAN-Caster uses ports of  20000 and above but any available UDP ports can be used.
-
 For example:
 
 Assuming:
@@ -59,7 +55,7 @@ Assuming:
 The server can be run on computer 1 with: 
 
 ```
-py -3 src/startserver.py -game "demo" -ip 0.0.0.0
+py -3 src/startserver.py -game "demo"
 ```
 
 The server will listen on 127.0.0.1 and 192.168.1.10
@@ -69,6 +65,8 @@ A client can be run on Computer 2, 3, and 4 with:
 ```
 py -3 src/startclient.py -game "demo" -sip 192.168.1.10
 ```
+
+> Note, if you want to run LAN-Caster across a network then the ports you choose must be open in the OS and network firewalls for two way UDP traffic. By default, LAN-Caster uses ports of  20000 and above but any available UDP ports can be used.
 
 ## Command Line Help
 
