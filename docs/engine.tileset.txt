@@ -8,6 +8,8 @@ CLASSES
         Tileset
     
     class Tileset(builtins.dict)
+     |  Tileset(tilesetFile)
+     |  
      |  The Tileset class is responsible for loading Tiled tileset files so they can be used by the game engine.
      |  
      |  It is assumed this class will be sub-classed to add additional functionality.
@@ -77,7 +79,7 @@ CLASSES
      |  Methods inherited from builtins.dict:
      |  
      |  __contains__(self, key, /)
-     |      True if D has a key k, else False.
+     |      True if the dictionary has the specified key, else False.
      |  
      |  __delitem__(self, key, /)
      |      Delete self[key].
@@ -112,11 +114,11 @@ CLASSES
      |  __ne__(self, value, /)
      |      Return self!=value.
      |  
-     |  __new__(*args, **kwargs) from builtins.type
-     |      Create and return a new object.  See help(type) for accurate signature.
-     |  
      |  __repr__(self, /)
      |      Return repr(self).
+     |  
+     |  __reversed__(self, /)
+     |      Return a reverse iterator over the dict keys.
      |  
      |  __setitem__(self, key, value, /)
      |      Set self[key] to value.
@@ -130,11 +132,8 @@ CLASSES
      |  copy(...)
      |      D.copy() -> a shallow copy of D
      |  
-     |  fromkeys(iterable, value=None, /) from builtins.type
-     |      Returns a new dict with keys from iterable and values equal to value.
-     |  
-     |  get(...)
-     |      D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+     |  get(self, key, default=None, /)
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  items(...)
      |      D.items() -> a set-like object providing a view on D's items
@@ -146,12 +145,16 @@ CLASSES
      |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
      |      If key is not found, d is returned if given, otherwise KeyError is raised
      |  
-     |  popitem(...)
-     |      D.popitem() -> (k, v), remove and return some (key, value) pair as a
-     |      2-tuple; but raise KeyError if D is empty.
+     |  popitem(self, /)
+     |      Remove and return a (key, value) pair as a 2-tuple.
+     |      
+     |      Pairs are returned in LIFO (last-in, first-out) order.
+     |      Raises KeyError if the dict is empty.
      |  
-     |  setdefault(...)
-     |      D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+     |  setdefault(self, key, default=None, /)
+     |      Insert key with a value of default if key is not in the dictionary.
+     |      
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  update(...)
      |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
@@ -161,6 +164,18 @@ CLASSES
      |  
      |  values(...)
      |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods inherited from builtins.dict:
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Create a new dictionary with keys from iterable and values set to value.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from builtins.dict:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
      |  
      |  ----------------------------------------------------------------------
      |  Data and other attributes inherited from builtins.dict:

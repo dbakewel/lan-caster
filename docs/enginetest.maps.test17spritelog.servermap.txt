@@ -8,9 +8,11 @@ CLASSES
         ServerMap
     
     class ServerMap(engine.servermap.ServerMap)
+     |  ServerMap(tilesets, mapDir)
+     |  
      |  TALK MECHANIC
      |  
-     |  Adds a trigger with type == talk which 
+     |  Adds a trigger with type == talk which
      |  sets speech text in the sprite.
      |  
      |  Uses Mechanics: speech text
@@ -41,7 +43,7 @@ CLASSES
      |      MOVE LINEAR MECHANIC: Check if a location for an object is valid.
      |      
      |      Determines is (x, y) would be a valid anchor point for object while
-     |      taking several things into account, including map size, inBounds layer, 
+     |      taking several things into account, including map size, inBounds layer,
      |      and outOfBounds layer.
      |      
      |      Priority of evaluation is as follows:
@@ -67,9 +69,9 @@ CLASSES
      |      ACTION MECHANIC: clear sprite flag from sprite.
      |      
      |      This should be called whenever some code does something
-     |      because of the action (the action is consumed). It 
+     |      because of the action (the action is consumed). It
      |      should also be called at the end of the step is nothing
-     |      could consume the action since action requests only 
+     |      could consume the action since action requests only
      |      last one step.
      |      
      |      Remove attributes to sprite: action
@@ -105,7 +107,7 @@ CLASSES
      |      HOLDABLE MECHANIC: init method.
      |      
      |      holdable sprites need to be included in Tiled data on
-     |      the sprites layer. This methods copies (by reference) 
+     |      the sprites layer. This methods copies (by reference)
      |      sprites of type == "holdable" to the triggers layer. They
      |      are them on BOTH layers at the same time.
      |  
@@ -131,7 +133,7 @@ CLASSES
      |      
      |      This should be set before a steps starts or very early
      |      in a step since it will be removed at the end of the step
-     |      and all step code should have a chance to see the action 
+     |      and all step code should have a chance to see the action
      |      has been requested.
      |      
      |      Add attributes to sprite: action
@@ -158,7 +160,7 @@ CLASSES
      |  setSpriteSpeechText(self, sprite, speechText, speechTextDelAfter=0)
      |      SPEECH TEXT MECHANIC: add speechText to sprite.
      |      
-     |      Add attributes to sprite: 
+     |      Add attributes to sprite:
      |          speechText
      |          speechTextDelAfter (optional)
      |      
@@ -171,7 +173,7 @@ CLASSES
      |      MOVE LINEAR MECHANIC: stepMove method.
      |      
      |      If the sprite is moving then move it towards it's destination. If it
-     |      can't move any longer (all movement would be invalid) or it has reached 
+     |      can't move any longer (all movement would be invalid) or it has reached
      |      it's destination then stop the sprite.
      |      
      |      Add attributes to sprite: direction
@@ -203,7 +205,7 @@ CLASSES
      |      
      |      The sprite's anchor is inside the trigger.
      |      
-     |      if the sprite is not holding anything now then: 
+     |      if the sprite is not holding anything now then:
      |          1) pick up holdable if the sprite has requested an action else
      |          2) tell the sprite the pick up action is possible.
      |  
@@ -220,8 +222,8 @@ CLASSES
      |              moved to.
      |      
      |      If the sprite is relocated then this method returns True which
-     |      stops other triggers from being processed for this sprite during 
-     |      the rest of this step. This makes sense since the sprite is no 
+     |      stops other triggers from being processed for this sprite during
+     |      the rest of this step. This makes sense since the sprite is no
      |      longer in the same location.
      |      
      |      Returns:
@@ -239,15 +241,15 @@ CLASSES
      |      Sorts all methods by type and priority.
      |  
      |  addStepMethodPriority(self, stepMethodType, stepMethodName, priority)
-     |      Set the prioriy of a step method. 
+     |      Set the prioriy of a step method.
      |      
-     |      This is normally used by subclass init* methods to prioritize step 
+     |      This is normally used by subclass init* methods to prioritize step
      |      methods before finding and sorting them.
      |      
      |      Args:
      |          stepMethodType (str): One of self['stepMethodPriority']
      |          stepMethodName (str): A method name that starts with stepMethodType
-     |          priority (int): The priority of stepMethodName.Lower number is 
+     |          priority (int): The priority of stepMethodName.Lower number is
      |              higher priority.
      |  
      |  getAllMethodsStr(self)
@@ -256,7 +258,7 @@ CLASSES
      |  getTriggerMethodName(self, trigger)
      |      Given a trigger name, return the name of a trigger's method.
      |      
-     |      Convert a trigger type (eg. trigger['type'] == "mapDoor") to method 
+     |      Convert a trigger type (eg. trigger['type'] == "mapDoor") to method
      |      name (eg. "triggerMapDoor")
      |      
      |      Args:
@@ -271,10 +273,10 @@ CLASSES
      |  stepTriggers(self, sprite)
      |      Process all triggers for a sprite.
      |      
-     |      Find all triggers (objects on the trigger layer) that contain this 
+     |      Find all triggers (objects on the trigger layer) that contain this
      |      sprite's anchor and call the corresponding trigger* method.
      |      
-     |      The search excludes the sprite itself from the search 
+     |      The search excludes the sprite itself from the search
      |      since objects may be on the sprite and trigger layer at the
      |      same time.
      |      
@@ -305,7 +307,7 @@ CLASSES
      |      is logged that suggests where the data may be missing from.
      |      
      |      Args:
-     |          object (dict): Tiled object 
+     |          object (dict): Tiled object
      |          props (list): A list of keys. e.g. ["prop-deltaX", "anchorX"]
      |      
      |      Returns:
@@ -345,7 +347,7 @@ CLASSES
      |  convertTiledColor(self, tiledColor)
      |      Convert Tiled HEX format
      |      
-     |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame 
+     |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame
      |      needs '#RRGGBBAA' so flip alpha to the end.
      |  
      |  convertTiledProps(self, object)
@@ -459,7 +461,7 @@ CLASSES
      |              layerIndex 1, and so on.
      |      
      |      Returns:
-     |          bool: True if the layerVisabilityMask mask was different from 
+     |          bool: True if the layerVisabilityMask mask was different from
      |              the mask that was already set.
      |  
      |  setLayerVisablitybyIndex(self, layerIndex, visable)
@@ -527,7 +529,7 @@ CLASSES
      |  Methods inherited from builtins.dict:
      |  
      |  __contains__(self, key, /)
-     |      True if D has a key k, else False.
+     |      True if the dictionary has the specified key, else False.
      |  
      |  __delitem__(self, key, /)
      |      Delete self[key].
@@ -562,11 +564,11 @@ CLASSES
      |  __ne__(self, value, /)
      |      Return self!=value.
      |  
-     |  __new__(*args, **kwargs) from builtins.type
-     |      Create and return a new object.  See help(type) for accurate signature.
-     |  
      |  __repr__(self, /)
      |      Return repr(self).
+     |  
+     |  __reversed__(self, /)
+     |      Return a reverse iterator over the dict keys.
      |  
      |  __setitem__(self, key, value, /)
      |      Set self[key] to value.
@@ -580,11 +582,8 @@ CLASSES
      |  copy(...)
      |      D.copy() -> a shallow copy of D
      |  
-     |  fromkeys(iterable, value=None, /) from builtins.type
-     |      Returns a new dict with keys from iterable and values equal to value.
-     |  
-     |  get(...)
-     |      D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+     |  get(self, key, default=None, /)
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  items(...)
      |      D.items() -> a set-like object providing a view on D's items
@@ -596,12 +595,16 @@ CLASSES
      |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
      |      If key is not found, d is returned if given, otherwise KeyError is raised
      |  
-     |  popitem(...)
-     |      D.popitem() -> (k, v), remove and return some (key, value) pair as a
-     |      2-tuple; but raise KeyError if D is empty.
+     |  popitem(self, /)
+     |      Remove and return a (key, value) pair as a 2-tuple.
+     |      
+     |      Pairs are returned in LIFO (last-in, first-out) order.
+     |      Raises KeyError if the dict is empty.
      |  
-     |  setdefault(...)
-     |      D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+     |  setdefault(self, key, default=None, /)
+     |      Insert key with a value of default if key is not in the dictionary.
+     |      
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  update(...)
      |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
@@ -611,6 +614,18 @@ CLASSES
      |  
      |  values(...)
      |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods inherited from builtins.dict:
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Create a new dictionary with keys from iterable and values set to value.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from builtins.dict:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
      |  
      |  ----------------------------------------------------------------------
      |  Data and other attributes inherited from builtins.dict:

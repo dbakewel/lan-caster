@@ -10,6 +10,8 @@ CLASSES
         Socket
     
     class Socket(builtins.object)
+     |  Socket(messages, msgProcessor, sourceIP, sourcePort, sourcePortSearch=False, destinationIP='127.0.0.1', destinationPort=20000)
+     |  
      |  Socket Class
      |  
      |  Basic network communications class for reliable and unreliable
@@ -22,12 +24,12 @@ CLASSES
      |      
      |      Args:
      |          messages (engine.messages.Messages object): Used for message validation.
-     |          msgProcessor (class instance): Class instance that contains methods for 
+     |          msgProcessor (class instance): Class instance that contains methods for
      |              msg types that will be received by recvReplyMsgs(). If a msg has
      |              type "joinRequest" then msgProcessor should have a method of the form
      |              "msgJoinRequest(self, ip, port, ipport, msg)".
-     |          sourceIP (str): The IP address to bind to. This is the IP the socket will listen on. This 
-     |              must be 127.0.0.1 (locahost), 0.0.0.0 (all interfaces), or a valid IP address on the 
+     |          sourceIP (str): The IP address to bind to. This is the IP the socket will listen on. This
+     |              must be 127.0.0.1 (locahost), 0.0.0.0 (all interfaces), or a valid IP address on the
      |              computer.
      |          sourcePort (int): The port to bind to.
      |          sourcePortSearch (bool): If true and sourcePort is not available then search for a
@@ -77,13 +79,13 @@ CLASSES
      |  recvReplyMsgs(self)
      |      Process all messages in socket recv buffer.
      |      
-     |      For each msg waiting to be received, invoke the corresponding callback 
+     |      For each msg waiting to be received, invoke the corresponding callback
      |      method in the msgProcessor.
      |      
      |      e.g. if msg of type "joinRequest" is received then call:
      |          msgProcessor.msgJoinReploy(ip, port, ipport, msg)
      |      
-     |      if the callback method returns a reply msg then send the 
+     |      if the callback method returns a reply msg then send the
      |      reply msg back to the IP/Port that send us the message.
      |  
      |  sendMessage(self, msg, destinationIP=None, destinationPort=None, packedAndChecked=False)
@@ -192,6 +194,9 @@ CLASSES
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from builtins.Exception:
+     |  
      |  __new__(*args, **kwargs) from builtins.type
      |      Create and return a new object.  See help(type) for accurate signature.
      |  
@@ -205,7 +210,7 @@ CLASSES
      |      Return getattr(self, name).
      |  
      |  __reduce__(...)
-     |      helper for pickle
+     |      Helper for pickle.
      |  
      |  __repr__(self, /)
      |      Return repr(self).

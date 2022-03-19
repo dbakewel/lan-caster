@@ -8,10 +8,12 @@ CLASSES
         Connector
     
     class Connector(builtins.dict)
+     |  Connector(connectorIP, connectorPort)
+     |  
      |  The Connector Class.
      |  
      |  The Connector can be used to allow game servers and clients to connect
-     |  without having to know each other's IP addresses. Rather a simple 
+     |  without having to know each other's IP addresses. Rather a simple
      |  serverName is used.
      |  
      |  The Connector class is responsible for:
@@ -27,9 +29,9 @@ CLASSES
      |      1) Server sends addServer message to connector. This provides the server
      |         information to the connector and also create a UDP punch through so
      |         the connector can send data back to there server. The server needs
-     |         to send additional addServer messages at a regular interval (e.g. 10s) to 
+     |         to send additional addServer messages at a regular interval (e.g. 10s) to
      |         keep the UDP punch through active and to stop the connector from
-     |         removing the server information based on a timeout. 
+     |         removing the server information based on a timeout.
      |      2) Each client can now send a getConnetInfo msg to the connector. The
      |         connector will combine the server and client ips into a connectInfo
      |         msg and send it to both the server and client.
@@ -37,7 +39,7 @@ CLASSES
      |         UDP punch through to the client so client msgs can reach the server.
      |      4) When the client receives a connectInfo message it will send a
      |         joinRequest to the server using each server IP until one connects.
-     |      5) When all users have joined the game, the server can send a 
+     |      5) When all users have joined the game, the server can send a
      |         delServer msg to the connector.
      |  
      |  Method resolution order:
@@ -61,7 +63,7 @@ CLASSES
      |      server list.
      |  
      |  msgAddServer(self, ip, port, ipport, msg)
-     |      Add serverName from self['serverlist']. 
+     |      Add serverName from self['serverlist'].
      |      
      |      This message would normally be sent by a server so that
      |      clients can request connectInfo for the server.
@@ -85,7 +87,7 @@ CLASSES
      |          engine.socket.recvReplyMsgs()
      |  
      |  msgDelServer(self, ip, port, ipport, msg)
-     |      Remove serverName from self['serverlist']. 
+     |      Remove serverName from self['serverlist'].
      |      
      |      This message would normally be sent by a server that no
      |      longer wants clients to join it's game.
@@ -109,9 +111,9 @@ CLASSES
      |          engine.socket.recvReplyMsgs()
      |  
      |  msgGetConnetInfo(self, ip, port, ipport, msg)
-     |      Process msg of type getConnectInfo. 
+     |      Process msg of type getConnectInfo.
      |      
-     |      This message would normally be sent by a client that knows the 
+     |      This message would normally be sent by a client that knows the
      |      server name they wish to connect to but need the connection info
      |      (ip addresses) so they can connect.
      |      
@@ -157,7 +159,7 @@ CLASSES
      |  Methods inherited from builtins.dict:
      |  
      |  __contains__(self, key, /)
-     |      True if D has a key k, else False.
+     |      True if the dictionary has the specified key, else False.
      |  
      |  __delitem__(self, key, /)
      |      Delete self[key].
@@ -192,11 +194,11 @@ CLASSES
      |  __ne__(self, value, /)
      |      Return self!=value.
      |  
-     |  __new__(*args, **kwargs) from builtins.type
-     |      Create and return a new object.  See help(type) for accurate signature.
-     |  
      |  __repr__(self, /)
      |      Return repr(self).
+     |  
+     |  __reversed__(self, /)
+     |      Return a reverse iterator over the dict keys.
      |  
      |  __setitem__(self, key, value, /)
      |      Set self[key] to value.
@@ -210,11 +212,8 @@ CLASSES
      |  copy(...)
      |      D.copy() -> a shallow copy of D
      |  
-     |  fromkeys(iterable, value=None, /) from builtins.type
-     |      Returns a new dict with keys from iterable and values equal to value.
-     |  
-     |  get(...)
-     |      D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+     |  get(self, key, default=None, /)
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  items(...)
      |      D.items() -> a set-like object providing a view on D's items
@@ -226,12 +225,16 @@ CLASSES
      |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
      |      If key is not found, d is returned if given, otherwise KeyError is raised
      |  
-     |  popitem(...)
-     |      D.popitem() -> (k, v), remove and return some (key, value) pair as a
-     |      2-tuple; but raise KeyError if D is empty.
+     |  popitem(self, /)
+     |      Remove and return a (key, value) pair as a 2-tuple.
+     |      
+     |      Pairs are returned in LIFO (last-in, first-out) order.
+     |      Raises KeyError if the dict is empty.
      |  
-     |  setdefault(...)
-     |      D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+     |  setdefault(self, key, default=None, /)
+     |      Insert key with a value of default if key is not in the dictionary.
+     |      
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  update(...)
      |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
@@ -241,6 +244,18 @@ CLASSES
      |  
      |  values(...)
      |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods inherited from builtins.dict:
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Create a new dictionary with keys from iterable and values set to value.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from builtins.dict:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
      |  
      |  ----------------------------------------------------------------------
      |  Data and other attributes inherited from builtins.dict:

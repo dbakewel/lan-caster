@@ -8,6 +8,8 @@ CLASSES
         Server
     
     class Server(builtins.dict)
+     |  Server(args)
+     |  
      |  The Server Class.
      |  
      |  The Server class is responsible for:
@@ -16,7 +18,7 @@ CLASSES
      |      2) Initiating game logic: step maps forward, global game logic
      |         such as detect end game;
      |      3) Send updated map data to players for the map they are on;
-     |      4) Receiving messages from players and storing the data for 
+     |      4) Receiving messages from players and storing the data for
      |         processing by the step logic.
      |      5) Receive and process test and connector messages if those
      |         features are turned on.
@@ -31,7 +33,7 @@ CLASSES
      |      import engine.server
      |      engine.server.SERVER...
      |  
-     |  The Server class is intended to be sub-classed and extended by the game. 
+     |  The Server class is intended to be sub-classed and extended by the game.
      |  
      |  To sub-class, add a server.py file under the game folder:
      |      src/<your_game_name>/server.py
@@ -52,7 +54,7 @@ CLASSES
      |  __init__(self, args)
      |      Init the Server class.
      |      
-     |      Set up the Server data, open server network ip:port, register with 
+     |      Set up the Server data, open server network ip:port, register with
      |      connector (if required), load Tiled data (maps and tilesets),
      |      and find player start locations.
      |      
@@ -110,7 +112,7 @@ CLASSES
      |  msgConnectInfo(self, ip, port, ipport, msg)
      |      Process msg of type connectInfo.
      |      
-     |      If server is using connector 
+     |      If server is using connector
      |      (self['registerName'] != False) then send a udpPunchThrough to the
      |      client public ip/port. Do this even if it looks like client and
      |      and server are on the same LAN or same host. It does not matter
@@ -160,8 +162,8 @@ CLASSES
      |  msgPlayerAction(self, ip, port, ipport, msg)
      |      Process msg of type playerAction.
      |      
-     |      Sets the sprite action so the sprite's 
-     |      action will be processed (or discarded if not action is available) during 
+     |      Sets the sprite action so the sprite's
+     |      action will be processed (or discarded if not action is available) during
      |      the next step.
      |      
      |      This method is designed to be called from self['socket'].recvReplyMsgs().
@@ -295,7 +297,7 @@ CLASSES
      |      all players have joined the game. This will ensure the connector
      |      does not remove this server data based the connectors timeout. This
      |      also keeps the UDP punch through in the server's LAN NAT open so
-     |      the connector can send msgs. 
+     |      the connector can send msgs.
      |      
      |      This method should be called regularly (in main loop) after the
      |      addServer msgs has been accepted by the connector.
@@ -323,7 +325,7 @@ CLASSES
      |  stepServer(self)
      |      Take the game one "step" forward in time.
      |      
-     |      This should be called once every 1/fps seconds by the main server loop. 
+     |      This should be called once every 1/fps seconds by the main server loop.
      |      Three tasks are performed:
      |          1) call self.stepServerStart()
      |          2) call map.stepMap() for each map that has at least one player on it.
@@ -334,14 +336,14 @@ CLASSES
      |      Server logic for the end of a step.
      |      
      |      Placeholder that can be overridden in sub-classes to perform any game
-     |      logic for the end of a step. This is any logic that is not map 
+     |      logic for the end of a step. This is any logic that is not map
      |      specific and is called after all map step processing is performed.
      |  
      |  stepServerStart(self)
      |      Server logic for the start of a step.
      |      
      |      Placeholder that can be overridden in sub-classes to perform any game
-     |      logic for the start of a step. This is any logic that is not map 
+     |      logic for the start of a step. This is any logic that is not map
      |      specific and is called before any map step processing is performed.
      |  
      |  ----------------------------------------------------------------------
@@ -357,7 +359,7 @@ CLASSES
      |  Methods inherited from builtins.dict:
      |  
      |  __contains__(self, key, /)
-     |      True if D has a key k, else False.
+     |      True if the dictionary has the specified key, else False.
      |  
      |  __delitem__(self, key, /)
      |      Delete self[key].
@@ -392,11 +394,11 @@ CLASSES
      |  __ne__(self, value, /)
      |      Return self!=value.
      |  
-     |  __new__(*args, **kwargs) from builtins.type
-     |      Create and return a new object.  See help(type) for accurate signature.
-     |  
      |  __repr__(self, /)
      |      Return repr(self).
+     |  
+     |  __reversed__(self, /)
+     |      Return a reverse iterator over the dict keys.
      |  
      |  __setitem__(self, key, value, /)
      |      Set self[key] to value.
@@ -410,11 +412,8 @@ CLASSES
      |  copy(...)
      |      D.copy() -> a shallow copy of D
      |  
-     |  fromkeys(iterable, value=None, /) from builtins.type
-     |      Returns a new dict with keys from iterable and values equal to value.
-     |  
-     |  get(...)
-     |      D.get(k[,d]) -> D[k] if k in D, else d.  d defaults to None.
+     |  get(self, key, default=None, /)
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  items(...)
      |      D.items() -> a set-like object providing a view on D's items
@@ -426,12 +425,16 @@ CLASSES
      |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
      |      If key is not found, d is returned if given, otherwise KeyError is raised
      |  
-     |  popitem(...)
-     |      D.popitem() -> (k, v), remove and return some (key, value) pair as a
-     |      2-tuple; but raise KeyError if D is empty.
+     |  popitem(self, /)
+     |      Remove and return a (key, value) pair as a 2-tuple.
+     |      
+     |      Pairs are returned in LIFO (last-in, first-out) order.
+     |      Raises KeyError if the dict is empty.
      |  
-     |  setdefault(...)
-     |      D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D
+     |  setdefault(self, key, default=None, /)
+     |      Insert key with a value of default if key is not in the dictionary.
+     |      
+     |      Return the value for key if key is in the dictionary, else default.
      |  
      |  update(...)
      |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
@@ -441,6 +444,18 @@ CLASSES
      |  
      |  values(...)
      |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods inherited from builtins.dict:
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Create a new dictionary with keys from iterable and values set to value.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from builtins.dict:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
      |  
      |  ----------------------------------------------------------------------
      |  Data and other attributes inherited from builtins.dict:
