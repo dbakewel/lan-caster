@@ -85,35 +85,66 @@ class ServerMap(engine.stepmap.StepMap):
                 sprite['moveDestX'],
                 sprite['moveDestY'])
 
-            # compute a new anchor x,y which moves directly towards destination for this step
-            newAnchorX, newAnchorY = geo.project(
-                sprite['anchorX'],
-                sprite['anchorY'],
-                sprite['direction'],
-                stepSpeed
-                )
-
-            # movement is only allowed if it is inbounds.
+            # while the location is not valid and we are trying to move at least 0.01 pixel.
             inBounds = False
+            while not inBounds and stepSpeed > 0.01:
+                # if we can get to the dest this step then just go there.
+                if stepSpeed > geo.distance(sprite['anchorX'], sprite['anchorY'], sprite['moveDestX'], sprite['moveDestY']):
+                    newAnchorX = sprite['moveDestX']
+                    newAnchorY = sprite['moveDestY']
+                else:
+                    # compute a new anchor x,y which moves directly towards destination
+                    newAnchorX, newAnchorY = geo.project(
+                        sprite['anchorX'],
+                        sprite['anchorY'],
+                        sprite['direction'],
+                        stepSpeed
+                        )
 
-            # if sprite can move directly towards destination
-            if self.checkLocation(sprite, newAnchorX, newAnchorY):
-                inBounds = True
-            # elif sprite is moving along X then try to stay at the same Y and move along only along X
-            elif newAnchorX != sprite['anchorX'] and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
-                newAnchorY = sprite['anchorY']
-                inBounds = True
-            # elif sprite is moving along Y then try to stay at the same X and move along only along Y
-            elif newAnchorY != sprite['anchorY'] and self.checkLocation(sprite, sprite['anchorX'], newAnchorY):
-                newAnchorX = sprite['anchorX']
-                inBounds = True
+                # if we are out of bounds then slow down and try again. Mabye not going as far will be in bounds.
+                inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
+                if not inBounds:
+                    stepSpeed *= 0.9
+
+            # if we cannot move directly then try sliding.
+            if not inBounds:
+                # reset speed since it was probably reduced above.
+                stepSpeed = sprite['moveSpeed'] / engine.server.SERVER['fps']
+
+                if sprite['moveDestX'] > sprite['anchorX']:
+                    newAnchorX = sprite['anchorX'] + stepSpeed
+                    if newAnchorX > sprite['moveDestX']:
+                        newAnchorX = sprite['moveDestX']
+                elif sprite['moveDestX'] < sprite['anchorX']:
+                    newAnchorX = sprite['anchorX'] - stepSpeed
+                    if newAnchorX < sprite['moveDestX']:
+                        newAnchorX = sprite['moveDestX']
+                else:
+                    newAnchorX = sprite['anchorX']
+                
+                if sprite['moveDestY'] > sprite['anchorY']:
+                    newAnchorY = sprite['anchorY'] + stepSpeed
+                    if newAnchorY > sprite['moveDestY']:
+                        newAnchorY = sprite['moveDestY']
+                elif sprite['moveDestY'] < sprite['anchorY']:
+                    newAnchorY = sprite['anchorY'] - stepSpeed
+                    if newAnchorY < sprite['moveDestY']:
+                        newAnchorY = sprite['moveDestY']
+                else:
+                    newAnchorY = sprite['anchorY']
+                
+                # if sprite is moving along X then try to stay at the same Y and move along only along X
+                if newAnchorX != sprite['anchorX'] and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
+                    newAnchorY = sprite['anchorY']
+                    inBounds = True
+                # elif sprite is moving along Y then try to stay at the same X and move along only along Y
+                elif newAnchorY != sprite['anchorY'] and self.checkLocation(sprite, sprite['anchorX'], newAnchorY):
+                    newAnchorX = sprite['anchorX']
+                    inBounds = True
 
             if inBounds:
-                if geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.1:
-                    # if sprite is only going to move less than 0.1 pixel then stop it.
-                    self.delSpriteDest(sprite)
-                elif geo.distance(newAnchorX, newAnchorY, sprite['moveDestX'], sprite['moveDestY']) < stepSpeed:
-                    # if sprite is close to destination then stop it.
+                if geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
+                    # if sprite is only going to move less than 0.01 pixel then stop it after this move.
                     self.delSpriteDest(sprite)
 
                 # move sprite to new location
