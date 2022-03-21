@@ -339,12 +339,21 @@ class Map(dict):
 
         self.setMapChanged()
 
-    def findObject(self, x=None, y=None, name=False, type=False, objectList=False, exclude=False, returnAll=False):
+    def findObject(self, x=None, y=None, width=None, height=None, useObjectAnchor=False, collisionType=False, name=False, type=False, objectList=False, exclude=False, returnAll=False):
         '''Find a Tiled object that matches ALL criteria provided.
 
         Args:
-            x (float), y (float): Find object that contains (x, y)
-            name (str): Find object with object['name'] == name
+            Collision detection can be done one of 4 ways:
+                1) x (float), y (float), width=None, height=None, useObjectAnchor == False: 
+                    Find object whose rect contains (x, y)
+                2) x (float), y (float), width (float), height (float), useObjectAnchor == False: 
+                    Find object whose rect overlaps with rect: x, y, width, height
+                3) x (float), y (float), width=None, height=None, useObjectAnchor == True: 
+                    Find object whose (anchorX, anchorY) == (x, y)
+                4) x (float), y (float), width (float), height (float), useObjectAnchor == True:
+                    Find object whose (anchorX, anchorY) is inside rect: x, y, width, height.
+            collisionType(str): Find object with object['name'] == name, 
+            name (str): Find object with object['collisionType'] == collisionType
             type (str): Find object with object['type'] == type
             objectList (dict): a list of objects to search. default is self['sprites']
             exclude (dict): a Tiled object. Skip this object while searching. Normally used
@@ -363,13 +372,30 @@ class Map(dict):
 
         found = []
         for object in objectList:
-            if (type == False or object['type'] == type) and \
-               (name == False or object['name'] == name) and \
-               (exclude == False or exclude != object) and \
-               (x is None or y is None or geo.objectContains(object, x, y)):
-                if not returnAll:
-                    return object
-                found.append(object)
+            if type != False and object['type'] != type:
+                continue
+            if name != False and object['name'] != name:
+                continue
+            if exclude != False and exclude == object:
+                continue
+            if collisionType != False and object['collisionType'] != collisionType:
+                continue
+            if x is not None and y is not None:
+                if useObjectAnchor == False:
+                    if not geo.objectContains(object, x, y, width, height):  # case 1 and 2 above
+                        continue
+                else:
+                    if width is None or height is None:
+                        w=h=0  # case 3 above
+                    else:
+                        # case 4 above
+                        w=width
+                        h=height
+                    if not geo.objectContains({'x':x, 'y':y, 'width':w, 'height':h}, object['anchorX'], object['anchorY']):
+                        continue
+            if not returnAll:
+                return object
+            found.append(object)
 
         if not returnAll:
             return False
@@ -396,6 +422,7 @@ class Map(dict):
             'height': (float)
             'anchorX': (float)
             'anchorY': (float)
+            'collisionType': (str)
             'mapName': (str) The last map the object was on (or is still on).
 
             Only for tile objects have the following:
@@ -421,6 +448,8 @@ class Map(dict):
             object['width'] = 0
         if "height" not in object:
             object['height'] = 0
+        if "collisionType" not in object:
+            object['collisionType'] = "anchor"
 
         # if this is a Tile Object
         if "gid" in object and ("tilesetName" not in object or "tilesetTileNumber" not in object):
@@ -443,6 +472,118 @@ class Map(dict):
 
         # The original object has been edited but also return it so the function can be passed
         return object
+
+    def checkLocation(self, object, newAnchorX, newAnchorY):
+        """Check if a location for an object is valid.
+
+        Determines is (newAnchorX, newAnchorY) would be a valid anchor point for 
+        object while taking several things into account, including map size, inBounds layer,
+        and outOfBounds layer, collision with other sprites.
+
+        Note, the priority evaluation is as follows:
+        1) if (newAnchorX, newAnchorY) overlaps another sprite then it is NOT valid
+        1) if (newAnchorX, newAnchorY) is not fully on the map then it is NOT valid.
+        2) if (newAnchorX, newAnchorY) is fully inside an object on the inBounds layer then it IS valid.
+        3) if (newAnchorX, newAnchorY) overlaps an object on the outOfBounds layer then it is NOT valid.
+        4) else it IS valid.
+
+        Args:
+            object (dict): A Tiled object.
+            newAnchorX (float): x coordiate to check if valid
+            newAnchorY (float): y coordiate to check if valid
+
+        Returns:
+            bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
+        """
+
+        # if move player move checking has been turned off then allow all moves for players
+        if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
+            return True
+
+        collisionType = object['collisionType']
+
+        if collisionType not in ('anchor', 'rect'):
+            log(f"collisionType == {collisionType} is not supported.", "ERROR")
+            return False
+
+        newX = newAnchorX - (object['anchorX'] - object['x'])
+        newY = newAnchorY - (object['anchorY'] - object['y'])
+
+        # if (newAnchorX, newAnchorY) overlaps another sprite then it is NOT valid
+        if collisionType == 'anchor':
+            # anchor collision cannot collide with another anchor but can with a rect.
+            if self.findObject(x=newAnchorX, y=newAnchorY, collisionType='rect', exclude=object):
+                return False
+        elif collisionType == 'rect':
+            # if rect collides with another rect
+            if self.findObject(x=newX, y=newY, width=object['width'], height=object['height'], collisionType='rect', exclude=object):
+                return False
+            # if rect collides with an anchor
+            if self.findObject(x=newX, y=newY, width=object['width'], height=object['height'], collisionType='anchor', useObjectAnchor=True, exclude=object):
+                return False
+
+        # if (newAnchorX, newAnchorY) is not fully on the map then it is NOT valid.
+        if collisionType == 'anchor':
+            if 0 > newAnchorX or newAnchorX > self['pixelWidth'] or 0 > newAnchorY or newAnchorY > self['pixelHeight']:
+                return False
+        elif collisionType == 'rect':
+            if 0 > newX or newX+object['width'] > self['pixelWidth'] or 0 > newY or newY+object['height'] > self['pixelHeight']:
+                return False
+
+        # if (newAnchorX, newAnchorY) is fully inside an object on the inBounds layer then it IS valid.
+        if collisionType == 'anchor':
+            if self.findObject(x=newAnchorX, y=newAnchorY, objectList=self['inBounds']):
+                return True
+        elif collisionType == 'rect':
+            if self.findObject(x=newX, y=newY, objectList=self['inBounds']) and \
+                self.findObject(x=newX+object['width'], y=newY, objectList=self['inBounds']) and \
+                self.findObject(x=newX, y=newY+object['height'], objectList=self['inBounds']) and \
+                self.findObject(x=newX+object['width'], y=newY+object['height'], objectList=self['inBounds']):
+                return True
+
+        # if (newAnchorX, newAnchorY) overlaps an object on the outOfBounds layer then it is NOT valid.
+        if collisionType == 'anchor':
+            if self.findObject(x=newAnchorX, y=newAnchorY, objectList=self['outOfBounds']):
+                return False
+        elif collisionType == 'rect':
+            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']) or \
+                self.findObject(x=newX+object['width'], y=newY, objectList=self['outOfBounds']) or \
+                self.findObject(x=newX, y=newY+object['height'], objectList=self['outOfBounds']) or \
+                self.findObject(x=newX+object['width'], y=newY+object['height'], objectList=self['outOfBounds']):
+                return False
+
+        # else it IS valid.
+        return True
+
+    def checkKeys(self, object, props):
+        """Check if all props are keys in object.
+
+        This can be used by a method to check if an object has all the
+        data required. If data is missing then a warning
+        is logged that suggests where the data may be missing from.
+
+        Args:
+            object (dict): Tiled object
+            props (list): A list of keys. e.g. ["prop-deltaX", "anchorX"]
+
+        Returns:
+            bool: True if all props are in object else False
+        """
+        result = True
+        for p in props:
+            if p not in object:
+                result = False
+                name = "object"
+                if object['name']:
+                    name = f"object with name={object['name']}"
+                elif object['type']:
+                    name = f"object with type={object['type']}"
+                if p.startswith('prop-'):
+                    tiledProp = p[5:]
+                    log(f"Missing Tiled property {tiledProp} in {name}", "WARNING")
+                else:
+                    log(f"Missing key {p} in {name}", "WARNING")
+        return result
 
     def setObjectLocationByXY(self, object, x, y):
         """Set an objects location using its top/left corner.
@@ -538,36 +679,6 @@ class Map(dict):
         if object in self['outOfBounds']:
             self.removeObject(object, objectList=self['outOfBounds'])
             destMap.addObject(object, objectList=destMap['outOfBounds'])
-
-    def checkKeys(self, object, props):
-        """Check if all props are keys in object.
-
-        This can be used by a method to check if an object has all the
-        data required. If data is missing then a warning
-        is logged that suggests where the data may be missing from.
-
-        Args:
-            object (dict): Tiled object
-            props (list): A list of keys. e.g. ["prop-deltaX", "anchorX"]
-
-        Returns:
-            bool: True if all props are in object else False
-        """
-        result = True
-        for p in props:
-            if p not in object:
-                result = False
-                name = "object"
-                if object['name']:
-                    name = f"object with name={object['name']}"
-                elif object['type']:
-                    name = f"object with type={object['type']}"
-                if p.startswith('prop-'):
-                    tiledProp = p[5:]
-                    log(f"Missing Tiled property {tiledProp} in {name}", "WARNING")
-                else:
-                    log(f"Missing key {p} in {name}", "WARNING")
-        return result
 
     ########################################################
     # LAYER VISABILITY MECHANIC

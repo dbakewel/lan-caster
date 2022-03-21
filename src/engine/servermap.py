@@ -20,6 +20,8 @@ class ServerMap(engine.stepmap.StepMap):
         A mapDoor trigger can relocate a sprite to a new location
         on the same or different map.
 
+        Uses Mechanics: move (checkLocation() to ensure destination is valid)
+
     HOLDABLE MECHANIC
         Allows a sprite to request (using ACTION MECHANIC) to pickup
         and drop other sprites of type == holdable.
@@ -95,14 +97,14 @@ class ServerMap(engine.stepmap.StepMap):
             inBounds = False
 
             # if sprite can move directly towards destination
-            if self.checkMove(sprite, newAnchorX, newAnchorY):
+            if self.checkLocation(sprite, newAnchorX, newAnchorY):
                 inBounds = True
             # elif sprite is moving along X then try to stay at the same Y and move along only along X
-            elif newAnchorX != sprite['anchorX'] and self.checkMove(sprite, newAnchorX, sprite['anchorY']):
+            elif newAnchorX != sprite['anchorX'] and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
                 newAnchorY = sprite['anchorY']
                 inBounds = True
             # elif sprite is moving along Y then try to stay at the same X and move along only along Y
-            elif newAnchorY != sprite['anchorY'] and self.checkMove(sprite, sprite['anchorX'], newAnchorY):
+            elif newAnchorY != sprite['anchorY'] and self.checkLocation(sprite, sprite['anchorX'], newAnchorY):
                 newAnchorX = sprite['anchorX']
                 inBounds = True
 
@@ -119,37 +121,6 @@ class ServerMap(engine.stepmap.StepMap):
             else:
                 # sprite cannot move.
                 self.delSpriteDest(sprite)
-
-    def checkMove(self, object, x, y):
-        """MOVE LINEAR MECHANIC: Check if a location for an object is valid.
-
-        Determines is (x, y) would be a valid anchor point for object while
-        taking several things into account, including map size, inBounds layer,
-        and outOfBounds layer.
-
-        Priority of evaluation is as follows:
-        1) if (x, y) is not on the map then it is NOT inbounds.
-        2) if (x, y) is inside an object on the inBounds layer then it IS inbounds.
-        3) if (x, y) is inside an object on the outOfBounds layer then it is NOT inbounds.
-        4) else it IS inbounds.
-
-        Args:
-            object (dict): A Tiled object.
-            x (float): x coordiate to check if valid
-            y (float): y coordiate to check if valid
-
-        Returns:
-            bool: True if an anchor point of (x, y) would be a valid for object, else False
-        """
-
-        # if move player move checking has been turned off then allow all moves for players
-        if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
-            return True
-
-        if geo.objectContains({"x": 0, "y": 0, "width": self['pixelWidth'], "height": self['pixelHeight']}, x, y) and \
-                (geo.objectsContains(self['inBounds'], x, y) or (not geo.objectsContains(self['outOfBounds'], x, y))):
-            return True
-        return False
 
     def setSpriteDest(self, sprite, moveDestX, moveDestY, moveSpeed):
         """MOVE LINEAR MECHANIC: Set sprites destination and speed.
@@ -202,6 +173,9 @@ class ServerMap(engine.stepmap.StepMap):
         the rest of this step. This makes sense since the sprite is no
         longer in the same location.
 
+        Note, sprite will only be moved if destination is valid based
+        on calling checkLocation().
+
         Returns:
             True: if sprite was moved.
             None: if sprite did not move.
@@ -218,22 +192,25 @@ class ServerMap(engine.stepmap.StepMap):
             if trigger['prop-destMapName'] in engine.server.SERVER['maps']:
                 destMap = engine.server.SERVER['maps'][trigger['prop-destMapName']]
             else:
-                log(
-                    f"MapDoor destMapName does not exist! trigger['prop-destMapName'] == {trigger['prop-destMapName']}",
-                    "FAILURE")
+                log(f"MapDoor destMapName does not exist!","FAILURE")
+                log(trigger, "FAILURE")
                 exit()
         else:
             destMap = self
-        dest = self.findObject(name=trigger['prop-destReference'], objectList=destMap['reference'])
+        dest = destMap.findObject(name=trigger['prop-destReference'], objectList=destMap['reference'])
         if dest:
-            self.setObjectMap(sprite, destMap)
-            destMap.setObjectLocationByAnchor(sprite, dest['anchorX'], dest['anchorY'])
-            destMap.delSpriteDest(sprite)
-            return True  # stop the processing of other triggers since sprite has moved.
+            # if dest location is a valid location for sprite.
+            if destMap.checkLocation(sprite, dest['anchorX'], dest['anchorY']):
+                self.setObjectMap(sprite, destMap)
+                destMap.setObjectLocationByAnchor(sprite, dest['anchorX'], dest['anchorY'])
+                destMap.delSpriteDest(sprite)
+                return True  # stop the processing of other triggers since sprite has moved.
+            else:
+                log(f"Trigger destination failed checkLocation.", "VERBOSE")
+                log(trigger,"VERBOSE")
         else:
-            log(
-                f"Trigger destination not found = {trigger['prop-destMapName']} - {trigger['prop-destReference']}",
-                "ERROR")
+            log(f"Trigger destination not found.","ERROR")
+            log(trigger,"ERROR")
 
     ########################################################
     # HOLDABLE MECHANIC
