@@ -185,8 +185,8 @@
                  "type":"pushable",
                  "visible":true,
                  "width":32,
-                 "x":420,
-                 "y":144
+                 "x":400,
+                 "y":132.01
                 }, 
                 {
                  "gid":10,
@@ -197,8 +197,8 @@
                  "type":"pushable",
                  "visible":true,
                  "width":32,
-                 "x":468,
-                 "y":146
+                 "x":432.01,
+                 "y":132.01
                 }, 
                 {
                  "gid":10,
@@ -233,8 +233,8 @@
                  "type":"pushable",
                  "visible":true,
                  "width":32,
-                 "x":416,
-                 "y":99
+                 "x":400,
+                 "y":100
                 }, 
                 {
                  "gid":10,
@@ -245,8 +245,8 @@
                  "type":"pushable",
                  "visible":true,
                  "width":32,
-                 "x":470,
-                 "y":99
+                 "x":432.01,
+                 "y":100.01
                 }, 
                 {
                  "gid":10,

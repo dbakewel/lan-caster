@@ -26,21 +26,16 @@ class ServerMap(engine.servermap.ServerMap):
         for pushable in self.findObject(type="pushable", returnAll=True):
             pushable['collisionType'] = "rect"
 
-    def checkLocation(self, object, x, y):
+    def checkLocation(self, object, newAnchorX, newAnchorY):
         """Extend checkLocation().
 
         If the object being moved is a player and they impact a pushable then
-        move the pushable away from the object but only if:
-            1) moving the pushable would be a valid move. This means
-            that full rect collision detection must be done, not just anchor to
-            rect collision detection.
-            2) moving the pushable would not make it overlap with any
-            other sprite.
-
-        Assumes player collisionType == 'anchor'
+        move the pushable away from the object but only if moving the pushable 
+        would be a valid move. Note, this using 'rect' based collision on the
+        pushable. Assumes player collisionType == 'anchor'
         """
 
-        validMove = super().checkLocation(object, x, y)
+        validMove = super().checkLocation(object, newAnchorX, newAnchorY)
         # if the move is not valid and it's a player trying to move then try to move a pushable out of the way.
         if validMove == False and object["type"] == "player":
             #if the player is moving between maps then do not try and push
@@ -48,11 +43,11 @@ class ServerMap(engine.servermap.ServerMap):
                 return False
 
             # if the player is not moving normally within a map (transport of some kind) then do not push
-            if geo.distance(x,y,object['x'],object['y']) > 50:
+            if geo.distance(newAnchorX, newAnchorY, object['anchorX'],object['anchorY']) > 50:
                 return False
 
             # find all sprites that player anchor would intersect (excluding player object)
-            overlapingSprites = self.findObject(x=x, y=y, exclude=object, returnAll=True)
+            overlapingSprites = self.findObject(x=newAnchorX, y=newAnchorY, exclude=object, returnAll=True)
             
             # if more than one sprite found or a non pushable was found then we cannot push
             if len(overlapingSprites) != 1 or overlapingSprites[0]['type'] != 'pushable':
@@ -64,28 +59,25 @@ class ServerMap(engine.servermap.ServerMap):
             # Only directions are directly left, right, up, or down.
             newX = pushable['x']
             newY = pushable['y']
-            if object['anchorX'] < newX and newX < x:
+            if object['anchorX'] < newX and newX < newAnchorX:
                 # move right
-                newX = x + 0.0001
-            elif object['anchorX'] > newX+pushable['width'] and newX+pushable['width'] > x:
+                newX = newAnchorX + 0.0001
+            elif object['anchorX'] > newX+pushable['width'] and newX+pushable['width'] > newAnchorX:
                 # move left
-                newX = x - pushable['width'] - 0.0001
-            elif object['anchorY'] < newY and newY < y:
+                newX = newAnchorX - pushable['width'] - 0.0001
+            elif object['anchorY'] < newY and newY < newAnchorY:
                 # move down
-                newY = y + 0.0001
-            elif object['anchorY'] > newY+pushable['height'] and newY+pushable['height'] > y:
+                newY = newAnchorY + 0.0001
+            elif object['anchorY'] > newY+pushable['height'] and newY+pushable['height'] > newAnchorY:
                 # move up
-                newY = y - pushable['height'] - 0.0001
+                newY = newAnchorY - pushable['height'] - 0.0001
             
-            newAnchorX = newX + (pushable['anchorX'] - pushable['x'])
-            newAnchorY = newY + (pushable['anchorY'] - pushable['y'])
+            newPushableAnchorX = newX + (pushable['anchorX'] - pushable['x'])
+            newPushableAnchorY = newY + (pushable['anchorY'] - pushable['y'])
 
             # if pushable can be moved to new location then move it and allow player to move.
-            if self.checkLocation(pushable, newAnchorX, newAnchorY):
-                self.setObjectLocationByAnchor(pushable, newAnchorX, newAnchorY)
+            if self.checkLocation(pushable, newPushableAnchorX, newPushableAnchorY):
+                self.setObjectLocationByAnchor(pushable, newPushableAnchorX, newPushableAnchorY)
                 return True
-
-            # don't allow player to move because we were not able to push pushable out of the way.
-            return False
 
         return validMove

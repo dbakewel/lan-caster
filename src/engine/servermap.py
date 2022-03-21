@@ -18,9 +18,7 @@ class ServerMap(engine.stepmap.StepMap):
 
     MAPDOOR MECHANIC
         A mapDoor trigger can relocate a sprite to a new location
-        on the same or different map.
-
-        Uses Mechanics: move (checkLocation() to ensure destination is valid)
+        (only if a valid location) on the same or different map.
 
     HOLDABLE MECHANIC
         Allows a sprite to request (using ACTION MECHANIC) to pickup
@@ -223,8 +221,7 @@ class ServerMap(engine.stepmap.StepMap):
             if trigger['prop-destMapName'] in engine.server.SERVER['maps']:
                 destMap = engine.server.SERVER['maps'][trigger['prop-destMapName']]
             else:
-                log(f"MapDoor destMapName does not exist!","FAILURE")
-                log(trigger, "FAILURE")
+                log(f"MapDoor destMapName does not exist! {trigger['prop-destMapName']}","FAILURE")
                 exit()
         else:
             destMap = self
@@ -238,10 +235,8 @@ class ServerMap(engine.stepmap.StepMap):
                 return True  # stop the processing of other triggers since sprite has moved.
             else:
                 log(f"Trigger destination failed checkLocation.", "VERBOSE")
-                log(trigger,"VERBOSE")
         else:
-            log(f"Trigger destination not found.","ERROR")
-            log(trigger,"ERROR")
+            log(f"Trigger destination not found. {trigger['prop-destReference']}","ERROR")
 
     ########################################################
     # HOLDABLE MECHANIC

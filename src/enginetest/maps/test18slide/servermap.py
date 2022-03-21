@@ -49,7 +49,7 @@ class ServerMap(engine.servermap.ServerMap):
         # mark sprite as sliding so we know it should be allowed to move inside outOfBounds areas.
         sprite["sliding"] = True
 
-    def checkLocation(self, object, x, y):
+    def checkLocation(self, object, newAnchorX, newAnchorY):
         """SLIDE MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
 
         If an object is sliding then allow it to move. The slide setup must
@@ -59,7 +59,7 @@ class ServerMap(engine.servermap.ServerMap):
         if "sliding" in object:
             return True
 
-        return super().checkLocation(object, x, y)
+        return super().checkLocation(object, newAnchorX, newAnchorY)
 
     def stepSpriteEndSlide(self, sprite):
         """SLIDE MECHANIC: remove sliding marker from sprite.
