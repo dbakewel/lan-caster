@@ -30,7 +30,7 @@ class ServerMap(engine.servermap.ServerMap):
         """Extend checkLocation().
 
         If the object being moved is a player and they impact a pushable then
-        move the pushable away from the object but only if moving the pushable 
+        move the pushable away from the object but only if moving the pushable
         would be a valid move. Note, this using 'rect' based collision on the
         pushable. Assumes player collisionType == 'anchor'
         """
@@ -38,40 +38,40 @@ class ServerMap(engine.servermap.ServerMap):
         validMove = super().checkLocation(object, newAnchorX, newAnchorY)
         # if the move is not valid and it's a player trying to move then try to move a pushable out of the way.
         if validMove == False and object["type"] == "player":
-            #if the player is moving between maps then do not try and push
+            # if the player is moving between maps then do not try and push
             if self['name'] != object['mapName']:
                 return False
 
             # if the player is not moving normally within a map (transport of some kind) then do not push
-            if geo.distance(newAnchorX, newAnchorY, object['anchorX'],object['anchorY']) > 50:
+            if geo.distance(newAnchorX, newAnchorY, object['anchorX'], object['anchorY']) > 50:
                 return False
 
             # find all sprites that player anchor would intersect (excluding player object)
             overlapingSprites = self.findObject(x=newAnchorX, y=newAnchorY, exclude=object, returnAll=True)
-            
+
             # if more than one sprite found or a non pushable was found then we cannot push
             if len(overlapingSprites) != 1 or overlapingSprites[0]['type'] != 'pushable':
                 return False
 
             pushable = overlapingSprites[0]
 
-            # find out what way to try and push pushable and compute new location. 
+            # find out what way to try and push pushable and compute new location.
             # Only directions are directly left, right, up, or down.
             newX = pushable['x']
             newY = pushable['y']
             if object['anchorX'] < newX and newX < newAnchorX:
                 # move right
                 newX = newAnchorX + 0.0001
-            elif object['anchorX'] > newX+pushable['width'] and newX+pushable['width'] > newAnchorX:
+            elif object['anchorX'] > newX + pushable['width'] and newX + pushable['width'] > newAnchorX:
                 # move left
                 newX = newAnchorX - pushable['width'] - 0.0001
             elif object['anchorY'] < newY and newY < newAnchorY:
                 # move down
                 newY = newAnchorY + 0.0001
-            elif object['anchorY'] > newY+pushable['height'] and newY+pushable['height'] > newAnchorY:
+            elif object['anchorY'] > newY + pushable['height'] and newY + pushable['height'] > newAnchorY:
                 # move up
                 newY = newAnchorY - pushable['height'] - 0.0001
-            
+
             newPushableAnchorX = newX + (pushable['anchorX'] - pushable['x'])
             newPushableAnchorY = newY + (pushable['anchorY'] - pushable['y'])
 

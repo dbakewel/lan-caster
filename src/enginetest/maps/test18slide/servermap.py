@@ -42,7 +42,7 @@ class ServerMap(engine.servermap.ServerMap):
             sprite['anchorX'],
             sprite['anchorY'],
             trigger["prop-slideDirection"],
-            trigger["prop-slideSpeed"] / engine.server.SERVER['fps'] * 1.001 
+            trigger["prop-slideSpeed"] / engine.server.SERVER['fps'] * 1.001
             )
         self.setSpriteDest(sprite, moveDestX, moveDestY, trigger["prop-slideSpeed"])
 

@@ -498,7 +498,6 @@ class Client(dict):
                 map.blitTextObject(self['screen'], (0, 0), textObject, mapRelative=False)
                 break
 
-
     ########################################################
     # USER INPUT HANDLING
     ########################################################

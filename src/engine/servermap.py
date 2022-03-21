@@ -87,7 +87,8 @@ class ServerMap(engine.stepmap.StepMap):
             inBounds = False
             while not inBounds and stepSpeed > 0.01:
                 # if we can get to the dest this step then just go there.
-                if stepSpeed > geo.distance(sprite['anchorX'], sprite['anchorY'], sprite['moveDestX'], sprite['moveDestY']):
+                if stepSpeed > geo.distance(sprite['anchorX'], sprite['anchorY'],
+                                            sprite['moveDestX'], sprite['moveDestY']):
                     newAnchorX = sprite['moveDestX']
                     newAnchorY = sprite['moveDestY']
                 else:
@@ -119,7 +120,7 @@ class ServerMap(engine.stepmap.StepMap):
                         newAnchorX = sprite['moveDestX']
                 else:
                     newAnchorX = sprite['anchorX']
-                
+
                 if sprite['moveDestY'] > sprite['anchorY']:
                     newAnchorY = sprite['anchorY'] + stepSpeed
                     if newAnchorY > sprite['moveDestY']:
@@ -130,7 +131,7 @@ class ServerMap(engine.stepmap.StepMap):
                         newAnchorY = sprite['moveDestY']
                 else:
                     newAnchorY = sprite['anchorY']
-                
+
                 # if sprite is moving along X then try to stay at the same Y and move along only along X
                 if newAnchorX != sprite['anchorX'] and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
                     newAnchorY = sprite['anchorY']
@@ -221,7 +222,7 @@ class ServerMap(engine.stepmap.StepMap):
             if trigger['prop-destMapName'] in engine.server.SERVER['maps']:
                 destMap = engine.server.SERVER['maps'][trigger['prop-destMapName']]
             else:
-                log(f"MapDoor destMapName does not exist! {trigger['prop-destMapName']}","FAILURE")
+                log(f"MapDoor destMapName does not exist! {trigger['prop-destMapName']}", "FAILURE")
                 exit()
         else:
             destMap = self
@@ -236,7 +237,7 @@ class ServerMap(engine.stepmap.StepMap):
             else:
                 log(f"Trigger destination failed checkLocation.", "VERBOSE")
         else:
-            log(f"Trigger destination not found. {trigger['prop-destReference']}","ERROR")
+            log(f"Trigger destination not found. {trigger['prop-destReference']}", "ERROR")
 
     ########################################################
     # HOLDABLE MECHANIC
