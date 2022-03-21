@@ -178,8 +178,6 @@ class Client(dict):
         log("Join server was successful.")
 
         self['serverIpport'] = engine.network.formatIpPort(self['serverIP'], self['serverPort'])
-
-        self['playerNumber'] = -1  # set to a real number from the joinReply msg sent from the server
         self['step'] = False  # Currently displayed step. Empty until we get first step msg from server. = {}
         self['mapOffset'] = (0, 0)
 
@@ -491,6 +489,14 @@ class Client(dict):
         textObject['text']['halign'] = "right"
         textObject['text']['text'] = "Map: " + self['step']['mapName']
         map.blitTextObject(self['screen'], (0, 0), textObject, mapRelative=False)
+
+        for sprite in self['step']['sprites']:
+            if "playerNumber" in sprite and self['playerNumber'] == sprite['playerNumber']:
+                textObject['text']['valign'] = "bottom"
+                textObject['text']['halign'] = "left"
+                textObject['text']['text'] = f"Player Anchor: ({round(sprite['anchorX'],4)}, {round(sprite['anchorY'],4)})"
+                map.blitTextObject(self['screen'], (0, 0), textObject, mapRelative=False)
+                break
 
     ########################################################
     # USER INPUT HANDLING

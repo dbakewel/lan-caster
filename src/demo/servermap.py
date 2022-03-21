@@ -167,8 +167,8 @@ class ServerMap(engine.servermap.ServerMap):
         elif sprite['type'] == "player":
             self.setSpriteSpeechText(sprite, f"I could throw something from here.")
 
-    def checkMove(self, object, x, y):
-        """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkMove().
+    def checkLocation(self, object, newAnchorX, newAnchorY):
+        """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
 
         Allow things that have bee thrown to go out of bounds so they
         can be thrown over water. The way the throw zones are set up in
@@ -179,7 +179,7 @@ class ServerMap(engine.servermap.ServerMap):
         if "moveSpeed" in object and object['moveSpeed'] == self['THROWSPEED']:
             return True
 
-        return super().checkMove(object, x, y)
+        return super().checkLocation(object, newAnchorX, newAnchorY)
 
     ########################################################
     # SPEED MULTIPLIER MECHANIC
