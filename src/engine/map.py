@@ -353,8 +353,8 @@ class Map(dict):
                     Find object whose (anchorX, anchorY) == (x, y)
                 4) x (float), y (float), width (float), height (float), useObjectAnchor == True:
                     Find object whose (anchorX, anchorY) is inside rect: x, y, width, height.
-            collisionType(str): Find object with object['name'] == name,
-            name (str): Find object with object['collisionType'] == collisionType
+            collisionType(str): Find object with object['collisionType'] == collisionType
+            name (str): Find object with object['name'] == name
             type (str): Find object with object['type'] == type
             objectList (dict): a list of objects to search. default is self['sprites']
             exclude (dict): a Tiled object. Skip this object while searching. Normally used
