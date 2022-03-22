@@ -77,7 +77,7 @@
                  "rotation":0,
                  "text":
                     {
-                     "text":"This map contains a subclassed servermap.py file. This subclass adds support for a sprites of type == \u201cpushable\u201d. If the player walks into a pushable it will move, unless that move would be outOfBounds. Also, pushable act as outOutBounds so no other sprite can be within their rect.\n\nTry walking into one of the blocks. Try blocking the dest of the mapDoor with a block.",
+                     "text":"This map contains a subclassed servermap.py file. This subclass adds support for a sprites of type == \u201cpushable\u201d which use collisionType == 'rect'. If the player walks into a pushable it will move move out of the way unless it is also blocked.\n\nTry walking into one of the blocks. Try blocking the dest of the mapDoor with a block.",
                      "wrap":true
                     },
                  "type":"",
