@@ -46,14 +46,10 @@ class ServerMap(engine.servermap.ServerMap):
             if geo.distance(newAnchorX, newAnchorY, object['anchorX'], object['anchorY']) > 50:
                 return False
 
-            # find all sprites that player anchor would intersect (excluding player object)
-            overlapingSprites = self.findObject(x=newAnchorX, y=newAnchorY, exclude=object, returnAll=True)
-
-            # if more than one sprite found or a non pushable was found then we cannot push
-            if len(overlapingSprites) != 1 or overlapingSprites[0]['type'] != 'pushable':
+            # try and find a pushable object that can be moved out of the way.
+            pushable = self.findObject(x=newAnchorX, y=newAnchorY, type='pushable', exclude=object)
+            if not pushable:
                 return False
-
-            pushable = overlapingSprites[0]
 
             # find out what way to try and push pushable and compute new location.
             # Only directions are directly left, right, up, or down.
