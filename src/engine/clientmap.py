@@ -310,6 +310,10 @@ class ClientMap(engine.map.Map):
                 vu = self.blitRoundObject(destImage, offset, object)
             elif "point" in object:
                 vu = self.blitRoundObject(destImage, offset, object)
+            elif "polyline" in object:
+                vu = self.blitPolyObject(destImage, offset, object)
+            elif "polygon" in object:
+                vu = self.blitPolyObject(destImage, offset, object)
             else:  # this is a rect
                 vu = self.blitRectObject(destImage, offset, object)
 
@@ -603,6 +607,37 @@ class ClientMap(engine.map.Map):
         pygame.draw.ellipse(image, borderColor, rect, borderThickness)
 
         destImage.blit(image, (roundObject['x'] + offset[0], roundObject['y'] + offset[1]))
+
+        # rect does not have an end time so just sent back a long time from now
+        validUntil = sys.float_info.max
+        return validUntil
+
+    def blitPolyObject(self, destImage, offset, polyObject,
+                       lineColor=(0, 0, 0, 255), lineThickness=1):
+        """Draw a Poly Object onto destImage"""
+
+        image = pygame.Surface((self['width'] * self['tilewidth'], self['height'] * self['tileheight']), pygame.SRCALPHA, 32)
+        image = image.convert_alpha()
+
+        # build polyline with orgin at destImage 0,0
+        points = []
+        if 'polyline' in polyObject:
+            closed = False
+            pointsDict = polyObject['polyline']
+        elif 'polygon' in polyObject:
+            closed = True
+            pointsDict = polyObject['polygon']
+        else:
+            log('polyObject did not contain a polygon or polyline attribute.', "ERROR")
+            closed = False
+            pointsDict = {}
+
+        for p in pointsDict:
+            points.append((p['x']+polyObject['x'],p['y']+polyObject['y']))
+            
+        pygame.draw.lines(image, lineColor, closed, points, lineThickness)
+
+        destImage.blit(image, (offset[0], offset[1]))
 
         # rect does not have an end time so just sent back a long time from now
         validUntil = sys.float_info.max
