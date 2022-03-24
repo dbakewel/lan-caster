@@ -72,8 +72,8 @@ CLASSES
      |  ----------------------------------------------------------------------
      |  Methods inherited from demo.servermap.ServerMap:
      |  
-     |  checkMove(self, object, x, y)
-     |      THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkMove().
+     |  checkLocation(self, object, newAnchorX, newAnchorY)
+     |      THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
      |      
      |      Allow things that have bee thrown to go out of bounds so they
      |      can be thrown over water. The way the throw zones are set up in
@@ -346,6 +346,9 @@ CLASSES
      |      the rest of this step. This makes sense since the sprite is no
      |      longer in the same location.
      |      
+     |      Note, sprite will only be moved if destination is valid based
+     |      on calling checkLocation().
+     |      
      |      Returns:
      |          True: if sprite was moved.
      |          None: if sprite did not move.
@@ -450,6 +453,7 @@ CLASSES
      |          'height': (float)
      |          'anchorX': (float)
      |          'anchorY': (float)
+     |          'collisionType': (str)
      |          'mapName': (str) The last map the object was on (or is still on).
      |      
      |          Only for tile objects have the following:
@@ -492,11 +496,22 @@ CLASSES
      |      Returns:
      |          tileGid (int): A map global tile number.
      |  
-     |  findObject(self, x=None, y=None, name=False, type=False, objectList=False, exclude=False, returnAll=False)
+     |  findObject(self, x=None, y=None, width=0, height=0, forceCollisionType=False, collisionType=False, name=False, type=False, objectList=False, exclude=False, returnAll=False)
      |      Find a Tiled object that matches ALL criteria provided.
      |      
      |      Args:
-     |          x (float), y (float): Find object that contains (x, y)
+     |          Collision detection can be done one of 2 ways:
+     |              1) x (float), y (float), width==0, height==0:
+     |                  Find object which collides (overlaps) with point: x, y
+     |              2) x (float), y (float), width (float), height (float):
+     |                  Find object which collides (overlaps) with rect: x, y, width, height.
+     |              For 1) and 2) above:
+     |                  - if width == 0 and height == 0 in arguments or in object
+     |                    then it is treated as a point.
+     |                  - if forceCollisionType != False then forceCollisionType will be used
+     |                    in place of object['collisionType']. Some layers automatically have
+     |                    forceCollisionType set to 'rect': triggers, inBounds, outOfBounds.
+     |          collisionType(str): Find object with object['collisionType'] == collisionType
      |          name (str): Find object with object['name'] == name
      |          type (str): Find object with object['type'] == type
      |          objectList (dict): a list of objects to search. default is self['sprites']

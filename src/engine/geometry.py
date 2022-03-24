@@ -15,8 +15,9 @@ import math
 
 from engine.log import log
 
+
 def objectContains(object, x, y, width=0, height=0):
-    """ Returns True if rect defined by x, y, width, height overlaps object's rect else returns False. 
+    """ Returns True if rect defined by x, y, width, height overlaps object's rect else returns False.
 
     Note, a rect with width=0 and height==0 is a point.
     """
@@ -29,10 +30,10 @@ def objectContains(object, x, y, width=0, height=0):
     else:
         # if object's rect overlaps rect defined by x, y, width, height
         if objectContains({'x': x, 'y': y, 'width': width, 'height': height}, object['x'], object['y']) or \
-            objectContains(object, x, y) or \
-            objectContains(object, x + width, y) or \
-            objectContains(object, x, y + height) or \
-            objectContains(object, x + width, y + height):
+                objectContains(object, x, y) or \
+                objectContains(object, x + width, y) or \
+                objectContains(object, x, y + height) or \
+                objectContains(object, x + width, y + height):
             return True
 
     return False
@@ -89,7 +90,7 @@ def project(x, y, rad, dis):
 
 
 def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
-    '''Sort list of game objects by y and then x. 
+    '''Sort list of game objects by y and then x.
 
     Do sort in place but list is also returned in case it is needed.
 

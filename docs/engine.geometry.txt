@@ -27,19 +27,19 @@ FUNCTIONS
     normalizeAngle(a)
         Returns angle a in the normalized range of 0 - 2pi. Angle a must be in radians.
     
-    objectContains(object, x, y)
-        Returns True if x,y is inside object's x, y, width, and height else returns False.
-    
-    objectsContains(objectList, x, y)
-        Returns True if x,y is inside any object's x,y,width,height in objectList
+    objectContains(object, x, y, width=0, height=0)
+        Returns True if rect defined by x, y, width, height overlaps object's rect else returns False.
+        
+        Note, a rect with width=0 and height==0 is a point.
     
     project(x, y, rad, dis)
         Returns point (x',y') where angle from (x,y) to (x',y')
         is rad and distance from (x,y) to (x',y') is dis.
     
     sortRightDown(listOfGameObs, maxWidth, useAnchor=True)
-        Sort list of game objects by y and then x. Do sort in place but list is also returned in
-        case it is needed.
+        Sort list of game objects by y and then x.
+        
+        Do sort in place but list is also returned in case it is needed.
         
         Schwartzian Transform is used to speed up sort.
         https://gawron.sdsu.edu/compling/course_core/python_intro/intro_lecture_files/fastpython.html#setgetdel

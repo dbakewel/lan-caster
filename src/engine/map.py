@@ -340,8 +340,8 @@ class Map(dict):
         self.setMapChanged()
 
     def findObject(self, x=None, y=None, width=0, height=0, forceCollisionType=False,
-                collisionType=False, name=False, type=False, 
-                objectList=False, exclude=False, returnAll=False):
+                   collisionType=False, name=False, type=False,
+                   objectList=False, exclude=False, returnAll=False):
         '''Find a Tiled object that matches ALL criteria provided.
 
         Args:
@@ -353,7 +353,7 @@ class Map(dict):
                 For 1) and 2) above:
                     - if width == 0 and height == 0 in arguments or in object
                       then it is treated as a point.
-                    - if forceCollisionType != False then forceCollisionType will be used 
+                    - if forceCollisionType != False then forceCollisionType will be used
                       in place of object['collisionType']. Some layers automatically have
                       forceCollisionType set to 'rect': triggers, inBounds, outOfBounds.
             collisionType(str): Find object with object['collisionType'] == collisionType
@@ -374,9 +374,9 @@ class Map(dict):
         if not isinstance(objectList, list):
             objectList = self['sprites']
 
-        #check for layers where we force rect collision for all objects on layer
+        # check for layers where we force rect collision for all objects on layer
         if objectList in (self['triggers'], self['inBounds'], self['outOfBounds']):
-            forceCollisionType='rect'
+            forceCollisionType = 'rect'
 
         found = []
         for object in objectList:
@@ -389,16 +389,17 @@ class Map(dict):
             if collisionType != False and object['collisionType'] != collisionType:
                 continue
             if x is not None and y is not None:
-                if forceCollisionType == 'anchor' or (forceCollisionType == False and object['collisionType'] == 'anchor'):
-                    if not geo.objectContains({'x': x, 'y': y, 'width': width, 'height': height}, 
-                        object['anchorX'], object['anchorY']):
+                if forceCollisionType == 'anchor' or (
+                        forceCollisionType == False and object['collisionType'] == 'anchor'):
+                    if not geo.objectContains({'x': x, 'y': y, 'width': width, 'height': height},
+                                              object['anchorX'], object['anchorY']):
                         continue
                 elif forceCollisionType == 'rect' or (forceCollisionType == False and object['collisionType'] == 'rect'):
                     if not geo.objectContains(object, x, y, width, height):
                         continue
                 else:
                     continue
-                    
+
             if not returnAll:
                 return object
             found.append(object)
@@ -508,13 +509,13 @@ class Map(dict):
             return True
 
         if object['collisionType'] == 'anchor':
-            newX=newAnchorX
-            newY=newAnchorY
+            newX = newAnchorX
+            newY = newAnchorY
             width = 0
             height = 0
-            # Only check for other sprites with collisionType=='rect' since we allow 
+            # Only check for other sprites with collisionType=='rect' since we allow
             # two sprites with collisionType=='anchor' to overlap.
-            otherSpriteCollisionType = 'rect' 
+            otherSpriteCollisionType = 'rect'
         elif object['collisionType'] == 'rect':
             newX = newAnchorX - (object['anchorX'] - object['x'])
             newY = newAnchorY - (object['anchorY'] - object['y'])
@@ -527,8 +528,8 @@ class Map(dict):
             return False
 
         # if object overlaps another sprite then it is NOT valid.
-        if self.findObject(x=newX, y=newY, width=width, height=height, 
-            collisionType=otherSpriteCollisionType, exclude=object):
+        if self.findObject(x=newX, y=newY, width=width, height=height,
+                           collisionType=otherSpriteCollisionType, exclude=object):
             return False
 
         # if object is not fully on the map then it is NOT valid.
@@ -536,7 +537,7 @@ class Map(dict):
             return False
 
         # if object is fully inside an object or objects on the inBounds layer then it IS valid.
-        if width== 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
+        if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
             if self.findObject(x=newX, y=newY, objectList=self['inBounds']):
                 return True
         else:
@@ -547,7 +548,7 @@ class Map(dict):
                 return True
 
         # if object overlaps an object on the outOfBounds layer then it is NOT valid.
-        if width==0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
+        if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
             if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']):
                 return False
         else:

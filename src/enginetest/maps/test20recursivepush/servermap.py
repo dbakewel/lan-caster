@@ -30,8 +30,8 @@ class ServerMap(engine.servermap.ServerMap):
     def checkLocation(self, object, newAnchorX, newAnchorY):
         """Extend checkLocation().
 
-        If the sprite impacts a pushable then move the pushable away from the 
-        sprite but only if moving the pushable would be a valid move. Note, 
+        If the sprite impacts a pushable then move the pushable away from the
+        sprite but only if moving the pushable would be a valid move. Note,
         this is using 'rect' based collision on the pushable.
         """
 
@@ -52,10 +52,17 @@ class ServerMap(engine.servermap.ServerMap):
             if object['collisionType'] == 'anchor':
                 pushables = self.findObject(x=newAnchorX, y=newAnchorY, type='pushable', exclude=object, returnAll=True)
             else:
-                pushables = self.findObject(x=newObjectX, y=newObjectY, width=object['width'], height=object['height'], type='pushable', exclude=object, returnAll=True)
+                pushables = self.findObject(
+                    x=newObjectX,
+                    y=newObjectY,
+                    width=object['width'],
+                    height=object['height'],
+                    type='pushable',
+                    exclude=object,
+                    returnAll=True)
             if len(pushables) == 0:
                 return False
-            
+
             newpushables = []
             for pushable in pushables:
                 # find out what way to try and push pushable and compute new location.
@@ -77,15 +84,15 @@ class ServerMap(engine.servermap.ServerMap):
                         # move up
                         newPushableY = newAnchorY - pushable['height'] - 0.0001
                 else:  # collisionType == 'rect'
-                    if object['x']+object['width'] < newPushableX and newPushableX < newObjectX+object['width']:
+                    if object['x'] + object['width'] < newPushableX and newPushableX < newObjectX + object['width']:
                         # move right
-                        newPushableX = newObjectX+object['width'] + 0.0001
+                        newPushableX = newObjectX + object['width'] + 0.0001
                     elif object['x'] > newPushableX + pushable['width'] and newPushableX + pushable['width'] > newObjectX:
                         # move left
                         newPushableX = newObjectX - pushable['width'] - 0.0001
-                    elif object['y']+object['height'] < newPushableY and newPushableY < newObjectY+object['height']:
+                    elif object['y'] + object['height'] < newPushableY and newPushableY < newObjectY + object['height']:
                         # move down
-                        newPushableY = newObjectY+object['height'] + 0.0001
+                        newPushableY = newObjectY + object['height'] + 0.0001
                     elif object['y'] > newPushableY + pushable['height'] and newPushableY + pushable['height'] > newObjectY:
                         # move up
                         newPushableY = newObjectY - pushable['height'] - 0.0001

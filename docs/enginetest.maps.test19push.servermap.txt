@@ -1,71 +1,226 @@
-Help on module engine.stepmap in engine:
+Help on module enginetest.maps.test19push.servermap in enginetest.maps.test19push:
 
 NAME
-    engine.stepmap - Map Step Processor
+    enginetest.maps.test19push.servermap - ServerMap for Engine Test Map.
 
 CLASSES
-    engine.map.Map(builtins.dict)
-        StepMap
+    engine.servermap.ServerMap(engine.stepmap.StepMap)
+        ServerMap
     
-    class StepMap(engine.map.Map)
-     |  StepMap(tilesets, mapDir)
+    class ServerMap(engine.servermap.ServerMap)
+     |  ServerMap(tilesets, mapDir)
      |  
-     |  Class which implements stepping the game forward in time.
+     |  PUSH MECHANIC
      |  
-     |  The StepMap class is responsible for calling the game logic, located
-     |  in sub-classes, which takes the game forward one step in time. It
-     |  does this by finding methods that match the naming format and then
-     |  calling those methods in a very specific order during each step.
-     |  Using the various methods name formats, a sub-classes can implement
-     |  many different game mechanics.
+     |  A sprite of type == pushable will be moved with a player sprite
+     |  collides with it. However this will only occur if the pushable sprite
+     |  can be moved away from the player while still staying in bounds.
      |  
-     |  The method name formats StepMap looks for are as follows. Except
-     |  for init<MechanicName>() the methods are called in this order
-     |  during each step:
+     |  Pushable sprites also act as outOfBounds areas for other sprites.
      |  
-     |      0) init<MechanicName>(): Called only once when the map is loaded.
-     |  
-     |      1) stepMapStart<MechanicName>(): Called once at the start of each step.
-     |  
-     |      2) stepSpriteStart<MechanicName>(sprite): Called for every object
-     |          on the sprite layer.
-     |  
-     |      3) trigger<MechanicName>(trigger, sprite): Called for every trigger
-     |          and sprite combination where the sprite anchor point is inside
-     |          the trigger.
-     |  
-     |      4) stepMove<MechanicName>(sprite): Called for every object
-     |          on the sprite layer.
-     |  
-     |      5) stepSpriteEnd<MechanicName>(sprite): Called for every object
-     |          on the sprite layer.
-     |  
-     |      6) stepMapEnd<MechanicName>(): Called once at the end of each step.
-     |  
-     |  <MechanicName> is replaced with the name of the game mechanic
-     |  being implemented.
-     |  
-     |  Besides implementing the step methods above, a game mechanic
-     |  may need to extend, override, or implement other methods.
-     |  See examples of implementing game mechanics in engine.servermap and
-     |  the various servermaps of the enginetest and demo games.
-     |  
-     |  The Server normally only calls the engine.stepmap.StepMap.StepMap()
-     |  method if at least one player is on the map. So game logic stops for
-     |  maps with no players.
-     |  
-     |  Also, the Server class normally calls stepServerStart() before the
-     |  all the maps process there steps and calls stepServerEnd() after
-     |  all maps have processed their steps.
-     |  See engine.server.Server.stepServer() for details.
+     |  Uses Mechanics: move
      |  
      |  Method resolution order:
-     |      StepMap
+     |      ServerMap
+     |      engine.servermap.ServerMap
+     |      engine.stepmap.StepMap
      |      engine.map.Map
      |      builtins.dict
      |      builtins.object
      |  
      |  Methods defined here:
+     |  
+     |  checkLocation(self, object, newAnchorX, newAnchorY)
+     |      Extend checkLocation().
+     |      
+     |      If the object being moved is a player and they impact a pushable then
+     |      move the pushable away from the object but only if moving the pushable
+     |      would be a valid move. Note, this using 'rect' based collision on the
+     |      pushable. Assumes player collisionType == 'anchor'
+     |  
+     |  initPush(self)
+     |      PUSH MECHANIC: init method.
+     |      
+     |      Copy (by reference) all pushable sprites to the outOfBounds layer.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.servermap.ServerMap:
+     |  
+     |  delHoldable(self, sprite)
+     |      HOLDABLE MECHANIC: sprite drops holding at sprite's location.
+     |      
+     |      Remove attributes from sprite: holding
+     |  
+     |  delSpriteAction(self, sprite)
+     |      ACTION MECHANIC: clear sprite flag from sprite.
+     |      
+     |      This should be called whenever some code does something
+     |      because of the action (the action is consumed). It
+     |      should also be called at the end of the step is nothing
+     |      could consume the action since action requests only
+     |      last one step.
+     |      
+     |      Remove attributes to sprite: action
+     |  
+     |  delSpriteActionText(self, sprite)
+     |      PLAYER ACTION TEXT MECHANIC: remove action text from player linked to sprite.
+     |  
+     |  delSpriteDest(self, sprite)
+     |      MOVE LINEAR MECHANIC: Stop Sprite
+     |      
+     |      Remove attributes from sprite: moveDestX, moveDestY, moveSpeed
+     |  
+     |  delSpriteLabelText(self, sprite)
+     |      LABEL TEXT MECHANIC: remove labelText from sprite.
+     |      
+     |      Remove attributes to sprite: labelText
+     |  
+     |  delSpriteMarqueeText(self, sprite)
+     |      PLAYER MARQUEE TEXT MECHANIC: remove marquee text from player linked to sprite.
+     |  
+     |  delSpriteSpeechText(self, sprite)
+     |      SPEECH TEXT MECHANIC: remove speechText from sprite.
+     |      
+     |      Remove attributes to sprite: speechText, speechTextDelAfter
+     |  
+     |  initAction(self)
+     |      ACTION MECHANIC: init method.
+     |      
+     |      Set priority of stepSpriteEndAction to be very low so all other
+     |      code has a chance to consume an action before it is removed.
+     |  
+     |  initHoldable(self)
+     |      HOLDABLE MECHANIC: init method.
+     |      
+     |      holdable sprites need to be included in Tiled data on
+     |      the sprites layer. This methods copies (by reference)
+     |      sprites of type == "holdable" to the triggers layer. They
+     |      are them on BOTH layers at the same time.
+     |  
+     |  initMapDoor(self)
+     |      MAPDOOR MECHANIC: init method.
+     |      
+     |      Set the priority of mapDoor trigger to 1 (very high).
+     |      This ensures a sprite goes through the mapDoor first
+     |      and other triggers are stopped after the sprite moves.
+     |  
+     |  setHoldable(self, holdable, sprite)
+     |      HOLDABLE MECHANIC: sprite picks up holdable.
+     |      
+     |      Add attributes to sprite: holding
+     |  
+     |  setSpriteAction(self, sprite)
+     |      ACTION MECHANIC: flag sprite that it should perform one action.
+     |      
+     |      This is normally set in a player sprite after the server
+     |      receives a playerAction message from client. Other game
+     |      mechanics can look for an action request and perform
+     |      some action based on this.
+     |      
+     |      This should be set before a steps starts or very early
+     |      in a step since it will be removed at the end of the step
+     |      and all step code should have a chance to see the action
+     |      has been requested.
+     |      
+     |      Add attributes to sprite: action
+     |  
+     |  setSpriteActionText(self, sprite, actionText)
+     |      PLAYER ACTION TEXT MECHANIC: add action text to player linked to sprite.
+     |      
+     |      Note, this will only work if sprite action text has not
+     |      already been set during this step.
+     |  
+     |  setSpriteDest(self, sprite, moveDestX, moveDestY, moveSpeed)
+     |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
+     |      
+     |      Add attributes to sprite: moveDestX, moveDestY, moveSpeed
+     |  
+     |  setSpriteLabelText(self, sprite, labelText)
+     |      LABEL TEXT MECHANIC: add labelText to sprite.
+     |      
+     |      Adds attributes to sprite: labelText
+     |  
+     |  setSpriteMarqueeText(self, sprite, marqueeText)
+     |      PLAYER MARQUEE TEXT MECHANIC: add marquee text to player linked to sprite.
+     |  
+     |  setSpriteSpeechText(self, sprite, speechText, speechTextDelAfter=0)
+     |      SPEECH TEXT MECHANIC: add speechText to sprite.
+     |      
+     |      Add attributes to sprite:
+     |          speechText
+     |          speechTextDelAfter (optional)
+     |      
+     |      Args:
+     |          speechText (str): The text the sprite is speaking.
+     |          speechTextDelAfter (float): time after which speechText will be
+     |              removed. Default is to remove at start of next step.
+     |  
+     |  stepMoveLinear(self, sprite)
+     |      MOVE LINEAR MECHANIC: stepMove method.
+     |      
+     |      If the sprite is moving then move it towards it's destination. If it
+     |      can't move any longer (all movement would be invalid) or it has reached
+     |      it's destination then stop the sprite.
+     |      
+     |      Add attributes to sprite: direction
+     |  
+     |  stepSpriteEndAction(self, sprite)
+     |      ACTION MECHANIC: stepSpriteEnd method.
+     |      
+     |      If an action was requested but no step method was able to consume
+     |      the action then simply delete the action (consume action it but do nothing).
+     |  
+     |  stepSpriteEndHoldable(self, sprite)
+     |      HOLDABLE MECHANIC: stepSpriteEnd method.
+     |      
+     |      Drop holdable if sprite has holding and action is requested by user.
+     |  
+     |  stepSpriteStartActionText(self, sprite)
+     |      PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
+     |      
+     |      Each step the actions available may change so start each
+     |      step by removing all action text. The first game mechanic
+     |      that finds an action that could be performed can set a
+     |      new action text.
+     |  
+     |  stepSpriteStartSpeechText(self, sprite)
+     |      SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out.
+     |  
+     |  triggerHoldable(self, holdable, sprite)
+     |      HOLDABLE MECHANIC: trigger method.
+     |      
+     |      The sprite's anchor is inside the trigger.
+     |      
+     |      if the sprite is not holding anything now then:
+     |          1) pick up holdable if the sprite has requested an action else
+     |          2) tell the sprite the pick up action is possible.
+     |  
+     |  triggerMapDoor(self, trigger, sprite)
+     |      MAPDOOR MECHANIC: trigger method
+     |      
+     |      Relocate sprite based on trigger properties.
+     |      
+     |      Trigger Properties:
+     |          destMapName: The map to move the player to. If missing then
+     |              do not change map.
+     |          destReference: The name of an object on the destination map
+     |              reference layer. This is the location the sprite will be
+     |              moved to.
+     |      
+     |      If the sprite is relocated then this method returns True which
+     |      stops other triggers from being processed for this sprite during
+     |      the rest of this step. This makes sense since the sprite is no
+     |      longer in the same location.
+     |      
+     |      Note, sprite will only be moved if destination is valid based
+     |      on calling checkLocation().
+     |      
+     |      Returns:
+     |          True: if sprite was moved.
+     |          None: if sprite did not move.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.stepmap.StepMap:
      |  
      |  __init__(self, tilesets, mapDir)
      |      Extents engine.map.Map.__init__()
@@ -146,29 +301,6 @@ CLASSES
      |      
      |      Returns:
      |          bool: True if all props are in object else False
-     |  
-     |  checkLocation(self, object, newAnchorX, newAnchorY)
-     |      Check if a location for an object is valid.
-     |      
-     |      Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
-     |      object while taking several things into account, including map size, inBounds layer,
-     |      and outOfBounds layer, collision with other sprites.
-     |      
-     |      Note, the priority evaluation is as follows:
-     |      1) if object collides (overlaps) with another sprite then it is NOT valid.
-     |         Note, two objects with collisionType == 'anchor' are allowed in the same location.
-     |      1) if object does not fully collide (overlap) with the map then it is NOT valid.
-     |      2) if object fully collides (overlaps) with an object or objects  on the inBounds layer then it IS valid.
-     |      3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-     |      4) else it IS valid.
-     |      
-     |      Args:
-     |          object (dict): A Tiled object.
-     |          newAnchorX (float): x coordiate to check if valid
-     |          newAnchorY (float): y coordiate to check if valid
-     |      
-     |      Returns:
-     |          bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
      |  
      |  checkObject(self, object)
      |      Check that object has required keys.

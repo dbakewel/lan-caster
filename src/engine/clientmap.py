@@ -616,7 +616,13 @@ class ClientMap(engine.map.Map):
                        lineColor=(0, 0, 0, 255), lineThickness=1):
         """Draw a Poly Object onto destImage"""
 
-        image = pygame.Surface((self['width'] * self['tilewidth'], self['height'] * self['tileheight']), pygame.SRCALPHA, 32)
+        image = pygame.Surface(
+            (self['width'] *
+             self['tilewidth'],
+                self['height'] *
+                self['tileheight']),
+            pygame.SRCALPHA,
+            32)
         image = image.convert_alpha()
 
         # build polyline with orgin at destImage 0,0
@@ -633,8 +639,8 @@ class ClientMap(engine.map.Map):
             pointsDict = {}
 
         for p in pointsDict:
-            points.append((p['x']+polyObject['x'],p['y']+polyObject['y']))
-            
+            points.append((p['x'] + polyObject['x'], p['y'] + polyObject['y']))
+
         pygame.draw.lines(image, lineColor, closed, points, lineThickness)
 
         destImage.blit(image, (offset[0], offset[1]))

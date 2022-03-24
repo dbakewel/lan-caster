@@ -75,6 +75,29 @@ CLASSES
      |      Returns:
      |          bool: True if all props are in object else False
      |  
+     |  checkLocation(self, object, newAnchorX, newAnchorY)
+     |      Check if a location for an object is valid.
+     |      
+     |      Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
+     |      object while taking several things into account, including map size, inBounds layer,
+     |      and outOfBounds layer, collision with other sprites.
+     |      
+     |      Note, the priority evaluation is as follows:
+     |      1) if object collides (overlaps) with another sprite then it is NOT valid.
+     |         Note, two objects with collisionType == 'anchor' are allowed in the same location.
+     |      1) if object does not fully collide (overlap) with the map then it is NOT valid.
+     |      2) if object fully collides (overlaps) with an object or objects  on the inBounds layer then it IS valid.
+     |      3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
+     |      4) else it IS valid.
+     |      
+     |      Args:
+     |          object (dict): A Tiled object.
+     |          newAnchorX (float): x coordiate to check if valid
+     |          newAnchorY (float): y coordiate to check if valid
+     |      
+     |      Returns:
+     |          bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
+     |  
      |  checkObject(self, object)
      |      Check that object has required keys.
      |      
@@ -92,6 +115,7 @@ CLASSES
      |          'height': (float)
      |          'anchorX': (float)
      |          'anchorY': (float)
+     |          'collisionType': (str)
      |          'mapName': (str) The last map the object was on (or is still on).
      |      
      |          Only for tile objects have the following:
@@ -134,11 +158,22 @@ CLASSES
      |      Returns:
      |          tileGid (int): A map global tile number.
      |  
-     |  findObject(self, x=None, y=None, name=False, type=False, objectList=False, exclude=False, returnAll=False)
+     |  findObject(self, x=None, y=None, width=0, height=0, forceCollisionType=False, collisionType=False, name=False, type=False, objectList=False, exclude=False, returnAll=False)
      |      Find a Tiled object that matches ALL criteria provided.
      |      
      |      Args:
-     |          x (float), y (float): Find object that contains (x, y)
+     |          Collision detection can be done one of 2 ways:
+     |              1) x (float), y (float), width==0, height==0:
+     |                  Find object which collides (overlaps) with point: x, y
+     |              2) x (float), y (float), width (float), height (float):
+     |                  Find object which collides (overlaps) with rect: x, y, width, height.
+     |              For 1) and 2) above:
+     |                  - if width == 0 and height == 0 in arguments or in object
+     |                    then it is treated as a point.
+     |                  - if forceCollisionType != False then forceCollisionType will be used
+     |                    in place of object['collisionType']. Some layers automatically have
+     |                    forceCollisionType set to 'rect': triggers, inBounds, outOfBounds.
+     |          collisionType(str): Find object with object['collisionType'] == collisionType
      |          name (str): Find object with object['name'] == name
      |          type (str): Find object with object['type'] == type
      |          objectList (dict): a list of objects to search. default is self['sprites']
