@@ -339,20 +339,23 @@ class Map(dict):
 
         self.setMapChanged()
 
-    def findObject(self, x=None, y=None, width=None, height=None, useObjectAnchor=False,
-                   collisionType=False, name=False, type=False, objectList=False, exclude=False, returnAll=False):
+    def findObject(self, x=None, y=None, width=0, height=0, forceCollisionType=False,
+                collisionType=False, name=False, type=False, 
+                objectList=False, exclude=False, returnAll=False):
         '''Find a Tiled object that matches ALL criteria provided.
 
         Args:
-            Collision detection can be done one of 4 ways:
-                1) x (float), y (float), width=None, height=None, useObjectAnchor == False:
-                    Find object whose rect contains (x, y)
-                2) x (float), y (float), width (float), height (float), useObjectAnchor == False:
-                    Find object whose rect overlaps with rect: x, y, width, height
-                3) x (float), y (float), width=None, height=None, useObjectAnchor == True:
-                    Find object whose (anchorX, anchorY) == (x, y)
-                4) x (float), y (float), width (float), height (float), useObjectAnchor == True:
-                    Find object whose (anchorX, anchorY) is inside rect: x, y, width, height.
+            Collision detection can be done one of 2 ways:
+                1) x (float), y (float), width==0, height==0:
+                    Find object which collides (overlaps) with point: x, y
+                2) x (float), y (float), width (float), height (float):
+                    Find object which collides (overlaps) with rect: x, y, width, height.
+                For 1) and 2) above:
+                    - if width == 0 and height == 0 in arguments or in object
+                      then it is treated as a point.
+                    - if forceCollisionType != False then forceCollisionType will be used 
+                      in place of object['collisionType']. Some layers automatically have
+                      forceCollisionType set to 'rect': triggers, inBounds, outOfBounds.
             collisionType(str): Find object with object['collisionType'] == collisionType
             name (str): Find object with object['name'] == name
             type (str): Find object with object['type'] == type
@@ -371,6 +374,10 @@ class Map(dict):
         if not isinstance(objectList, list):
             objectList = self['sprites']
 
+        #check for layers where we force rect collision for all objects on layer
+        if objectList in (self['triggers'], self['inBounds'], self['outOfBounds']):
+            forceCollisionType='rect'
+
         found = []
         for object in objectList:
             if type != False and object['type'] != type:
@@ -382,19 +389,16 @@ class Map(dict):
             if collisionType != False and object['collisionType'] != collisionType:
                 continue
             if x is not None and y is not None:
-                if useObjectAnchor == False:
-                    if not geo.objectContains(object, x, y, width, height):  # case 1 and 2 above
+                if forceCollisionType == 'anchor' or (forceCollisionType == False and object['collisionType'] == 'anchor'):
+                    if not geo.objectContains({'x': x, 'y': y, 'width': width, 'height': height}, 
+                        object['anchorX'], object['anchorY']):
+                        continue
+                elif forceCollisionType == 'rect' or (forceCollisionType == False and object['collisionType'] == 'rect'):
+                    if not geo.objectContains(object, x, y, width, height):
                         continue
                 else:
-                    if width is None or height is None:
-                        w = h = 0  # case 3 above
-                    else:
-                        # case 4 above
-                        w = width
-                        h = height
-                    if not geo.objectContains({'x': x, 'y': y, 'width': w, 'height': h},
-                                              object['anchorX'], object['anchorY']):
-                        continue
+                    continue
+                    
             if not returnAll:
                 return object
             found.append(object)
@@ -478,15 +482,16 @@ class Map(dict):
     def checkLocation(self, object, newAnchorX, newAnchorY):
         """Check if a location for an object is valid.
 
-        Determines is (newAnchorX, newAnchorY) would be a valid anchor point for
+        Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
         object while taking several things into account, including map size, inBounds layer,
         and outOfBounds layer, collision with other sprites.
 
         Note, the priority evaluation is as follows:
-        1) if (newAnchorX, newAnchorY) overlaps another sprite then it is NOT valid
-        1) if (newAnchorX, newAnchorY) is not fully on the map then it is NOT valid.
-        2) if (newAnchorX, newAnchorY) is fully inside an object on the inBounds layer then it IS valid.
-        3) if (newAnchorX, newAnchorY) overlaps an object on the outOfBounds layer then it is NOT valid.
+        1) if object collides (overlaps) with another sprite then it is NOT valid.
+           Note, two objects with collisionType == 'anchor' are allowed in the same location.
+        1) if object does not fully collide (overlap) with the map then it is NOT valid.
+        2) if object fully collides (overlaps) with an object or objects  on the inBounds layer then it IS valid.
+        3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
         4) else it IS valid.
 
         Args:
@@ -502,59 +507,54 @@ class Map(dict):
         if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
             return True
 
-        collisionType = object['collisionType']
-
-        if collisionType not in ('anchor', 'rect'):
-            log(f"collisionType == {collisionType} is not supported.", "ERROR")
+        if object['collisionType'] == 'anchor':
+            newX=newAnchorX
+            newY=newAnchorY
+            width = 0
+            height = 0
+            # Only check for other sprites with collisionType=='rect' since we allow 
+            # two sprites with collisionType=='anchor' to overlap.
+            otherSpriteCollisionType = 'rect' 
+        elif object['collisionType'] == 'rect':
+            newX = newAnchorX - (object['anchorX'] - object['x'])
+            newY = newAnchorY - (object['anchorY'] - object['y'])
+            width = object['width']
+            height = object['height']
+            # these types of objects can collide with all other types of sprites.
+            otherSpriteCollisionType = False
+        else:
+            log(f"collisionType is not supported.", "ERROR")
             return False
 
-        newX = newAnchorX - (object['anchorX'] - object['x'])
-        newY = newAnchorY - (object['anchorY'] - object['y'])
+        # if object overlaps another sprite then it is NOT valid.
+        if self.findObject(x=newX, y=newY, width=width, height=height, 
+            collisionType=otherSpriteCollisionType, exclude=object):
+            return False
 
-        # if (newAnchorX, newAnchorY) overlaps another sprite then it is NOT valid
-        if collisionType == 'anchor':
-            # anchor collision cannot collide with another anchor but can with a rect.
-            if self.findObject(x=newAnchorX, y=newAnchorY, collisionType='rect', exclude=object):
-                return False
-        elif collisionType == 'rect':
-            # if rect collides with another rect
-            if self.findObject(x=newX, y=newY, width=object['width'],
-                               height=object['height'], collisionType='rect', exclude=object):
-                return False
-            # if rect collides with an anchor
-            if self.findObject(x=newX, y=newY, width=object['width'], height=object['height'],
-                               collisionType='anchor', useObjectAnchor=True, exclude=object):
-                return False
+        # if object is not fully on the map then it is NOT valid.
+        if 0 > newX or newX + width > self['pixelWidth'] or 0 > newY or newY + height > self['pixelHeight']:
+            return False
 
-        # if (newAnchorX, newAnchorY) is not fully on the map then it is NOT valid.
-        if collisionType == 'anchor':
-            if 0 > newAnchorX or newAnchorX > self['pixelWidth'] or 0 > newAnchorY or newAnchorY > self['pixelHeight']:
-                return False
-        elif collisionType == 'rect':
-            if 0 > newX or newX + object['width'] > self['pixelWidth'] or 0 > newY or newY + \
-                    object['height'] > self['pixelHeight']:
-                return False
-
-        # if (newAnchorX, newAnchorY) is fully inside an object on the inBounds layer then it IS valid.
-        if collisionType == 'anchor':
-            if self.findObject(x=newAnchorX, y=newAnchorY, objectList=self['inBounds']):
+        # if object is fully inside an object or objects on the inBounds layer then it IS valid.
+        if width== 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
+            if self.findObject(x=newX, y=newY, objectList=self['inBounds']):
                 return True
-        elif collisionType == 'rect':
+        else:
             if self.findObject(x=newX, y=newY, objectList=self['inBounds']) and \
-                    self.findObject(x=newX + object['width'], y=newY, objectList=self['inBounds']) and \
-                    self.findObject(x=newX, y=newY + object['height'], objectList=self['inBounds']) and \
-                    self.findObject(x=newX + object['width'], y=newY + object['height'], objectList=self['inBounds']):
+                    self.findObject(x=newX + width, y=newY, objectList=self['inBounds']) and \
+                    self.findObject(x=newX, y=newY + height, objectList=self['inBounds']) and \
+                    self.findObject(x=newX + width, y=newY + height, objectList=self['inBounds']):
                 return True
 
-        # if (newAnchorX, newAnchorY) overlaps an object on the outOfBounds layer then it is NOT valid.
-        if collisionType == 'anchor':
-            if self.findObject(x=newAnchorX, y=newAnchorY, objectList=self['outOfBounds']):
+        # if object overlaps an object on the outOfBounds layer then it is NOT valid.
+        if width==0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
+            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']):
                 return False
-        elif collisionType == 'rect':
+        else:
             if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX + object['width'], y=newY, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX, y=newY + object['height'], objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX + object['width'], y=newY + object['height'], objectList=self['outOfBounds']):
+                    self.findObject(x=newX + width, y=newY, objectList=self['outOfBounds']) or \
+                    self.findObject(x=newX, y=newY + height, objectList=self['outOfBounds']) or \
+                    self.findObject(x=newX + width, y=newY + height, objectList=self['outOfBounds']):
                 return False
 
         # else it IS valid.

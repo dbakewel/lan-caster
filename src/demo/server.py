@@ -103,13 +103,10 @@ class Server(engine.server.Server):
         if self['mode'] == "gameOn":
             end = self['maps']['end']
             endGame = end.findObject(name="endGame", objectList=end['reference'])
-            playersIn = 0
-            for ipport in self['players']:
-                sprite = self['players'][ipport]['sprite']
-                if sprite['mapName'] == "end" and geo.objectContains(endGame, sprite['anchorX'], sprite['anchorY']):
-                    playersIn += 1
+            playersIn = end.findObject(x=endGame['x'], y=endGame['y'], width=endGame['width'], height=endGame['height'],
+                type='player', returnAll=True)
             # if all players have made it to the end.
-            if playersIn == len(self['players']):
+            if len(playersIn) == len(self['players']):
                 self['mode'] = "gameOver"
                 secsToWin = round(time.perf_counter() - self['gameStartSec'])
                 self['quitAfter'] = time.perf_counter() + 30

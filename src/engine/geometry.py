@@ -15,39 +15,25 @@ import math
 
 from engine.log import log
 
+def objectContains(object, x, y, width=0, height=0):
+    """ Returns True if rect defined by x, y, width, height overlaps object's rect else returns False. 
 
-def objectContains(object, x, y, width=None, height=None):
-    """ Returns True if x,y is inside object's rect else returns False.
-
-    If width and height are provided then return True if any part of the
-    rect defined by x, y, width, height overlaps the object's rect.
+    Note, a rect with width=0 and height==0 is a point.
     """
-    if "ellipse" in object:
-        pass  # not yet supported.
-    elif "point" in object:
-        if width is None or height is None:
-            # if point object is same as point defined by x,y
-            if x == object['x'] and y == object['y']:
-                return True
-        else:
-            # if point object is inside rect defined by x,y,width,height
-            if x <= object['x'] and object['x'] <= x + wdith and \
-                    y <= object['y'] and object['y'] <= y + height:
-                return True
-    else:  # object is a rect. Tile objects ("gid") and text objects are also treated as rects.
-        if width is None or height is None:
-            # if rect object contains point defined by x,y
-            if object['x'] <= x and x <= object['x'] + object['width'] and \
-               object['y'] <= y and y <= object['y'] + object['height']:
-                return True
-        else:
-            # if rect object overlaps rect defined by x,y,width,height
-            if objectContains(object, x, y) or \
-                    objectContains(object, x + width, y) or \
-                    objectContains(object, x, y + height) or \
-                    objectContains(object, x + width, y + height) or \
-                    objectContains({'x': x, 'y': y, 'width': width, 'height': height}, object['x'], object['y']):
-                return True
+
+    if width == 0 and height == 0:
+        # if object's rect contains point defined by x,y
+        if object['x'] <= x and x <= object['x'] + object['width'] and \
+           object['y'] <= y and y <= object['y'] + object['height']:
+            return True
+    else:
+        # if object's rect overlaps rect defined by x, y, width, height
+        if objectContains({'x': x, 'y': y, 'width': width, 'height': height}, object['x'], object['y']) or \
+            objectContains(object, x, y) or \
+            objectContains(object, x + width, y) or \
+            objectContains(object, x, y + height) or \
+            objectContains(object, x + width, y + height):
+            return True
 
     return False
 
