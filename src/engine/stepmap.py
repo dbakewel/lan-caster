@@ -114,7 +114,7 @@ class StepMap(engine.map.Map):
 
         for i in range(len(self['stepMethodTypes'])):
             methodType = f"{self['stepMethodTypes'][i]}*"
-            if "Sprite" in self['stepMethodTypes'][i]:
+            if "Sprite" in self['stepMethodTypes'][i] or "Move" in self['stepMethodTypes'][i]:
                 methodType += "(sprite)"
             elif self['stepMethodTypes'][i].startswith("trigger"):
                 methodType += "(trigger, sprite)"

@@ -24,3 +24,5 @@ class Client(engine.client.Client):
             "bgborderThickness": 6,
             "bgroundCorners": 12
             })
+
+        log(f"Client __init__ complete. Client Attributes:{engine.log.dictToStr(self, 1)}", "VERBOSE")
