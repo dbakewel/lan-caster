@@ -111,22 +111,22 @@ class ServerMap(engine.stepmap.StepMap):
                 stepSpeed = sprite['moveSpeed'] / engine.server.SERVER['fps']
 
                 if sprite['moveDestX'] > sprite['anchorX']:
-                    newAnchorX = sprite['anchorX'] + stepSpeed
+                    newAnchorX = sprite['anchorX'] + min(stepSpeed, sprite['moveDestX'] - sprite['anchorX'])
                     if newAnchorX > sprite['moveDestX']:
                         newAnchorX = sprite['moveDestX']
                 elif sprite['moveDestX'] < sprite['anchorX']:
-                    newAnchorX = sprite['anchorX'] - stepSpeed
+                    newAnchorX = sprite['anchorX'] - min(stepSpeed, sprite['anchorX'] - sprite['moveDestX'])
                     if newAnchorX < sprite['moveDestX']:
                         newAnchorX = sprite['moveDestX']
                 else:
                     newAnchorX = sprite['anchorX']
 
                 if sprite['moveDestY'] > sprite['anchorY']:
-                    newAnchorY = sprite['anchorY'] + stepSpeed
+                    newAnchorY = sprite['anchorY'] + min(stepSpeed, sprite['moveDestY'] - sprite['anchorY'])
                     if newAnchorY > sprite['moveDestY']:
                         newAnchorY = sprite['moveDestY']
                 elif sprite['moveDestY'] < sprite['anchorY']:
-                    newAnchorY = sprite['anchorY'] - stepSpeed
+                    newAnchorY = sprite['anchorY'] - min(stepSpeed, sprite['anchorY'] - sprite['moveDestY'])
                     if newAnchorY < sprite['moveDestY']:
                         newAnchorY = sprite['moveDestY']
                 else:
@@ -160,6 +160,7 @@ class ServerMap(engine.stepmap.StepMap):
         sprite['moveDestX'] = moveDestX
         sprite['moveDestY'] = moveDestY
         sprite['moveSpeed'] = moveSpeed
+        self.setMapChanged()
 
     def delSpriteDest(self, sprite):
         """MOVE LINEAR MECHANIC: Stop Sprite
@@ -172,6 +173,7 @@ class ServerMap(engine.stepmap.StepMap):
             del sprite['moveDestY']
         if "moveSpeed" in sprite:
             del sprite['moveSpeed']
+        self.setMapChanged()
 
     ########################################################
     # MAPDOOR MECHANIC
