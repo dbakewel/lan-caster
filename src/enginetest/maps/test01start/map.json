@@ -52,7 +52,7 @@
                      "fontfamily":"MS Shell Dlg 2",
                      "halign":"center",
                      "pixelsize":24,
-                     "text":"Sprite (type == player) test.",
+                     "text":"Sprite (type == \"player\") test.",
                      "wrap":true
                     },
                  "type":"",
