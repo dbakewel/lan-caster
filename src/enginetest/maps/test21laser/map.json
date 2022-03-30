@@ -96,8 +96,8 @@
                  "type":"holdable",
                  "visible":true,
                  "width":32,
-                 "x":543.66464834653,
-                 "y":288.797391709362
+                 "x":545.15510013973,
+                 "y":216.510479739171
                 }, 
                 {
                  "gid":172,
@@ -210,6 +210,11 @@
                          "name":"rayDirection",
                          "type":"float",
                          "value":1.5707
+                        }, 
+                        {
+                         "name":"rayThickness",
+                         "type":"int",
+                         "value":5
                         }],
                  "rotation":0,
                  "type":"",
@@ -217,6 +222,82 @@
                  "width":32,
                  "x":557.823940381928,
                  "y":99.5100139729856
+                }, 
+                {
+                 "gid":209,
+                 "height":32,
+                 "id":113,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":293.268747088961,
+                 "y":242.593386120168
+                }, 
+                {
+                 "gid":209,
+                 "height":32,
+                 "id":114,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":410.269212855147,
+                 "y":209.058220773172
+                }, 
+                {
+                 "gid":209,
+                 "height":32,
+                 "id":115,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":366.300884955752,
+                 "y":279.109455053563
+                }, 
+                {
+                 "gid":209,
+                 "height":32,
+                 "id":116,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":472.122962272939,
+                 "y":340.217978574756
+                }, 
+                {
+                 "gid":152,
+                 "height":32,
+                 "id":117,
+                 "name":"rayemitter",
+                 "properties":[
+                        {
+                         "name":"rayColor",
+                         "type":"color",
+                         "value":"#800322f0"
+                        }, 
+                        {
+                         "name":"rayDirection",
+                         "type":"float",
+                         "value":2.356
+                        }, 
+                        {
+                         "name":"rayThickness",
+                         "type":"int",
+                         "value":2
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":480.320447135538,
+                 "y":92.8029809035864
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -324,7 +405,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":113,
+ "nextobjectid":118,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
