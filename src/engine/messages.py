@@ -67,6 +67,7 @@ class Messages(dict):
 
             # msgs used only for test mode
             'testTogglePlayerMoveChecking': {},
+            'testPlayerPreviousMap': {},
             'testPlayerNextMap': {},
             'testPlayerJump': {
                 'moveDestX': 'int',
