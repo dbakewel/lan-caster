@@ -15,6 +15,84 @@ import math
 
 from engine.log import log
 
+##############################################
+## BASIC GEOMETRY
+##############################################
+
+def angle(x1, y1, x2, y2):
+    """ Returns angle from (x1,y1) and (x2,y2) in radians. """
+    delta_x = x2 - x1
+    delta_y = y2 - y1
+    a = math.atan2(delta_y, delta_x)
+    # atan2 return between -pi and pi. We want between 0 and 2pi with 0 degrees at 3 oclock
+    return normalizeAngle(a)
+
+
+def normalizeAngle(a):
+    """ Returns angle a in the normalized range of 0 - 2pi. Angle a must be in radians. """
+    while a < 0:
+        a += math.pi * 2
+    while a >= math.pi * 2:
+        a -= math.pi * 2
+    return a
+
+
+def project(x, y, rad, dis):
+    """
+    Returns point (x',y') where angle from (x,y) to (x',y')
+    is rad and distance from (x,y) to (x',y') is dis.
+    """
+
+    xp = x + dis * math.cos(rad)
+    yp = y + dis * math.sin(rad)
+
+    return xp, yp
+
+
+def distance(x1, y1, x2, y2):
+    """ Returns distance between (x1,y1) and (x2,y2) """
+    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+
+##############################################
+## GAME ENGINE SPECIFIC GEOMETRY
+##############################################
+
+def angleLable(a):
+    """ Returns the label ('Up', 'Down', 'Left', 'Right') of angle a """
+    if a < math.pi / 4:
+        label = 'Right'
+    elif a < math.pi - math.pi / 4:
+        label = 'Down'
+    elif a < math.pi + math.pi / 4:
+        label = 'Left'
+    elif a < math.pi * 2 - math.pi / 4:
+        label = 'Up'
+    else:
+        label = 'Right'
+    return label
+
+def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
+    '''Sort list of game objects by y and then x.
+
+    Do sort in place but list is also returned in case it is needed.
+
+    Schwartzian Transform is used to speed up sort.
+    https://gawron.sdsu.edu/compling/course_core/python_intro/intro_lecture_files/fastpython.html#setgetdel
+    '''
+
+    if useAnchor:  # use the anchor point to sort by
+        listOfGameObs[:] = [(maxWidth * o['anchorY'] + o['anchorX'], o) for o in listOfGameObs]
+    else:  # use middle of object rect to sort by
+        listOfGameObs[:] = [(maxWidth * (o['y'] + o['height'] / 2) + o['x'] + o['width'] / 2, o) for o in listOfGameObs]
+    listOfGameObs.sort(key=lambda x: x[0])
+    listOfGameObs[:] = [o for (k, o) in listOfGameObs]
+
+    return listOfGameObs
+
+##############################################
+## COLLISIONS
+##############################################
 
 def objectContains(object, x, y, width=0, height=0):
     """ Returns True if rect defined by x, y, width, height overlaps object's rect else returns False.
@@ -38,74 +116,9 @@ def objectContains(object, x, y, width=0, height=0):
 
     return False
 
-
-def angleLable(a):
-    """ Returns the label ('Up', 'Down', 'Left', 'Right') of angle a """
-    if a < math.pi / 4:
-        label = 'Right'
-    elif a < math.pi - math.pi / 4:
-        label = 'Down'
-    elif a < math.pi + math.pi / 4:
-        label = 'Left'
-    elif a < math.pi * 2 - math.pi / 4:
-        label = 'Up'
-    else:
-        label = 'Right'
-    return label
-
-
-def normalizeAngle(a):
-    """ Returns angle a in the normalized range of 0 - 2pi. Angle a must be in radians. """
-    while a < 0:
-        a += math.pi * 2
-    while a >= math.pi * 2:
-        a -= math.pi * 2
-    return a
-
-
-def angle(x1, y1, x2, y2):
-    """ Returns angle from (x1,y1) and (x2,y2) in radians. """
-    delta_x = x2 - x1
-    delta_y = y2 - y1
-    a = math.atan2(delta_y, delta_x)
-    # atan2 return between -pi and pi. We want between 0 and 2pi with 0 degrees at 3 oclock
-    return normalizeAngle(a)
-
-
-def distance(x1, y1, x2, y2):
-    """ Returns distance between (x1,y1) and (x2,y2) """
-    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
-
-
-def project(x, y, rad, dis):
-    """
-    Returns point (x',y') where angle from (x,y) to (x',y')
-    is rad and distance from (x,y) to (x',y') is dis.
-    """
-
-    xp = x + dis * math.cos(rad)
-    yp = y + dis * math.sin(rad)
-
-    return xp, yp
-
-
-def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
-    '''Sort list of game objects by y and then x.
-
-    Do sort in place but list is also returned in case it is needed.
-
-    Schwartzian Transform is used to speed up sort.
-    https://gawron.sdsu.edu/compling/course_core/python_intro/intro_lecture_files/fastpython.html#setgetdel
-    '''
-
-    if useAnchor:  # use the anchor point to sort by
-        listOfGameObs[:] = [(maxWidth * o['anchorY'] + o['anchorX'], o) for o in listOfGameObs]
-    else:  # use middle of object rect to sort by
-        listOfGameObs[:] = [(maxWidth * (o['y'] + o['height'] / 2) + o['x'] + o['width'] / 2, o) for o in listOfGameObs]
-    listOfGameObs.sort(key=lambda x: x[0])
-    listOfGameObs[:] = [o for (k, o) in listOfGameObs]
-
-    return listOfGameObs
+##############################################
+## INTERSECTIONS
+##############################################
 
 def intersectLines(x1,y1, x2,y2, x3,y3, x4,y4):
     '''Returns intersection point between line segments or None
@@ -126,6 +139,89 @@ def intersectLines(x1,y1, x2,y2, x3,y3, x4,y4):
     x = x1 + ua * (x2-x1)
     y = y1 + ua * (y2-y1)
     return (x,y)
+
+
+def intersectLineRect(x1,y1, x2, y2, rx,ry, rwidth, rheight):
+    '''Returns list of intersection points between line segment and Rect or None
+    Returns intersection point between line segment ((x1,y1), (x2,y2)) and 
+    rect (rx, ry, rwidth, rheight). If line segment does not intersect then 
+    return None.
+    '''
+    ipoints = []
+    for pt in [(rx,ry,rx+rwidth,ry),
+        (rx,ry,rx,ry+rheight),
+        (rx+rwidth,ry,rx+rwidth,ry+rheight),
+        (rx,ry+rheight,rx+rwidth,ry+rheight)]:
+        ipt = intersectLines(x1,y1, x2,y2, pt[0],pt[1], pt[2],pt[3])
+        if ipt:
+            ipoints.append(ipt)
+
+    if len(ipoints) == 0:
+        return None
+    return ipoints
+
+def sgn(x):
+    if x < 0:
+        return -1
+    return 1
+
+
+def intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius):
+    """
+    Return list of intersection points between line segment (x1,y1) and 
+    (x2,y2) circle centered at (cx,cy) with radius cradius, or None if line 
+    segment is entirely inside or outside circle.
+    Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
+    """
+
+    # move points so circle is at origin (0,0)
+    x1 -= cx
+    x2 -= cx
+    y1 -= cy
+    y2 -= cy
+
+    # Does infinite line intersect circle
+    dx = x2 - x1
+    dy = y2 - y1
+    dr = math.sqrt(dx**2 + dy**2)
+    D = x1 * y2 - x2 * y1
+    delta = (cradius * cradius) * dr**2 - D**2
+    # delta < 0 -> no intersection
+    # delta == 0 -> tangent (one point of intersection)
+    # delta > 0 -> intersection (two points)
+    if delta < 0:
+        return None
+
+    # now we know that the line to infinity intersects the circle.
+    # but we need to figure out if the line segment touches or not
+    # and if so what the points are.
+
+    # compute intersection points (will be the same if delta==0)
+    ix1 = (D * dy + sgn(dy) * dx * math.sqrt(delta)) / dr**2
+    ix2 = (D * dy - sgn(dy) * dx * math.sqrt(delta)) / dr**2
+
+    iy1 = (-1 * D * dx + abs(dy) * math.sqrt(delta)) / dr**2
+    iy2 = (-1 * D * dx - abs(dy) * math.sqrt(delta)) / dr**2
+
+    ipoints = []
+    # only need to check if the x is on the line, since y will give same result.
+    # note, this can result in no points if line segment is fully inside the circle.
+    if (x1 < ix1 and ix1 < x2) or (x1 > ix1 and ix1 > x2):
+        ipoints.append((ix1+cx,iy1+cy))
+    if (x1 < ix2 and ix2 < x2) or (x1 > ix2 and ix2 > x2):
+        ipoints.append((ix2+cx,iy2+cy))
+
+    if len(ipoints) == 0:
+        return None
+    if delta == 0 and len(ipoints) == 2:
+        # remove one of the duplicate points.
+        ipoints.pop()
+
+    return ipoints
+
+##############################################
+## VECTOR
+##############################################
 
 class Vector2D:
     """A two-dimensional vector with Cartesian coordinates.
@@ -220,6 +316,9 @@ class Vector2D:
         normal = other.ortho().unit()
         return self - 2 * (self @ normal) * normal
 
+##############################################
+## TESTS
+##############################################
 
 if __name__ == '__main__':
     #v1 = Vector2D(2, 5/3)

@@ -17,13 +17,13 @@ class ServerMap(engine.servermap.ServerMap):
 
     """
 
-    def stepSpriteStartRayEmitter(self, sprite):
-        """RAY MECHANIC: stepSpriteStart method
+    def stepMapStartRayEmitter(self):
+        """RAY MECHANIC: stepMapStart method
 
         Remove rays from sprite layer. They will be added again during the step.
         """
-        if sprite['name']=="ray":
-            self.removeObject(sprite)
+        for ray in self.findObject(name="ray", returnAll=True):
+            self.removeObject(ray)
 
     def stepMapEndRayEmitter(self):
         """RAY MECHANIC: stepMapEnd method
@@ -32,7 +32,6 @@ class ServerMap(engine.servermap.ServerMap):
 
         note, this is done at the end of the step in case reflectors are rotating.
         """
-
         # find ray emitters
         for emitter in self.findObject(name="rayemitter", returnAll=True):
             if not self.checkKeys(emitter, ['prop-rayDirection','prop-rayColor','prop-rayThickness']):
@@ -60,7 +59,7 @@ class ServerMap(engine.servermap.ServerMap):
 
 
     def rayTrace(self, x1, y1, r, exclude=False, maxRecurstion=10):
-        """Create line segment from x,y in direction r until something is intersected.
+        """Create line segment from x,y in direction r.
 
         """
         if maxRecurstion == 0:
@@ -70,9 +69,8 @@ class ServerMap(engine.servermap.ServerMap):
         x2,y2 = geo.project(x1,y1,r,self['pixelWidth']*self['pixelHeight'])
 
         for reflector in self.findObject(name="rayreflector", returnAll=True, exclude=exclude):
-            a = self.getRayReflectorAngle(reflector)
-            rx1,ry1 = geo.project(reflector['anchorX'],reflector['anchorY'], a,reflector['width']/2)
-            rx2,ry2 = geo.project(reflector['anchorX'],reflector['anchorY'], a+math.pi,reflector['width']/2)
+            rx1,ry1 = geo.project(reflector['anchorX'],reflector['anchorY'], reflector['rotation'],reflector['width']/2)
+            rx2,ry2 = geo.project(reflector['anchorX'],reflector['anchorY'], reflector['rotation']+math.pi,reflector['width']/2)
 
             intersectionPoint = geo.intersectLines(x1,y1,x2,y2,rx1,ry1,rx2,ry2)
 
@@ -113,42 +111,17 @@ class ServerMap(engine.servermap.ServerMap):
         Set all reflectors to a random rotation to start.
         """
         for reflector in self.findObject(name="rayreflector", returnAll=True):
-            reflector['tilesetTileNumber'] = random.randint(0, 7)
-            reflector['gid'] = self.findGid(reflector['tilesetName'], reflector['tilesetTileNumber'])
-
-        self['nextReflectorRotateTime'] = time.perf_counter() + 1
-
-    def stepMapStartRayReflector(self):
-        """RAY REFLECTOR MECHANIC: stepMapStart method.
-
-        Determine if it is time to rotate the reflectors.
-        """
-        if self['nextReflectorRotateTime'] < time.perf_counter():
-            self['nextReflectorRotateTime'] = 0 # time has expired and reflextors should rotate.
+            reflector['startRotation'] = math.radians(random.randint(0, 179))
+            reflector['rotation'] = reflector['startRotation']
 
     def stepSpriteStartRayReflector(self, sprite):
         """RAY REFLECTOR MECHANIC: stepSpriteStart method.
 
-        If sprite is a reflector then rotate if it is time to do so.
+        Rotate reflector based on 10 second cycle.
         """
-        if sprite['name'] == "rayreflector" and self['nextReflectorRotateTime'] == 0:
-            sprite['tilesetTileNumber'] += 1
-            if sprite['tilesetTileNumber'] > 7:
-                sprite['tilesetTileNumber'] = 0
-            sprite['gid'] = self.findGid(sprite['tilesetName'], sprite['tilesetTileNumber'])
+        if sprite['name'] == 'rayreflector':
+            secondsPerHalfRotation = 10
+            sprite['rotation'] = sprite['startRotation'] + math.pi * (time.perf_counter()/secondsPerHalfRotation % 1)
 
     def stepMapEndRayReflector(self):
-        """RAY REFLECTOR MECHANIC: stepMapEnd method.
-
-        If reflectors were just rotated then set a new timeout for the next rotation.
-        """
-        if self['nextReflectorRotateTime'] == 0:
-            self['nextReflectorRotateTime'] = time.perf_counter() + 1  # set next reflector rotation time.
-            self.setMapChanged()
-
-    def getRayReflectorAngle(self, reflector):
-        """RAY REFLECTOR MECHANIC: init method.
-
-        Given a reflector object, return the angle of the reflector.
-        """
-        return math.pi / 2.0 + reflector['tilesetTileNumber'] * 0.392699  # pi / 8 = 0.392699
+        self.setMapChanged()  # reflectors rotate every step so map changes every step.

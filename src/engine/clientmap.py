@@ -302,22 +302,33 @@ class ClientMap(engine.map.Map):
         validUntil = sys.float_info.max
         vu = validUntil
         for object in objectList:
-            if "gid" in object:
-                vu = self.blitTileObject(destImage, offset, object)
-            elif "text" in object:
-                vu = self.blitTextObject(destImage, offset, object)
-            elif "ellipse" in object:
-                vu = self.blitRoundObject(destImage, offset, object)
-            elif "point" in object:
-                vu = self.blitRoundObject(destImage, offset, object)
-            elif "polyline" in object:
-                vu = self.blitPolyObject(destImage, offset, object)
-            elif "polygon" in object:
-                vu = self.blitPolyObject(destImage, offset, object)
-            else:  # this is a rect
-                vu = self.blitRectObject(destImage, offset, object)
-
+            vu = self.blitObject(destImage, offset, object)
             validUntil = min(validUntil, vu)
+        return validUntil
+
+    def blitObject(self, destImage, offset, object):
+        """Blit object.
+
+        Args:
+            deskImage (pygame Surface)
+            offset (int, int): Render entire map offset by (x, y) onto destImage
+            object: dict
+        """
+        validUntil = sys.float_info.max
+        if "gid" in object:
+            validUntil = self.blitTileObject(destImage, offset, object)
+        elif "text" in object:
+            validUntil = self.blitTextObject(destImage, offset, object)
+        elif "ellipse" in object:
+            validUntil = self.blitRoundObject(destImage, offset, object)
+        elif "point" in object:
+            validUntil = self.blitRoundObject(destImage, offset, object)
+        elif "polyline" in object:
+            validUntil = self.blitPolyObject(destImage, offset, object)
+        elif "polygon" in object:
+            validUntil = self.blitPolyObject(destImage, offset, object)
+        else:  # this is a rect
+            validUntil = self.blitRectObject(destImage, offset, object)
         return validUntil
 
     #####################################################

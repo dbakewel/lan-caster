@@ -88,18 +88,6 @@
          "name":"sprites",
          "objects":[
                 {
-                 "gid":209,
-                 "height":32,
-                 "id":90,
-                 "name":"rayreflector",
-                 "rotation":0,
-                 "type":"holdable",
-                 "visible":true,
-                 "width":32,
-                 "x":545.15510013973,
-                 "y":216.510479739171
-                }, 
-                {
                  "gid":172,
                  "height":32,
                  "id":92,
@@ -224,54 +212,6 @@
                  "y":99.5100139729856
                 }, 
                 {
-                 "gid":209,
-                 "height":32,
-                 "id":113,
-                 "name":"rayreflector",
-                 "rotation":0,
-                 "type":"holdable",
-                 "visible":true,
-                 "width":32,
-                 "x":293.268747088961,
-                 "y":242.593386120168
-                }, 
-                {
-                 "gid":209,
-                 "height":32,
-                 "id":114,
-                 "name":"rayreflector",
-                 "rotation":0,
-                 "type":"holdable",
-                 "visible":true,
-                 "width":32,
-                 "x":410.269212855147,
-                 "y":209.058220773172
-                }, 
-                {
-                 "gid":209,
-                 "height":32,
-                 "id":115,
-                 "name":"rayreflector",
-                 "rotation":0,
-                 "type":"holdable",
-                 "visible":true,
-                 "width":32,
-                 "x":366.300884955752,
-                 "y":279.109455053563
-                }, 
-                {
-                 "gid":209,
-                 "height":32,
-                 "id":116,
-                 "name":"rayreflector",
-                 "rotation":0,
-                 "type":"holdable",
-                 "visible":true,
-                 "width":32,
-                 "x":472.122962272939,
-                 "y":340.217978574756
-                }, 
-                {
                  "gid":152,
                  "height":32,
                  "id":117,
@@ -298,6 +238,72 @@
                  "width":32,
                  "x":480.320447135538,
                  "y":92.8029809035864
+                }, 
+                {
+                 "height":32,
+                 "id":119,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":199.720540288775,
+                 "y":180.344666977177
+                }, 
+                {
+                 "height":64,
+                 "id":120,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":64,
+                 "x":510.129482999534,
+                 "y":215.020027945971
+                }, 
+                {
+                 "height":32,
+                 "id":121,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":309.663716814159,
+                 "y":96.5291103865859
+                }, 
+                {
+                 "height":32,
+                 "id":122,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":32,
+                 "x":261.224033535165,
+                 "y":184.465766185375
+                }, 
+                {
+                 "height":64,
+                 "id":124,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":64,
+                 "x":514.250582207732,
+                 "y":521.702841173731
+                }, 
+                {
+                 "height":128,
+                 "id":125,
+                 "name":"rayreflector",
+                 "rotation":0,
+                 "type":"holdable",
+                 "visible":true,
+                 "width":128,
+                 "x":358.498369818351,
+                 "y":162.503959012576
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -405,7 +411,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":118,
+ "nextobjectid":126,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -414,10 +420,6 @@
         {
          "firstgid":1,
          "source":"..\/..\/tilesets\/fantasy-tileset.json"
-        }, 
-        {
-         "firstgid":209,
-         "source":"..\/..\/tilesets\/rayreflectors.json"
         }],
  "tilewidth":32,
  "type":"map",
