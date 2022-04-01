@@ -18,21 +18,22 @@
          "draworder":"topdown",
          "id":12,
          "name":"reference",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":130,
+                 "height":32,
+                 "id":126,
+                 "name":"skull",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":-46.5542617605962,
+                 "y":63.694457382394
+                }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":13,
-         "name":"triggers",
-         "objects":[],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -242,68 +243,105 @@
                 {
                  "height":32,
                  "id":119,
-                 "name":"rayreflector",
+                 "name":"flatreflector",
                  "rotation":0,
                  "type":"holdable",
                  "visible":true,
                  "width":32,
-                 "x":199.720540288775,
-                 "y":180.344666977177
+                 "x":476.199347927341,
+                 "y":497.065673032138
                 }, 
                 {
                  "height":64,
                  "id":120,
-                 "name":"rayreflector",
+                 "name":"flatreflector",
                  "rotation":0,
                  "type":"holdable",
                  "visible":true,
                  "width":64,
-                 "x":510.129482999534,
-                 "y":215.020027945971
+                 "x":373.007918025151,
+                 "y":82.3698183511877
                 }, 
                 {
                  "height":32,
                  "id":121,
-                 "name":"rayreflector",
+                 "name":"flatreflector",
                  "rotation":0,
                  "type":"holdable",
                  "visible":true,
                  "width":32,
-                 "x":309.663716814159,
-                 "y":96.5291103865859
+                 "x":436.352119236143,
+                 "y":467.651606893339
                 }, 
                 {
                  "height":32,
                  "id":122,
-                 "name":"rayreflector",
+                 "name":"flatreflector",
                  "rotation":0,
                  "type":"holdable",
                  "visible":true,
                  "width":32,
-                 "x":261.224033535165,
-                 "y":184.465766185375
+                 "x":579.435491383325,
+                 "y":437.842571029343
                 }, 
                 {
                  "height":64,
                  "id":124,
-                 "name":"rayreflector",
+                 "name":"flatreflector",
                  "rotation":0,
                  "type":"holdable",
                  "visible":true,
                  "width":64,
-                 "x":514.250582207732,
-                 "y":521.702841173731
+                 "x":522.448067070331,
+                 "y":519.467163483931
                 }, 
                 {
-                 "height":128,
-                 "id":125,
-                 "name":"rayreflector",
+                 "gid":10,
+                 "height":32,
+                 "id":131,
+                 "name":"",
+                 "rotation":0,
+                 "type":"pushable",
+                 "visible":true,
+                 "width":32,
+                 "x":370.772240335352,
+                 "y":494.479739170936
+                }, 
+                {
+                 "gid":10,
+                 "height":32,
+                 "id":132,
+                 "name":"",
+                 "rotation":0,
+                 "type":"pushable",
+                 "visible":true,
+                 "width":32,
+                 "x":346.179785747555,
+                 "y":533.231485794131
+                }, 
+                {
+                 "gid":10,
+                 "height":32,
+                 "id":133,
+                 "name":"",
+                 "rotation":0,
+                 "type":"pushable",
+                 "visible":true,
+                 "width":32,
+                 "x":600.301816488123,
+                 "y":273.892873777364
+                }, 
+                {
+                 "gid":209,
+                 "height":64,
+                 "id":134,
+                 "name":"circlereflector",
                  "rotation":0,
                  "type":"holdable",
                  "visible":true,
-                 "width":128,
-                 "x":358.498369818351,
-                 "y":162.503959012576
+                 "width":64,
+                 "x":482.205868653936,
+                 "y":451.562179785748
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -411,7 +449,7 @@
          "y":0
         }],
  "nextlayerid":15,
- "nextobjectid":126,
+ "nextobjectid":135,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -420,6 +458,10 @@
         {
          "firstgid":1,
          "source":"..\/..\/tilesets\/fantasy-tileset.json"
+        }, 
+        {
+         "firstgid":209,
+         "source":"..\/..\/tilesets\/circlereflector.json"
         }],
  "tilewidth":32,
  "type":"map",

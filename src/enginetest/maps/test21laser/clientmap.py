@@ -16,7 +16,7 @@ class ClientMap(engine.clientmap.ClientMap):
     """
 
     def blitObject(self, destImage, offset, object):
-        """Extend blitObject to render rayreflextors.
+        """Extend blitObject to render flatreflectors.
 
         Args:
             deskImage (pygame Surface)
@@ -24,11 +24,11 @@ class ClientMap(engine.clientmap.ClientMap):
             object: dict
         """
         
-        if object['name'] == "rayreflector":
+        if object['name'] == "flatreflector":
             validUntil = sys.float_info.max
             rx1,ry1 = geo.project(object['anchorX'],object['anchorY'], object['rotation'],object['width']/2)
             rx2,ry2 = geo.project(object['anchorX'],object['anchorY'], object['rotation']+math.pi,object['width']/2)
-            pygame.draw.line(destImage, "#FFD700", (rx1,ry1), (rx2,ry2), width=2)
+            pygame.draw.line(destImage, "#FFD700", (rx1+offset[0],ry1+offset[1]), (rx2+offset[0],ry2+offset[1]), width=2)
             return validUntil
         else:
             return super().blitObject(destImage, offset, object)
