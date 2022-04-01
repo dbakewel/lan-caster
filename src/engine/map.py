@@ -480,7 +480,7 @@ class Map(dict):
         # The original object has been edited but also return it so the function can be passed
         return object
 
-    def checkLocation(self, object, newAnchorX, newAnchorY):
+    def checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False):
         """Check if a location for an object is valid.
 
         Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
@@ -490,10 +490,11 @@ class Map(dict):
         Note, the priority evaluation is as follows:
         1) if object collides (overlaps) with another sprite then it is NOT valid.
            Note, two objects with collisionType == 'anchor' are allowed in the same location.
-        1) if object does not fully collide (overlap) with the map then it is NOT valid.
-        2) if object fully collides (overlaps) with an object or objects  on the inBounds layer then it IS valid.
+        2) if object does not fully collide (overlap) with the map then it is NOT valid.
         3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-        4) else it IS valid.
+        4) if the inBounds layer is empty or ignoreInBounds == True then it IS valid
+        5) if object is fully inside an object or objects on the inBounds layer then it IS valid.
+        6) else it is NOT valid.
 
         Args:
             object (dict): A Tiled object.
@@ -504,7 +505,7 @@ class Map(dict):
             bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
         """
 
-        # if move player move checking has been turned off then allow all moves for players
+        # if object is a player and player move checking has been turned off then return True
         if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
             return True
 
@@ -527,14 +528,29 @@ class Map(dict):
             log(f"collisionType is not supported.", "ERROR")
             return False
 
-        # if object overlaps another sprite then it is NOT valid.
+        # if object collides (overlaps) with another sprite then it is NOT valid.
         if self.findObject(x=newX, y=newY, width=width, height=height,
                            collisionType=otherSpriteCollisionType, exclude=object):
             return False
 
-        # if object is not fully on the map then it is NOT valid.
+        # if object does not fully collide (overlap) with the map then it is NOT valid.
         if 0 > newX or newX + width > self['pixelWidth'] or 0 > newY or newY + height > self['pixelHeight']:
             return False
+
+        # if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
+        if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
+            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']):
+                return False
+        else:
+            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']) or \
+                    self.findObject(x=newX + width, y=newY, objectList=self['outOfBounds']) or \
+                    self.findObject(x=newX, y=newY + height, objectList=self['outOfBounds']) or \
+                    self.findObject(x=newX + width, y=newY + height, objectList=self['outOfBounds']):
+                return False
+
+        # if the inBounds layer is empty then it IS valid
+        if len(self['inBounds']) == 0 or ignoreInBounds:
+            return True
 
         # if object is fully inside an object or objects on the inBounds layer then it IS valid.
         if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
@@ -547,19 +563,8 @@ class Map(dict):
                     self.findObject(x=newX + width, y=newY + height, objectList=self['inBounds']):
                 return True
 
-        # if object overlaps an object on the outOfBounds layer then it is NOT valid.
-        if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
-            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']):
-                return False
-        else:
-            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX + width, y=newY, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX, y=newY + height, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX + width, y=newY + height, objectList=self['outOfBounds']):
-                return False
-
-        # else it IS valid.
-        return True
+        # else it is NOT valid.
+        return False
 
     def checkKeys(self, object, props):
         """Check if all props are keys in object.

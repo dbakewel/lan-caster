@@ -89,51 +89,18 @@ class ServerMap(engine.servermap.ServerMap):
         reflextion = False
         x2, y2 = geo.project(x1, y1, r, self['pixelWidth'] * self['pixelHeight'])
 
-        # determine how many inBounds objects ray starts inside of.
-        obs = self.findObject(x=x1, y=y1, objectList=self['inBounds'], returnAll=True)
-        inBoundsCount = len(obs)
-        # determine how many outOfBounds objects ray starts inside of.
-        obs = self.findObject(x=x1, y=y1, objectList=self['outOfBounds'], returnAll=True)
-        outOfBoundsCount = len(obs)
-
         """
         intersections is an array of tules that contain points of intersection between the ray
-        and other game objects. Form (x, y, distance from (x1,y1) to (x,y), type, enter/exit, object )
+        and other game objects. Form (x, y, distance from (x1,y1) to (x,y), type, object )
         """
         intersections = []
-        # find all intersections with inBounds
-        for o in self['inBounds']:
-            ipts = geo.intersectLineRect(x1, y1, x2, y2, o['x'], o['y'], o['width'], o['height'])
-            if ipts:
-                for i in range(len(ipts)):
-                    ipts[i] = ipts[i] + (geo.distance(x1, y1, ipts[i][0], ipts[i][1]),)
-                # if ray did not start inside o
-                if len(ipts) == 2:
-                    if ipts[0][2] < ipts[1][2]:
-                        intersections.append(ipts[0] + ("inBounds", "enter", o))
-                        intersections.append(ipts[1] + ("inBounds", "exit", o))
-                    else:
-                        intersections.append(ipts[1] + ("inBounds", "enter", o))
-                        intersections.append(ipts[0] + ("inBounds", "exit", o))
-                else:
-                    intersections.append(ipts[0] + ("inBounds", "exit", o))
 
         # find all intersections with outOfBounds
         for o in self['outOfBounds']:
             ipts = geo.intersectLineRect(x1, y1, x2, y2, o['x'], o['y'], o['width'], o['height'])
             if ipts:
                 for i in range(len(ipts)):
-                    ipts[i] = ipts[i] + (geo.distance(x1, y1, ipts[i][0], ipts[i][1]),)
-                # if ray did not start inside o
-                if len(ipts) == 2:
-                    if ipts[0][2] < ipts[1][2]:
-                        intersections.append(ipts[0] + ("outOfBounds", "enter", o))
-                        intersections.append(ipts[1] + ("outOfBounds", "exit", o))
-                    else:
-                        intersections.append(ipts[1] + ("outOfBounds", "enter", o))
-                        intersections.append(ipts[0] + ("outOfBounds", "exit", o))
-                else:
-                    intersections.append(ipts[0] + ("outOfBounds", "exit", o))
+                    intersections.append(ipts[i] + (geo.distance(x1, y1, ipts[i][0], ipts[i][1]), "stop", o))
 
         # find all intersections with map edges
         for l in (
@@ -144,41 +111,29 @@ class ServerMap(engine.servermap.ServerMap):
                 ):
             ipt = geo.intersectLines(x1, y1, x2, y2, l[0], l[1], l[2], l[3],)
             if ipt:
-                ipt = ipt + (geo.distance(x1, y1, ipt[0], ipt[1]),)
-                intersections.append(ipt + ("stop", None, None))
+                intersections.append(ipt + (geo.distance(x1, y1, ipt[0], ipt[1]), "stop", None))
 
         # find all intersections with sprites (based on collisionType) with special code for reflectors.
         for o in self.findObject(returnAll=True, exclude=exclude):
             if o['name'] == 'flatreflector':
                 rx1, ry1 = geo.project(o['anchorX'], o['anchorY'], o['rotation'], o['width'] / 2)
                 rx2, ry2 = geo.project(o['anchorX'], o['anchorY'], o['rotation'] + math.pi, o['width'] / 2)
-
                 ipt = geo.intersectLines(x1, y1, x2, y2, rx1, ry1, rx2, ry2)
                 if ipt:
-                    ipt = ipt + (geo.distance(x1, y1, ipt[0], ipt[1]),)
-                    intersections.append(ipt + ("flatreflector", None, o))
+                    intersections.append(ipt + (geo.distance(x1, y1, ipt[0], ipt[1]), "flatreflector", o))
             elif o['name'] == 'circlereflector':
                 ipts = geo.intersectLineCircle(x1, y1, x2, y2, o['anchorX'], o['anchorY'], o['width'] / 2)
                 if ipts:
-                    for i in range(len(ipts)):
-                        ipts[i] = ipts[i] + (geo.distance(x1, y1, ipts[i][0], ipts[i][1]),)
-                    # if ray did not start inside o and did not simply hit tangent to it.
-                    if len(ipts) == 2:
-                        if ipts[0][2] < ipts[1][2]:
-                            intersections.append(ipts[0] + ("circlereflector", None, o))
-                        else:
-                            intersections.append(ipts[1] + ("circlereflector", None, o))
+                    if len(ipts) == 2: # if ray did not start inside o and did not simply hit tangent to it.
+                        for i in range(len(ipts)):
+                            intersections.append(ipts[i] + 
+                                (geo.distance(x1, y1, ipts[i][0], ipts[i][1]), "circlereflector", o))
             elif o['collisionType'] == 'rect':
                 ipts = geo.intersectLineRect(x1, y1, x2, y2, o['x'], o['y'], o['width'], o['height'])
                 if ipts:
-                    for i in range(len(ipts)):
-                        ipts[i] = ipts[i] + (geo.distance(x1, y1, ipts[i][0], ipts[i][1]),)
-                    # if ray did not start inside o
-                    if len(ipts) == 2:
-                        if ipts[0][2] < ipts[1][2]:
-                            intersections.append(ipts[0] + ("stop", None, o))
-                        else:
-                            intersections.append(ipts[1] + ("stop", None, o))
+                    if len(ipts) == 2:  # if ray did not start inside o
+                        for i in range(len(ipts)):
+                            intersections.append(ipts[i] + (geo.distance(x1, y1, ipts[i][0], ipts[i][1]), "stop", o))
 
         # sort intersections by the distance from the x1,y1 (i.e. the start of the ray)
         intersections.sort(key=lambda ipt: ipt[2])
@@ -188,52 +143,20 @@ class ServerMap(engine.servermap.ServerMap):
             if ipt[3] == "stop":
                 # hit something that is hard stop, such as map edge or sprite with collisionType ray can pass through.
                 break
-            elif ipt[3] == "inBounds":
-                if ipt[4] == "enter":
-                    inBoundsCount += 1
-                else:
-                    inBoundsCount -= 1
-                    if inBoundsCount == 0 and outOfBoundsCount != 0:
-                        # exited an inbound rect while also inside an outOfBounds rect.
-                        break
-            elif ipt[3] == "outOfBounds":
-                if ipt[4] == "enter":
-                    outOfBoundsCount += 1
-                    if inBoundsCount == 0:
-                        # hit an outOfBounds that is not covered by an inBounds.
-                        break
-                else:
-                    outOfBoundsCount -= 1
             elif ipt[3] == "flatreflector" or ipt[3] == "circlereflector":
                 # compute reflection angle and make recursive call
-                o = ipt[5]
+                o = ipt[4]
                 if ipt[3] == "flatreflector":
                     rx1, ry1 = geo.project(o['anchorX'], o['anchorY'], o['rotation'], o['width'] / 2)
                     rx2, ry2 = geo.project(o['anchorX'], o['anchorY'], o['rotation'] + math.pi, o['width'] / 2)
-                    reflextionVector = geo.Vector2D(
-                        ipt[0] -
-                        x1,
-                        ipt[1] -
-                        y1).reflect(
-                        geo.Vector2D(
-                            rx2 -
-                            rx1,
-                            ry2 -
-                            ry1))
+                    reflextionVector = geo.Vector2D(ipt[0] - x1, ipt[1] - y1).reflect(
+                        geo.Vector2D(rx2 - rx1, ry2 - ry1))
                 elif ipt[3] == "circlereflector":
                     reflextionVector = geo.Vector2D(ipt[0] - x1, ipt[1] - y1).reflect(
                         geo.Vector2D(o['anchorX'] - ipt[0], o['anchorY'] - ipt[1]).ortho())
                 maxRecurstion -= 1
-                reflextion = self.rayTrace(
-                    ipt[0],
-                    ipt[1],
-                    geo.angle(
-                        0,
-                        0,
-                        reflextionVector.x,
-                        reflextionVector.y),
-                    exclude=o,
-                    maxRecurstion=maxRecurstion)
+                reflextion = self.rayTrace(ipt[0], ipt[1], geo.angle(0, 0, reflextionVector.x, reflextionVector.y), 
+                    exclude=o, maxRecurstion=maxRecurstion)
                 break
 
         x2 = ipt[0]

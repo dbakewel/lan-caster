@@ -170,16 +170,15 @@ class ServerMap(engine.servermap.ServerMap):
     def checkLocation(self, object, newAnchorX, newAnchorY):
         """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
 
-        Allow things that have bee thrown to go out of bounds so they
-        can be thrown over water. The way the throw zones are set up in
-        the demo game ensures that objects can't be thrown off the map
-        or other places they should not be thrown.
+        Allow things that have bee thrown to ignore inBounds so they
+        can be thrown over water. This will still stop an object that
+        is thrown at an outOfBounds (such as a wall).
         """
-
+        ignoreInBounds = False
         if "moveSpeed" in object and object['moveSpeed'] == self['THROWSPEED']:
-            return True
+            ignoreInBounds = True
 
-        return super().checkLocation(object, newAnchorX, newAnchorY)
+        return super().checkLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
 
     ########################################################
     # SPEED MULTIPLIER MECHANIC

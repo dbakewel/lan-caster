@@ -544,28 +544,6 @@
         }, 
         {
          "draworder":"topdown",
-         "id":24,
-         "name":"outOfBounds",
-         "objects":[
-                {
-                 "height":645,
-                 "id":25,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":647,
-                 "x":-3,
-                 "y":-3
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":false,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
          "id":22,
          "name":"inBounds",
          "objects":[
