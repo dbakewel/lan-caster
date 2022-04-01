@@ -98,7 +98,7 @@ class Socket:
         self.s.settimeout(0)
         self.destinationIP = resolve(destinationIP)
         self.destinationPort = destinationPort
-        self.bufferSize = 4096
+        self.bufferSize = 256000
         random.seed()
         self.msgID = random.randrange(0, 65000, 1)
 
@@ -445,7 +445,6 @@ class Socket:
             except Exception as e:
                 log(str(type(e)) + " " + str(e), "ERROR")
                 more = False
-
         for msg, ip, port in msgQ:
             methodName = "msg" + msg['type'][:1].capitalize() + msg['type'][1:]
             if methodName not in self.msgProcessorMethods:

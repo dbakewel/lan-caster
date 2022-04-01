@@ -1,0 +1,14 @@
+{ "columns":1,
+ "image":"..\/images\/circlereflector.png",
+ "imageheight":64,
+ "imagewidth":64,
+ "margin":0,
+ "name":"circlereflector",
+ "spacing":0,
+ "tilecount":1,
+ "tiledversion":"1.7.2",
+ "tileheight":64,
+ "tilewidth":64,
+ "type":"tileset",
+ "version":"1.6"
+}

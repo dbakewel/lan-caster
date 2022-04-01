@@ -394,6 +394,48 @@ class Server(dict):
                 else:
                     log(f"TEST: playerMoveCheck turned OFF by {self['players'][ipport]['sprite']['labelText']} {ipport}")
 
+    def msgTestPlayerPreviousMap(self, ip, port, ipport, msg):
+        """Process msg of type playerNextMap.
+
+        If in test mode, moves the player
+        to previous map (based on map names sorted alphabetically).
+
+        This method is designed to be called from self['socket'].recvReplyMsgs().
+        self['socket'].recvReplyMsgs() will call this method when it receives a
+        msg of the corresponding type.
+
+        Args:
+            ip (str): IP Address of sender.
+            port (int): Port number of sender.
+            ipport (str): IP Address and Port of sender in format "ip:port".
+            msg (dict): The message which was received.
+
+        See Also:
+            Message format in engine.messages.Messages['messageDefinitions']
+            engine.socket.recvReplyMsgs()
+        """
+        if ipport in self['players']:  # if this is a player who has already joined the game
+            if self['testMode']:
+                sprite = self['players'][ipport]['sprite']
+                mapNames = []
+                for mapName in self['maps'].keys():
+                    mapNames.append(mapName)
+                mapNames.sort
+                destMapName = mapNames[len(mapNames) - 1]
+                for i in range(len(mapNames)):
+                    if mapNames[i] == sprite['mapName']:
+                        break
+                    destMapName = mapNames[i]
+                map = self['maps'][sprite['mapName']]
+                destMap = self['maps'][destMapName]
+                map.setObjectMap(sprite, destMap)
+                # make sure player is still inside the map bounds.
+                # This can be a problem is player jumped to smaller map.
+                if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
+                    destMap.setObjectLocationByAnchor(sprite, map['pixelWidth'] / 2, map['pixelHeight'] / 2)
+                destMap.delSpriteDest(sprite)
+                log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
+
     def msgTestPlayerNextMap(self, ip, port, ipport, msg):
         """Process msg of type playerNextMap.
 

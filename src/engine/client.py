@@ -467,7 +467,7 @@ class Client(dict):
             'x': 0, 'y': 0,
             'width': self['screen'].get_width(), 'height': self['screen'].get_height(),
             'text': {
-                'text': "TEST MODE: F1=Toggle_Player_Move_Checking F2=Jump_Map RMB=Jump_Location",
+                'text': "TEST MODE: F1=Toggle_Player_Move_Checking F2/F3=Jump_Map RMB=Jump_Location",
                 'pixelsize': 14,
                 'vlaign': 'top',
                 'halign': 'center',
@@ -527,6 +527,8 @@ class Client(dict):
             if event.key == pygame.K_F1:
                 self['socket'].sendMessage({'type': 'testTogglePlayerMoveChecking'})
             elif event.key == pygame.K_F2:
+                self['socket'].sendMessage({'type': 'testPlayerPreviousMap'})
+            elif event.key == pygame.K_F3:
                 self['socket'].sendMessage({'type': 'testPlayerNextMap'})
         elif event.type == pygame.MOUSEBUTTONDOWN:
             btn1, btn2, btn3 = pygame.mouse.get_pressed(num_buttons=3)
