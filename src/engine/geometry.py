@@ -16,8 +16,9 @@ import math
 from engine.log import log
 
 ##############################################
-## BASIC GEOMETRY
+# BASIC GEOMETRY
 ##############################################
+
 
 def angle(x1, y1, x2, y2):
     """ Returns angle from (x1,y1) and (x2,y2) in radians. """
@@ -55,7 +56,7 @@ def distance(x1, y1, x2, y2):
 
 
 ##############################################
-## GAME ENGINE SPECIFIC GEOMETRY
+# GAME ENGINE SPECIFIC GEOMETRY
 ##############################################
 
 def angleLable(a):
@@ -71,6 +72,7 @@ def angleLable(a):
     else:
         label = 'Right'
     return label
+
 
 def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
     '''Sort list of game objects by y and then x.
@@ -91,8 +93,9 @@ def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
     return listOfGameObs
 
 ##############################################
-## COLLISIONS
+# COLLISIONS
 ##############################################
+
 
 def objectContains(object, x, y, width=0, height=0):
     """ Returns True if rect defined by x, y, width, height overlaps object's rect else returns False.
@@ -117,48 +120,50 @@ def objectContains(object, x, y, width=0, height=0):
     return False
 
 ##############################################
-## INTERSECTIONS
+# INTERSECTIONS
 ##############################################
 
-def intersectLines(x1,y1, x2,y2, x3,y3, x4,y4):
+
+def intersectLines(x1, y1, x2, y2, x3, y3, x4, y4):
     '''Returns intersection point between line segments or None
-    Returns intersection point between line segment ((x1,y1), (x2,y2)) and 
-    line segment ((x3,y3), (x4,y4)). If line segments do not intersect then 
+    Returns intersection point between line segment ((x1,y1), (x2,y2)) and
+    line segment ((x3,y3), (x4,y4)). If line segments do not intersect then
     return None.
     Based on code from https://gist.github.com/kylemcdonald/6132fc1c29fd3767691442ba4bc84018
     '''
-    denom = (y4-y3)*(x2-x1) - (x4-x3)*(y2-y1)
-    if denom == 0: # parallel
+    denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
+    if denom == 0:  # parallel
         return None
-    ua = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / denom
-    if ua < 0 or ua > 1: # out of range
+    ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom
+    if ua < 0 or ua > 1:  # out of range
         return None
-    ub = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / denom
-    if ub < 0 or ub > 1: # out of range
+    ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom
+    if ub < 0 or ub > 1:  # out of range
         return None
-    x = x1 + ua * (x2-x1)
-    y = y1 + ua * (y2-y1)
-    return (x,y)
+    x = x1 + ua * (x2 - x1)
+    y = y1 + ua * (y2 - y1)
+    return (x, y)
 
 
-def intersectLineRect(x1,y1, x2, y2, rx,ry, rwidth, rheight):
+def intersectLineRect(x1, y1, x2, y2, rx, ry, rwidth, rheight):
     '''Returns list of intersection points between line segment and Rect or None
-    Returns intersection point between line segment ((x1,y1), (x2,y2)) and 
-    rect (rx, ry, rwidth, rheight). If line segment does not intersect then 
+    Returns intersection point between line segment ((x1,y1), (x2,y2)) and
+    rect (rx, ry, rwidth, rheight). If line segment does not intersect then
     return None.
     '''
     ipoints = []
-    for pt in [(rx,ry,rx+rwidth,ry),
-        (rx,ry,rx,ry+rheight),
-        (rx+rwidth,ry,rx+rwidth,ry+rheight),
-        (rx,ry+rheight,rx+rwidth,ry+rheight)]:
-        ipt = intersectLines(x1,y1, x2,y2, pt[0],pt[1], pt[2],pt[3])
+    for pt in [(rx, ry, rx + rwidth, ry),
+               (rx, ry, rx, ry + rheight),
+               (rx + rwidth, ry, rx + rwidth, ry + rheight),
+               (rx, ry + rheight, rx + rwidth, ry + rheight)]:
+        ipt = intersectLines(x1, y1, x2, y2, pt[0], pt[1], pt[2], pt[3])
         if ipt:
             ipoints.append(ipt)
 
     if len(ipoints) == 0:
         return None
     return ipoints
+
 
 def sgn(x):
     if x < 0:
@@ -168,8 +173,8 @@ def sgn(x):
 
 def intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius):
     """
-    Return list of intersection points between line segment (x1,y1) and 
-    (x2,y2) circle centered at (cx,cy) with radius cradius, or None if line 
+    Return list of intersection points between line segment (x1,y1) and
+    (x2,y2) circle centered at (cx,cy) with radius cradius, or None if line
     segment is entirely inside or outside circle.
     Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
     """
@@ -207,9 +212,9 @@ def intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius):
     # only need to check if the x is on the line, since y will give same result.
     # note, this can result in no points if line segment is fully inside the circle.
     if (x1 < ix1 and ix1 < x2) or (x1 > ix1 and ix1 > x2):
-        ipoints.append((ix1+cx,iy1+cy))
+        ipoints.append((ix1 + cx, iy1 + cy))
     if (x1 < ix2 and ix2 < x2) or (x1 > ix2 and ix2 > x2):
-        ipoints.append((ix2+cx,iy2+cy))
+        ipoints.append((ix2 + cx, iy2 + cy))
 
     if len(ipoints) == 0:
         return None
@@ -220,8 +225,9 @@ def intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius):
     return ipoints
 
 ##############################################
-## VECTOR
+# VECTOR
 ##############################################
+
 
 class Vector2D:
     """A two-dimensional vector with Cartesian coordinates.
@@ -234,7 +240,7 @@ class Vector2D:
 
     def __str__(self):
         """Human-readable string representation of the vector."""
-        return repr((round(self.x,4), round(self.y,4)))
+        return repr((round(self.x, 4), round(self.y, 4)))
         # return '{:g}i + {:g}j'.format(self.x, self.y)
 
     def __repr__(self):
@@ -262,7 +268,7 @@ class Vector2D:
         """Multiplication of a vector by a scalar."""
 
         if isinstance(scalar, int) or isinstance(scalar, float):
-            return Vector2D(self.x*scalar, self.y*scalar)
+            return Vector2D(self.x * scalar, self.y * scalar)
         raise NotImplementedError('Can only multiply Vector2D by a scalar')
 
     def __rmul__(self, scalar):
@@ -298,7 +304,7 @@ class Vector2D:
 
         https://matthew-brett.github.io/teaching/vector_projection.html
         """
-        return ((self @ other)/abs(other)**2)*other
+        return ((self @ other) / abs(other)**2) * other
 
     def unit(self):
         """Return a unit vector of the vector."""
@@ -309,7 +315,11 @@ class Vector2D:
         return Vector2D(self.y, -self.x)
 
     def reflect(self, other):
-        """Return a vector that is reflected off other
+        """Return a vector that is reflected off other.
+
+        Unlike other reflect code. The vector being reflected starts
+        being pointed at other. The returned vector points away
+        from other.
 
         https://bluebill.net/vector_reflection.html
         """
@@ -317,8 +327,9 @@ class Vector2D:
         return self - 2 * (self @ normal) * normal
 
 ##############################################
-## TESTS
+# TESTS
 ##############################################
+
 
 if __name__ == '__main__':
     #v1 = Vector2D(2, 5/3)
@@ -341,7 +352,7 @@ if __name__ == '__main__':
     print('v2 / 2.5 = ', v2 / 2.5)
     print('v1 % 1 = ', v1 % 1)
     print('v1.dot(v2) = v1 @ v2 = ', v1 @ v2)
-    print('v1.distance_to(v2) = ',v1.distance_to(v2))
+    print('v1.distance_to(v2) = ', v1.distance_to(v2))
     print('v1 as polar vector, (r, theta) =', v1.to_polar())
     print('v1 project onto v2 = ', v1.project(v2))
     print('v2 project onto v1 = ', v2.project(v1))

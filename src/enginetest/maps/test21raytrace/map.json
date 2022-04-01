@@ -49,7 +49,7 @@
                  "rotation":0,
                  "text":
                     {
-                     "text":"TBD",
+                     "text":"This map contains a subclassed servermap.py and clientmap.py.This map traces rays from rayemitters until they stop at a wall or map edge. Rays can be reflected off flat and circle reflectors and changes raytargets to skulls. This map tests large parts of the engine.geometry module.",
                      "wrap":true
                     },
                  "type":"",
@@ -68,7 +68,7 @@
                      "fontfamily":"MS Shell Dlg 2",
                      "halign":"center",
                      "pixelsize":24,
-                     "text":"Laser Test",
+                     "text":"Ray Trace Test",
                      "wrap":true
                     },
                  "type":"",
