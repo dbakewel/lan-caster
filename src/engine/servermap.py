@@ -143,8 +143,12 @@ class ServerMap(engine.stepmap.StepMap):
                     inBounds = True
 
             if inBounds:
-                if geo.distance(moveDestX, sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
-                    # if sprite is only going to move less than 0.01 pixel then stop it after this move.
+                """
+                if sprite reached the destination or sprite is only going to move less than 0.01 pixel then 
+                    stop it after this move.
+                """
+                if (moveDestX == newAnchorX and moveDestY == newAnchorY) or \
+                    geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
                     self.delMoveLinear(sprite)
 
                 # move sprite to new location
