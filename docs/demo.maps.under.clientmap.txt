@@ -70,6 +70,14 @@ CLASSES
      |          offset (int, int): Render entire map offset by (x, y) onto destImage
      |          layer (dict): Tiled layer from self['layers']
      |  
+     |  blitObject(self, destImage, offset, object)
+     |      Blit object.
+     |      
+     |      Args:
+     |          deskImage (pygame Surface)
+     |          offset (int, int): Render entire map offset by (x, y) onto destImage
+     |          object: dict
+     |  
      |  blitObjectList(self, destImage, offset, objectList)
      |      Blit each object in objectList.
      |      
@@ -183,7 +191,7 @@ CLASSES
      |      Returns:
      |          bool: True if all props are in object else False
      |  
-     |  checkLocation(self, object, newAnchorX, newAnchorY)
+     |  checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False)
      |      Check if a location for an object is valid.
      |      
      |      Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
@@ -193,15 +201,17 @@ CLASSES
      |      Note, the priority evaluation is as follows:
      |      1) if object collides (overlaps) with another sprite then it is NOT valid.
      |         Note, two objects with collisionType == 'anchor' are allowed in the same location.
-     |      1) if object does not fully collide (overlap) with the map then it is NOT valid.
-     |      2) if object fully collides (overlaps) with an object or objects  on the inBounds layer then it IS valid.
+     |      2) if object does not fully collide (overlap) with the map then it is NOT valid.
      |      3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-     |      4) else it IS valid.
+     |      4) if the inBounds layer is empty or ignoreInBounds == True then it IS valid
+     |      5) if object is fully inside an object or objects on the inBounds layer then it IS valid.
+     |      6) else it is NOT valid.
      |      
      |      Args:
      |          object (dict): A Tiled object.
      |          newAnchorX (float): x coordiate to check if valid
      |          newAnchorY (float): y coordiate to check if valid
+     |          ignoreInBounds (bool): if True then do not consider inBounds layers (default False)
      |      
      |      Returns:
      |          bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
@@ -239,7 +249,7 @@ CLASSES
      |          object (dict): Object is both edited in place and also returned.
      |  
      |  convertTiledColor(self, tiledColor)
-     |      Convert Tiled HEX format
+     |      Convert Tiled color HEX format to pygame format.
      |      
      |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame
      |      needs '#RRGGBBAA' so flip alpha to the end.

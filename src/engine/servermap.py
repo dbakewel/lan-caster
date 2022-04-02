@@ -69,7 +69,7 @@ class ServerMap(engine.stepmap.StepMap):
         """
         if 'move' in sprite and sprite['move']['type'] == 'Linear':
             moveDestX = sprite['move']['x']
-            moveDestY = sprite['move']['y'] 
+            moveDestY = sprite['move']['y']
             moveSpeed = sprite['move']['s']
 
             # convert pixels per second to pixels per step
@@ -144,11 +144,11 @@ class ServerMap(engine.stepmap.StepMap):
 
             if inBounds:
                 """
-                if sprite reached the destination or sprite is only going to move less than 0.01 pixel then 
+                if sprite reached the destination or sprite is only going to move less than 0.01 pixel then
                     stop it after this move.
                 """
                 if (moveDestX == newAnchorX and moveDestY == newAnchorY) or \
-                    geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
+                        geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
                     self.delMoveLinear(sprite)
 
                 # move sprite to new location
@@ -160,15 +160,15 @@ class ServerMap(engine.stepmap.StepMap):
     def setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed):
         """MOVE LINEAR MECHANIC: Set sprites destination and speed.
 
-        Add attributes to sprite: moveDestX, moveDestY, moveSpeed
+        Add attributes to sprite: move
         """
-        sprite['move'] = {'type':'Linear', 'x':moveDestX, 'y': moveDestY, 's': moveSpeed}
+        sprite['move'] = {'type': 'Linear', 'x': moveDestX, 'y': moveDestY, 's': moveSpeed}
         self.setMapChanged()
 
     def delMoveLinear(self, sprite):
         """MOVE LINEAR MECHANIC: Stop Sprite
 
-        Remove attributes from sprite: moveDestX, moveDestY, moveSpeed
+        Remove attributes from sprite: move
         """
         if 'move' in sprite and sprite['move']['type'] == 'Linear':
             del sprite['move']

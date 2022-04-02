@@ -14,6 +14,92 @@ DESCRIPTION
         r = math.radians(d)
         d = math.degrees(r)
 
+CLASSES
+    builtins.object
+        Vector2D
+    
+    class Vector2D(builtins.object)
+     |  Vector2D(x, y)
+     |  
+     |  A two-dimensional vector with Cartesian coordinates.
+     |  
+     |  Based on https://scipython.com/book2/chapter-4-the-core-python-language-ii/examples/a-2d-vector-class/
+     |  
+     |  Methods defined here:
+     |  
+     |  __abs__(self)
+     |      Absolute value (magnitude) of the vector. i.e. ||self||
+     |  
+     |  __add__(self, other)
+     |      Vector addition.
+     |  
+     |  __init__(self, x, y)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __matmul__ = dot(self, other)
+     |  
+     |  __mod__(self, scalar)
+     |      One way to implement modulus operation: for each component.
+     |  
+     |  __mul__(self, scalar)
+     |      Multiplication of a vector by a scalar.
+     |  
+     |  __neg__(self)
+     |      Negation of the vector (invert through origin.)
+     |  
+     |  __repr__(self)
+     |      Unambiguous string representation of the vector.
+     |  
+     |  __rmul__(self, scalar)
+     |      Reflected multiplication so vector * scalar also works.
+     |  
+     |  __str__(self)
+     |      Human-readable string representation of the vector.
+     |  
+     |  __sub__(self, other)
+     |      Vector subtraction.
+     |  
+     |  __truediv__(self, scalar)
+     |      True division of the vector by a scalar.
+     |  
+     |  distance_to(self, other)
+     |      The distance between vectors self and other.
+     |  
+     |  dot(self, other)
+     |      The scalar (dot) product of self and other. Both must be vectors.
+     |  
+     |  ortho(self)
+     |      Return a vector that is orthogonal.
+     |  
+     |  project(self, other)
+     |      Return a vector that is the vector projected onto other.
+     |      
+     |      https://matthew-brett.github.io/teaching/vector_projection.html
+     |  
+     |  reflect(self, other)
+     |      Return a vector that is reflected off other.
+     |      
+     |      Unlike other reflect code. The vector being reflected starts
+     |      being pointed at other. The returned vector points away
+     |      from other.
+     |      
+     |      https://bluebill.net/vector_reflection.html
+     |  
+     |  to_polar(self)
+     |      Return the vector's components in polar coordinates.
+     |  
+     |  unit(self)
+     |      Return a unit vector of the vector.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __dict__
+     |      dictionary for instance variables (if defined)
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+
 FUNCTIONS
     angle(x1, y1, x2, y2)
         Returns angle from (x1,y1) and (x2,y2) in radians.
@@ -23,6 +109,25 @@ FUNCTIONS
     
     distance(x1, y1, x2, y2)
         Returns distance between (x1,y1) and (x2,y2)
+    
+    intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius)
+        Return list of intersection points between line segment (x1,y1) and
+        (x2,y2) circle centered at (cx,cy) with radius cradius, or None if line
+        segment is entirely inside or outside circle.
+        Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
+    
+    intersectLineRect(x1, y1, x2, y2, rx, ry, rwidth, rheight)
+        Returns list of intersection points between line segment and Rect or None
+        Returns intersection point between line segment ((x1,y1), (x2,y2)) and
+        rect (rx, ry, rwidth, rheight). If line segment does not intersect then
+        return None.
+    
+    intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
+        Returns intersection point between line segments or None
+        Returns intersection point between line segment ((x1,y1), (x2,y2)) and
+        line segment ((x3,y3), (x4,y4)). If line segments do not intersect then
+        return None.
+        Based on code from https://gist.github.com/kylemcdonald/6132fc1c29fd3767691442ba4bc84018
     
     normalizeAngle(a)
         Returns angle a in the normalized range of 0 - 2pi. Angle a must be in radians.
@@ -35,6 +140,8 @@ FUNCTIONS
     project(x, y, rad, dis)
         Returns point (x',y') where angle from (x,y) to (x',y')
         is rad and distance from (x,y) to (x',y') is dis.
+    
+    sgn(x)
     
     sortRightDown(listOfGameObs, maxWidth, useAnchor=True)
         Sort list of game objects by y and then x.

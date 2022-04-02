@@ -15,7 +15,7 @@ class ServerMap(engine.servermap.ServerMap):
 
     FLAT REFLECTOR
 
-    CIRCLE REFLECTOR (all code is part of the RAY EMITTER raytrace call.)
+    CIRCLE REFLECTOR (all code is part of the RAY EMITTER raytrace() method.)
 
     """
 
@@ -74,7 +74,7 @@ class ServerMap(engine.servermap.ServerMap):
             self.addObject(polyobject)
 
     def rayTrace(self, x1, y1, r, exclude=False, maxRecurstion=10):
-        """Create a polyline from x,y in direction r.
+        """RAY MECHANIC: Create a polyline from x,y in direction r.
 
         Takes collisions and reflectors into account.
 
@@ -124,10 +124,10 @@ class ServerMap(engine.servermap.ServerMap):
             elif o['name'] == 'circlereflector':
                 ipts = geo.intersectLineCircle(x1, y1, x2, y2, o['anchorX'], o['anchorY'], o['width'] / 2)
                 if ipts:
-                    if len(ipts) == 2: # if ray did not start inside o and did not simply hit tangent to it.
+                    if len(ipts) == 2:  # if ray did not start inside o and did not simply hit tangent to it.
                         for i in range(len(ipts)):
-                            intersections.append(ipts[i] + 
-                                (geo.distance(x1, y1, ipts[i][0], ipts[i][1]), "circlereflector", o))
+                            intersections.append(ipts[i] +
+                                                 (geo.distance(x1, y1, ipts[i][0], ipts[i][1]), "circlereflector", o))
             elif o['collisionType'] == 'rect':
                 ipts = geo.intersectLineRect(x1, y1, x2, y2, o['x'], o['y'], o['width'], o['height'])
                 if ipts:
@@ -155,8 +155,8 @@ class ServerMap(engine.servermap.ServerMap):
                     reflextionVector = geo.Vector2D(ipt[0] - x1, ipt[1] - y1).reflect(
                         geo.Vector2D(o['anchorX'] - ipt[0], o['anchorY'] - ipt[1]).ortho())
                 maxRecurstion -= 1
-                reflextion = self.rayTrace(ipt[0], ipt[1], geo.angle(0, 0, reflextionVector.x, reflextionVector.y), 
-                    exclude=o, maxRecurstion=maxRecurstion)
+                reflextion = self.rayTrace(ipt[0], ipt[1], geo.angle(0, 0, reflextionVector.x, reflextionVector.y),
+                                           exclude=o, maxRecurstion=maxRecurstion)
                 break
 
         x2 = ipt[0]
@@ -173,7 +173,7 @@ class ServerMap(engine.servermap.ServerMap):
     # FLAT REFLECTOR MECHANIC
     ########################################################
 
-    def initRayReflector(self):
+    def initFlatReflector(self):
         """FLAT REFLECTOR MECHANIC: init method.
 
         Set reflector half circle rotation speed in seconds
@@ -184,7 +184,7 @@ class ServerMap(engine.servermap.ServerMap):
             flatreflector['startRotation'] = math.radians(random.randint(0, 179))
             self.setFlatReflectorRotation(flatreflector)
 
-    def stepMapStartRayReflector(self):
+    def stepMapStartFlatReflector(self):
         """FLAT REFLECTOR MECHANIC: stepMapStart method.
 
         Rotate reflector based on secondsPerHalfRotation second cycle.

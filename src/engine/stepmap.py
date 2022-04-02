@@ -13,7 +13,7 @@ class StepMap(engine.map.Map):
     in sub-classes, which takes the game forward one step in time. It
     does this by finding methods that match the naming format and then
     calling those methods in a very specific order during each step.
-    Using the various methods name formats, a sub-classes can implement
+    Using the various methods name formats, a sub-class can implement
     many different game mechanics.
 
     The method name formats StepMap looks for are as follows. Except
@@ -28,8 +28,9 @@ class StepMap(engine.map.Map):
             and sprite combination where the sprite anchor point is inside
             the trigger.
 
-        3) stepMove<MechanicName>(sprite): Called for every object GTEEGGGS
-            on the sprite layer.
+        3) stepMove<MechanicName>(sprite): Called for every object
+            on the sprite layer which contains:
+                sprite['move']['type'] == '<MechanicName>'
 
         4) stepMapEnd<MechanicName>(): Called once at the end of each step.
 
@@ -39,14 +40,14 @@ class StepMap(engine.map.Map):
     Besides implementing the step methods above, a game mechanic
     may need to extend, override, or implement other methods.
     See examples of implementing game mechanics in engine.servermap and
-    the various servermaps of the enginetest and demo games.
+    the various servermap sub-classes of the enginetest and demo games.
 
     The Server normally only calls the engine.stepmap.StepMap.StepMap()
     method if at least one player is on the map. So game logic stops for
     maps with no players.
 
     Also, the Server class normally calls stepServerStart() before the
-    all the maps process there steps and calls stepServerEnd() after
+    maps process thier steps and calls stepServerEnd() after
     all maps have processed their steps.
     See engine.server.Server.stepServer() for details.
     '''
@@ -97,7 +98,7 @@ class StepMap(engine.map.Map):
         log(f"Map '{self['name']}' Methods:\n{self.getAllMethodsStr()}", "VERBOSE")
 
     def getAllMethodsStr(self):
-        '''Return a multi-line string of all map init*, step*, and trigger* methods.'''
+        '''Return a multi-line human readable string of all map init*, step*, and trigger* methods.'''
 
         allMethods = sorted([func for func in dir(self) if callable(getattr(self, func))
                              and not func.startswith("__")])
@@ -178,7 +179,7 @@ class StepMap(engine.map.Map):
         return otherMethodsStr + "\n" + stepMethodsStr
 
     def addStepMethodPriority(self, stepMethodType, stepMethodName, priority):
-        """Set the prioriy of a step method.
+        """Set the priority of a step method.
 
         This is normally used by subclass init* methods to prioritize step
         methods before finding and sorting them.
@@ -206,12 +207,13 @@ class StepMap(engine.map.Map):
             method = getattr(self, methodName, None)
             method()
 
-        # for each sprite find all triggers sprite is inside and call
+        # for each sprite, find all triggers sprite is inside and call
         # corresponding trigger* method.
         for sprite in self['sprites']:
             self.stepTriggers(sprite)
 
-        # call all self['step']Move*(sprite) methods for each sprite HSFHDSHGSG
+        # call all selfstepMove*(sprite) methods for each sprite
+        # with a corresponding sprite['move']['type']
         for methodName in self['stepMethods']['stepMove']:
             method = getattr(self, methodName, None)
             for sprite in self['sprites']:
@@ -267,10 +269,9 @@ class StepMap(engine.map.Map):
                 break  # do not process any more triggers for this sprite on this step.
 
     def getTriggerMethodName(self, trigger):
-        """Given a trigger name, return the name of a trigger's method.
+        """Convert a trigger type  to method
 
-        Convert a trigger type (eg. trigger['type'] == "mapDoor") to method
-        name (eg. "triggerMapDoor")
+        eg. trigger['type'] == "mapDoor" would return "triggerMapDoor"
 
         Args:
             trigger (dict): Tiled object that is on this maps trigger layer.

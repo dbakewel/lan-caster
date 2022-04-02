@@ -212,6 +212,26 @@ CLASSES
      |          Message format in engine.messages.Messages['messageDefinitions']
      |          engine.socket.recvReplyMsgs()
      |  
+     |  msgTestPlayerPreviousMap(self, ip, port, ipport, msg)
+     |      Process msg of type playerNextMap.
+     |      
+     |      If in test mode, moves the player
+     |      to previous map (based on map names sorted alphabetically).
+     |      
+     |      This method is designed to be called from self['socket'].recvReplyMsgs().
+     |      self['socket'].recvReplyMsgs() will call this method when it receives a
+     |      msg of the corresponding type.
+     |      
+     |      Args:
+     |          ip (str): IP Address of sender.
+     |          port (int): Port number of sender.
+     |          ipport (str): IP Address and Port of sender in format "ip:port".
+     |          msg (dict): The message which was received.
+     |      
+     |      See Also:
+     |          Message format in engine.messages.Messages['messageDefinitions']
+     |          engine.socket.recvReplyMsgs()
+     |  
      |  msgTestTogglePlayerMoveChecking(self, ip, port, ipport, msg)
      |      Process msg of type playerMoveChecking.
      |      

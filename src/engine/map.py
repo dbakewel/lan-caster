@@ -24,7 +24,7 @@ class Map(dict):
     LAYER VISABILITY MECHANIC
         The layer visibility mechanic allows layers that were loaded from the Tiled
         map file to be shown or hidden. Normally the server and servermap set layer
-        visiblity and send it to the client in a step message as a bitmask. The
+        visibility and send it to the client in a step message as a bitmask. The
         client can then use that bitmask to match its visible layers to those
         on the server.
     """
@@ -32,7 +32,7 @@ class Map(dict):
     def __init__(self, tilesets, mapDir):
         """Load map file and do data conversion.
 
-        Note, all Tiled properites will be converted into an easier to access form.
+        Note, all Tiled properties will be converted into an easier to access form.
             from: {object['properties'][{name: name1, value: value1}],[...]}
             to: {object.prop-name1=value1,...}
         Note, duplicate property names is not supported!
@@ -170,7 +170,7 @@ class Map(dict):
         return engine.log.objectToStr(self, depth=2)
 
     def convertTiledColor(self, tiledColor):
-        """Convert Tiled HEX format
+        """Convert Tiled color HEX format to pygame format.
 
         Tiled hex colors with alpha are '#AARRGGBB' format but pygame
         needs '#RRGGBBAA' so flip alpha to the end.
@@ -500,6 +500,7 @@ class Map(dict):
             object (dict): A Tiled object.
             newAnchorX (float): x coordiate to check if valid
             newAnchorY (float): y coordiate to check if valid
+            ignoreInBounds (bool): if True then do not consider inBounds layers (default False)
 
         Returns:
             bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False

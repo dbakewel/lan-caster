@@ -56,15 +56,14 @@ CLASSES
      |  checkLocation(self, object, newAnchorX, newAnchorY)
      |      THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
      |      
-     |      Allow things that have bee thrown to go out of bounds so they
-     |      can be thrown over water. The way the throw zones are set up in
-     |      the demo game ensures that objects can't be thrown off the map
-     |      or other places they should not be thrown.
+     |      Allow things that have bee thrown to ignore inBounds so they
+     |      can be thrown over water. This will still stop an object that
+     |      is thrown at an outOfBounds (such as a wall).
      |  
      |  delRespawnPoint(self, sprite)
      |      RESPAWN POINT MECHANIC: remove the sprites respawn point.
      |      
-     |      Removes attributes from sprite: respawnMapName, respawnX, respawnY
+     |      Removes attributes from sprite: respawn
      |  
      |  initBombArea(self)
      |      BOMB AREA MECHANIC: init method.
@@ -88,7 +87,7 @@ CLASSES
      |      Remember sprites location so the sprite can be put back to this
      |      location later.
      |      
-     |      Adds attributes to sprite: respawnMapName, respawnX, respawnY
+     |      Adds attributes to sprite: respawn
      |  
      |  setSpriteLocationByRespawnPoint(self, sprite)
      |      RESPAWN POINT MECHANIC: Move sprite to respawn point.
@@ -99,16 +98,16 @@ CLASSES
      |      If no respawn point was previously stored in the sprite then
      |      do nothing and log a warning.
      |  
-     |  stepSpriteEndSpeedMultiplier(self, sprite)
-     |      SPEED MULTIPLIER MECHANIC: stepSpriteEnd method.
+     |  stepMapEndSpeedMultiplier(self)
+     |      SPEED MULTIPLIER MECHANIC: stepMapEnd method.
      |      
      |      This will run after stepMove methods. Restore the sprite's
      |      moveSpeed back to what it was.
      |      
      |      Removes attributes from sprite: speedMultiNormalSpeed
      |  
-     |  stepSpriteStartChicken(self, sprite)
-     |      CHICKEN MECHANIC: stepSpriteStart method.
+     |  stepMapStartChicken(self)
+     |      CHICKEN MECHANIC: stepMapStart method.
      |      
      |      Have the chicken move towards the closest player, but
      |      stop before getting to close. Note, if a chicken is
@@ -166,6 +165,11 @@ CLASSES
      |      
      |      Remove attributes from sprite: holding
      |  
+     |  delMoveLinear(self, sprite)
+     |      MOVE LINEAR MECHANIC: Stop Sprite
+     |      
+     |      Remove attributes from sprite: move
+     |  
      |  delSpriteAction(self, sprite)
      |      ACTION MECHANIC: clear sprite flag from sprite.
      |      
@@ -179,11 +183,6 @@ CLASSES
      |  
      |  delSpriteActionText(self, sprite)
      |      PLAYER ACTION TEXT MECHANIC: remove action text from player linked to sprite.
-     |  
-     |  delSpriteDest(self, sprite)
-     |      MOVE LINEAR MECHANIC: Stop Sprite
-     |      
-     |      Remove attributes from sprite: moveDestX, moveDestY, moveSpeed
      |  
      |  delSpriteLabelText(self, sprite)
      |      LABEL TEXT MECHANIC: remove labelText from sprite.
@@ -201,7 +200,7 @@ CLASSES
      |  initAction(self)
      |      ACTION MECHANIC: init method.
      |      
-     |      Set priority of stepSpriteEndAction to be very low so all other
+     |      Set priority of stepMapEndAction to be very low so all other
      |      code has a chance to consume an action before it is removed.
      |  
      |  initHoldable(self)
@@ -224,6 +223,11 @@ CLASSES
      |      
      |      Add attributes to sprite: holding
      |  
+     |  setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed)
+     |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
+     |      
+     |      Add attributes to sprite: move
+     |  
      |  setSpriteAction(self, sprite)
      |      ACTION MECHANIC: flag sprite that it should perform one action.
      |      
@@ -245,11 +249,6 @@ CLASSES
      |      Note, this will only work if sprite action text has not
      |      already been set during this step.
      |  
-     |  setSpriteDest(self, sprite, moveDestX, moveDestY, moveSpeed)
-     |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
-     |      
-     |      Add attributes to sprite: moveDestX, moveDestY, moveSpeed
-     |  
      |  setSpriteLabelText(self, sprite, labelText)
      |      LABEL TEXT MECHANIC: add labelText to sprite.
      |      
@@ -270,6 +269,28 @@ CLASSES
      |          speechTextDelAfter (float): time after which speechText will be
      |              removed. Default is to remove at start of next step.
      |  
+     |  stepMapEndAction(self)
+     |      ACTION MECHANIC: stepMapEnd method.
+     |      
+     |      If an action was requested but no step method was able to consume
+     |      the action then simply delete the action (consume action it but do nothing).
+     |  
+     |  stepMapEndHoldable(self)
+     |      HOLDABLE MECHANIC: stepMapEnd method.
+     |      
+     |      Drop holdable if sprite has holding and action is requested by user.
+     |  
+     |  stepMapStartActionText(self)
+     |      PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
+     |      
+     |      Each step the actions available may change so start each
+     |      step by removing all action text. The first game mechanic
+     |      that finds an action that could be performed can set a
+     |      new action text.
+     |  
+     |  stepMapStartSpeechText(self)
+     |      SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out.
+     |  
      |  stepMoveLinear(self, sprite)
      |      MOVE LINEAR MECHANIC: stepMove method.
      |      
@@ -278,28 +299,6 @@ CLASSES
      |      it's destination then stop the sprite.
      |      
      |      Add attributes to sprite: direction
-     |  
-     |  stepSpriteEndAction(self, sprite)
-     |      ACTION MECHANIC: stepSpriteEnd method.
-     |      
-     |      If an action was requested but no step method was able to consume
-     |      the action then simply delete the action (consume action it but do nothing).
-     |  
-     |  stepSpriteEndHoldable(self, sprite)
-     |      HOLDABLE MECHANIC: stepSpriteEnd method.
-     |      
-     |      Drop holdable if sprite has holding and action is requested by user.
-     |  
-     |  stepSpriteStartActionText(self, sprite)
-     |      PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
-     |      
-     |      Each step the actions available may change so start each
-     |      step by removing all action text. The first game mechanic
-     |      that finds an action that could be performed can set a
-     |      new action text.
-     |  
-     |  stepSpriteStartSpeechText(self, sprite)
-     |      SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out.
      |  
      |  triggerHoldable(self, holdable, sprite)
      |      HOLDABLE MECHANIC: trigger method.
@@ -345,7 +344,7 @@ CLASSES
      |      Sorts all methods by type and priority.
      |  
      |  addStepMethodPriority(self, stepMethodType, stepMethodName, priority)
-     |      Set the prioriy of a step method.
+     |      Set the priority of a step method.
      |      
      |      This is normally used by subclass init* methods to prioritize step
      |      methods before finding and sorting them.
@@ -357,13 +356,12 @@ CLASSES
      |              higher priority.
      |  
      |  getAllMethodsStr(self)
-     |      Return a multi-line string of all map init*, step*, and trigger* methods.
+     |      Return a multi-line human readable string of all map init*, step*, and trigger* methods.
      |  
      |  getTriggerMethodName(self, trigger)
-     |      Given a trigger name, return the name of a trigger's method.
+     |      Convert a trigger type  to method
      |      
-     |      Convert a trigger type (eg. trigger['type'] == "mapDoor") to method
-     |      name (eg. "triggerMapDoor")
+     |      eg. trigger['type'] == "mapDoor" would return "triggerMapDoor"
      |      
      |      Args:
      |          trigger (dict): Tiled object that is on this maps trigger layer.
@@ -450,7 +448,7 @@ CLASSES
      |          object (dict): Object is both edited in place and also returned.
      |  
      |  convertTiledColor(self, tiledColor)
-     |      Convert Tiled HEX format
+     |      Convert Tiled color HEX format to pygame format.
      |      
      |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame
      |      needs '#RRGGBBAA' so flip alpha to the end.

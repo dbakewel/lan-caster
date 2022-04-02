@@ -1,7 +1,7 @@
-Help on module enginetest.maps.test18slide.servermap in enginetest.maps.test18slide:
+Help on module enginetest.maps.test21raytrace.servermap in enginetest.maps.test21raytrace:
 
 NAME
-    enginetest.maps.test18slide.servermap - ServerMap for Engine Test Map.
+    enginetest.maps.test21raytrace.servermap - ServerMap for Engine Test Map.
 
 CLASSES
     engine.servermap.ServerMap(engine.stepmap.StepMap)
@@ -10,12 +10,13 @@ CLASSES
     class ServerMap(engine.servermap.ServerMap)
      |  ServerMap(tilesets, mapDir)
      |  
-     |  SLIDE MECHANIC
+     |  This servermap implements ray emitter and reflector mechanics.
      |  
-     |  A slide forces sprites to move in a specific direction and speed.
-     |  Note, a sprite that is sliding can move while in an outOfBounds area.
+     |  RAY EMITTER
      |  
-     |  Uses Mechanics: move
+     |  FLAT REFLECTOR
+     |  
+     |  CIRCLE REFLECTOR (all code is part of the RAY EMITTER raytrace() method.)
      |  
      |  Method resolution order:
      |      ServerMap
@@ -27,41 +28,60 @@ CLASSES
      |  
      |  Methods defined here:
      |  
-     |  checkLocation(self, object, newAnchorX, newAnchorY)
-     |      SLIDE MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
+     |  delHoldable(self, sprite)
+     |      FLAT REFLECTOR MECHANIC: extend EXTEND HOLDABLE MECHANIC
      |      
-     |      If an object is sliding then allow it to move. The slide setup must
-     |      ensure the sprite does not move to an invalid location.
+     |      reset reflextor start position when dropped so it picks up where
+     |      it was when it was picked up.
      |  
-     |  initSlide(self)
-     |      SLIDE MECHANIC: init method.
+     |  initFlatReflector(self)
+     |      FLAT REFLECTOR MECHANIC: init method.
      |      
-     |      Slide trigger needs to occur after other triggers
-     |      that change speed and direction since we want to force
-     |      the sprite to move as dictated by the slide.
+     |      Set reflector half circle rotation speed in seconds
+     |      Set all reflectors to a random rotation to start.
      |  
-     |  stepMapEndSlide(self)
-     |      SLIDE MECHANIC: remove sliding marker from sprite.
+     |  initPush(self)
+     |      PUSH MECHANIC: init method.
      |      
-     |      Remove the sprite sliding marker now the step is over. It will
-     |      get added again during the next step is the sprite is still inside
-     |      a slide trigger.
+     |      Copy (by reference) all pushable sprites to the outOfBounds layer.
+     |      
+     |      Note, only part of pushable code included here so there are some objects with collisionType == rect.
      |  
-     |  triggerSlide(self, trigger, sprite)
-     |      SLIDE MECHANIC: trigger method.
+     |  initRayEmitter(self)
+     |      RAY MECHANIC: init method
      |      
-     |      Set the sprites direction and speed to match the slide triggers
-     |      properties: slideDirection, slideSpeed
+     |      Find GID of skull using tileObject on reference layer
+     |  
+     |  rayTrace(self, x1, y1, r, exclude=False, maxRecurstion=10)
+     |      RAY MECHANIC: Create a polyline from x,y in direction r.
      |      
-     |      Note, slideDirection is in radians.
+     |      Takes collisions and reflectors into account.
+     |      
+     |      Returns a polyline dict of the form:
+     |          [{"x":x1, "y":y1},{"x":x2, "y":y2},...]
+     |      where all values are ralative to map orgin. To use in a polyline Object
+     |      values must be converted so all points are relative to object x,y.
+     |  
+     |  setFlatReflectorRotation(self, flatreflector)
+     |      FLAT REFLECTOR MECHANIC: set rotation of flat reflector.
+     |  
+     |  stepMapEndRayEmitter(self)
+     |      RAY MECHANIC: stepMapEnd method
+     |      
+     |      compute ray and monster hits.
+     |  
+     |  stepMapStartFlatReflector(self)
+     |      FLAT REFLECTOR MECHANIC: stepMapStart method.
+     |      
+     |      Rotate reflector based on secondsPerHalfRotation second cycle.
+     |  
+     |  stepMapStartRayEmitter(self)
+     |      RAY MECHANIC: stepMapStart method
+     |      
+     |      Remove rays from sprite layer. They will be added back at the end of the step.
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from engine.servermap.ServerMap:
-     |  
-     |  delHoldable(self, sprite)
-     |      HOLDABLE MECHANIC: sprite drops holding at sprite's location.
-     |      
-     |      Remove attributes from sprite: holding
      |  
      |  delMoveLinear(self, sprite)
      |      MOVE LINEAR MECHANIC: Stop Sprite
@@ -312,6 +332,31 @@ CLASSES
      |      
      |      Returns:
      |          bool: True if all props are in object else False
+     |  
+     |  checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False)
+     |      Check if a location for an object is valid.
+     |      
+     |      Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
+     |      object while taking several things into account, including map size, inBounds layer,
+     |      and outOfBounds layer, collision with other sprites.
+     |      
+     |      Note, the priority evaluation is as follows:
+     |      1) if object collides (overlaps) with another sprite then it is NOT valid.
+     |         Note, two objects with collisionType == 'anchor' are allowed in the same location.
+     |      2) if object does not fully collide (overlap) with the map then it is NOT valid.
+     |      3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
+     |      4) if the inBounds layer is empty or ignoreInBounds == True then it IS valid
+     |      5) if object is fully inside an object or objects on the inBounds layer then it IS valid.
+     |      6) else it is NOT valid.
+     |      
+     |      Args:
+     |          object (dict): A Tiled object.
+     |          newAnchorX (float): x coordiate to check if valid
+     |          newAnchorY (float): y coordiate to check if valid
+     |          ignoreInBounds (bool): if True then do not consider inBounds layers (default False)
+     |      
+     |      Returns:
+     |          bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
      |  
      |  checkObject(self, object)
      |      Check that object has required keys.

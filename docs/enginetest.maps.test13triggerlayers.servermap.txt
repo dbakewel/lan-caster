@@ -53,6 +53,11 @@ CLASSES
      |      
      |      Remove attributes from sprite: holding
      |  
+     |  delMoveLinear(self, sprite)
+     |      MOVE LINEAR MECHANIC: Stop Sprite
+     |      
+     |      Remove attributes from sprite: move
+     |  
      |  delSpriteAction(self, sprite)
      |      ACTION MECHANIC: clear sprite flag from sprite.
      |      
@@ -66,11 +71,6 @@ CLASSES
      |  
      |  delSpriteActionText(self, sprite)
      |      PLAYER ACTION TEXT MECHANIC: remove action text from player linked to sprite.
-     |  
-     |  delSpriteDest(self, sprite)
-     |      MOVE LINEAR MECHANIC: Stop Sprite
-     |      
-     |      Remove attributes from sprite: moveDestX, moveDestY, moveSpeed
      |  
      |  delSpriteLabelText(self, sprite)
      |      LABEL TEXT MECHANIC: remove labelText from sprite.
@@ -88,7 +88,7 @@ CLASSES
      |  initAction(self)
      |      ACTION MECHANIC: init method.
      |      
-     |      Set priority of stepSpriteEndAction to be very low so all other
+     |      Set priority of stepMapEndAction to be very low so all other
      |      code has a chance to consume an action before it is removed.
      |  
      |  initHoldable(self)
@@ -111,6 +111,11 @@ CLASSES
      |      
      |      Add attributes to sprite: holding
      |  
+     |  setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed)
+     |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
+     |      
+     |      Add attributes to sprite: move
+     |  
      |  setSpriteAction(self, sprite)
      |      ACTION MECHANIC: flag sprite that it should perform one action.
      |      
@@ -132,11 +137,6 @@ CLASSES
      |      Note, this will only work if sprite action text has not
      |      already been set during this step.
      |  
-     |  setSpriteDest(self, sprite, moveDestX, moveDestY, moveSpeed)
-     |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
-     |      
-     |      Add attributes to sprite: moveDestX, moveDestY, moveSpeed
-     |  
      |  setSpriteLabelText(self, sprite, labelText)
      |      LABEL TEXT MECHANIC: add labelText to sprite.
      |      
@@ -157,6 +157,28 @@ CLASSES
      |          speechTextDelAfter (float): time after which speechText will be
      |              removed. Default is to remove at start of next step.
      |  
+     |  stepMapEndAction(self)
+     |      ACTION MECHANIC: stepMapEnd method.
+     |      
+     |      If an action was requested but no step method was able to consume
+     |      the action then simply delete the action (consume action it but do nothing).
+     |  
+     |  stepMapEndHoldable(self)
+     |      HOLDABLE MECHANIC: stepMapEnd method.
+     |      
+     |      Drop holdable if sprite has holding and action is requested by user.
+     |  
+     |  stepMapStartActionText(self)
+     |      PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
+     |      
+     |      Each step the actions available may change so start each
+     |      step by removing all action text. The first game mechanic
+     |      that finds an action that could be performed can set a
+     |      new action text.
+     |  
+     |  stepMapStartSpeechText(self)
+     |      SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out.
+     |  
      |  stepMoveLinear(self, sprite)
      |      MOVE LINEAR MECHANIC: stepMove method.
      |      
@@ -165,28 +187,6 @@ CLASSES
      |      it's destination then stop the sprite.
      |      
      |      Add attributes to sprite: direction
-     |  
-     |  stepSpriteEndAction(self, sprite)
-     |      ACTION MECHANIC: stepSpriteEnd method.
-     |      
-     |      If an action was requested but no step method was able to consume
-     |      the action then simply delete the action (consume action it but do nothing).
-     |  
-     |  stepSpriteEndHoldable(self, sprite)
-     |      HOLDABLE MECHANIC: stepSpriteEnd method.
-     |      
-     |      Drop holdable if sprite has holding and action is requested by user.
-     |  
-     |  stepSpriteStartActionText(self, sprite)
-     |      PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
-     |      
-     |      Each step the actions available may change so start each
-     |      step by removing all action text. The first game mechanic
-     |      that finds an action that could be performed can set a
-     |      new action text.
-     |  
-     |  stepSpriteStartSpeechText(self, sprite)
-     |      SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out.
      |  
      |  triggerHoldable(self, holdable, sprite)
      |      HOLDABLE MECHANIC: trigger method.
@@ -232,7 +232,7 @@ CLASSES
      |      Sorts all methods by type and priority.
      |  
      |  addStepMethodPriority(self, stepMethodType, stepMethodName, priority)
-     |      Set the prioriy of a step method.
+     |      Set the priority of a step method.
      |      
      |      This is normally used by subclass init* methods to prioritize step
      |      methods before finding and sorting them.
@@ -244,13 +244,12 @@ CLASSES
      |              higher priority.
      |  
      |  getAllMethodsStr(self)
-     |      Return a multi-line string of all map init*, step*, and trigger* methods.
+     |      Return a multi-line human readable string of all map init*, step*, and trigger* methods.
      |  
      |  getTriggerMethodName(self, trigger)
-     |      Given a trigger name, return the name of a trigger's method.
+     |      Convert a trigger type  to method
      |      
-     |      Convert a trigger type (eg. trigger['type'] == "mapDoor") to method
-     |      name (eg. "triggerMapDoor")
+     |      eg. trigger['type'] == "mapDoor" would return "triggerMapDoor"
      |      
      |      Args:
      |          trigger (dict): Tiled object that is on this maps trigger layer.
@@ -304,7 +303,7 @@ CLASSES
      |      Returns:
      |          bool: True if all props are in object else False
      |  
-     |  checkLocation(self, object, newAnchorX, newAnchorY)
+     |  checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False)
      |      Check if a location for an object is valid.
      |      
      |      Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
@@ -314,15 +313,17 @@ CLASSES
      |      Note, the priority evaluation is as follows:
      |      1) if object collides (overlaps) with another sprite then it is NOT valid.
      |         Note, two objects with collisionType == 'anchor' are allowed in the same location.
-     |      1) if object does not fully collide (overlap) with the map then it is NOT valid.
-     |      2) if object fully collides (overlaps) with an object or objects  on the inBounds layer then it IS valid.
+     |      2) if object does not fully collide (overlap) with the map then it is NOT valid.
      |      3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-     |      4) else it IS valid.
+     |      4) if the inBounds layer is empty or ignoreInBounds == True then it IS valid
+     |      5) if object is fully inside an object or objects on the inBounds layer then it IS valid.
+     |      6) else it is NOT valid.
      |      
      |      Args:
      |          object (dict): A Tiled object.
      |          newAnchorX (float): x coordiate to check if valid
      |          newAnchorY (float): y coordiate to check if valid
+     |          ignoreInBounds (bool): if True then do not consider inBounds layers (default False)
      |      
      |      Returns:
      |          bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
@@ -360,7 +361,7 @@ CLASSES
      |          object (dict): Object is both edited in place and also returned.
      |  
      |  convertTiledColor(self, tiledColor)
-     |      Convert Tiled HEX format
+     |      Convert Tiled color HEX format to pygame format.
      |      
      |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame
      |      needs '#RRGGBBAA' so flip alpha to the end.

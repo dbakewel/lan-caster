@@ -308,7 +308,7 @@ class ServerMap(engine.servermap.ServerMap):
 
         Adds attributes to sprite: respawn
         """
-        sprite['respawn'] = {'mapName': sprite['mapName'], 'x':sprite['anchorX'], 'y':sprite['anchorY']}
+        sprite['respawn'] = {'mapName': sprite['mapName'], 'x': sprite['anchorX'], 'y': sprite['anchorY']}
 
     def delRespawnPoint(self, sprite):
         """RESPAWN POINT MECHANIC: remove the sprites respawn point.
