@@ -184,20 +184,14 @@ class ServerMap(engine.servermap.ServerMap):
             flatreflector['startRotation'] = math.radians(random.randint(0, 179))
             self.setFlatReflectorRotation(flatreflector)
 
-    def stepSpriteStartRayReflector(self, sprite):
-        """FLAT REFLECTOR MECHANIC: stepSpriteStart method.
+    def stepMapStartRayReflector(self):
+        """FLAT REFLECTOR MECHANIC: stepMapStart method.
 
         Rotate reflector based on secondsPerHalfRotation second cycle.
         """
-        if sprite['name'] == 'flatreflector':
+        for sprite in self.findObject(name='flatreflector', returnAll=True):
             self.setFlatReflectorRotation(sprite)
-
-    def stepMapEndRayReflector(self):
-        """FLAT REFLECTOR MECHANIC: stepMapEnd method.
-
-        reflectors rotate every step so map changes every step.
-        """
-        self.setMapChanged()
+            self.setMapChanged()
 
     def delHoldable(self, sprite):
         """FLAT REFLECTOR MECHANIC: extend EXTEND HOLDABLE MECHANIC

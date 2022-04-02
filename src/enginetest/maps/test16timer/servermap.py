@@ -43,8 +43,8 @@ class ServerMap(engine.servermap.ServerMap):
         sprite['holding']['delAfter'] = time.perf_counter() + 5
         super().delHoldable(sprite)
 
-    def stepSpriteStartDelAfter(self, sprite):
-        """DELETE TIMER MECHANIC: stepSpriteStart method.
+    def stepMapStartDelAfter(self):
+        """DELETE TIMER MECHANIC: stepMapStart method.
 
         Delete any sprites that have a delete countdown (delAfter)
         timer that is in the past.
@@ -52,8 +52,9 @@ class ServerMap(engine.servermap.ServerMap):
         Also update label text of any sprites that are counting
         down.
         """
-        if 'delAfter' in sprite:
-            if sprite['delAfter'] < time.perf_counter():
-                self.removeObjectFromAllLayers(sprite)
-            else:
-                self.setSpriteLabelText(sprite, str(math.ceil(sprite['delAfter'] - time.perf_counter())))
+        for sprite in self['sprites']:
+            if 'delAfter' in sprite:
+                if sprite['delAfter'] < time.perf_counter():
+                    self.removeObjectFromAllLayers(sprite)
+                else:
+                    self.setSpriteLabelText(sprite, str(math.ceil(sprite['delAfter'] - time.perf_counter())))

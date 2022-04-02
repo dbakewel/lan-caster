@@ -50,29 +50,29 @@ class ServerMap(demo.servermap.ServerMap):
             else:
                 self.addObject(saw, objectList=self['triggers'])
 
-    def stepSpriteStartSaw(self, sprite):
-        """SAW: stepSpriteStart method.
+    def stepMapStartSaw(self):
+        """SAW: stepMapStart method.
 
         If saw has stopped then start it moving again
         but in the reverse direction.
         """
-
-        if sprite['type'] == "saw":
-            if "moveDestX" not in sprite:
-                # change direction sprite will go the next time is stops.
-                sprite['prop-speed'] *= -1
-                if sprite['prop-speed'] > 0:
-                    self.setSpriteDest(
-                        sprite,
-                        sprite['prop-maxX'],
-                        sprite['anchorY'],
-                        sprite['prop-speed'])
-                else:
-                    self.setSpriteDest(
-                        sprite,
-                        sprite['prop-minX'],
-                        sprite['anchorY'],
-                        sprite['prop-speed'] * -1)
+        for sprite in self['sprites']:
+            if sprite['type'] == "saw":
+                if "moveDestX" not in sprite:
+                    # change direction sprite will go the next time is stops.
+                    sprite['prop-speed'] *= -1
+                    if sprite['prop-speed'] > 0:
+                        self.setSpriteDest(
+                            sprite,
+                            sprite['prop-maxX'],
+                            sprite['anchorY'],
+                            sprite['prop-speed'])
+                    else:
+                        self.setSpriteDest(
+                            sprite,
+                            sprite['prop-minX'],
+                            sprite['anchorY'],
+                            sprite['prop-speed'] * -1)
 
     def triggerSaw(self, trigger, sprite):
         """SAW: trigger method.
@@ -152,12 +152,13 @@ class ServerMap(demo.servermap.ServerMap):
         self.setStopSawDest(saw)
         self.delSpriteDest(saw)
 
-    def stepSpriteEndStopSaw(self, sprite):
-        """STOP SAW: stepSpriteEnd
+    def stepMapEndStopSaw(self):
+        """STOP SAW: stepMapEnd
 
         If a saw was stopped earlier in the step then set it moving
         again now that we are past stepMove methods.
         """
-        if sprite['type'] == "saw" and "stopSawDestX" in sprite:
-            self.setSpriteDest(sprite, sprite['stopSawDestX'], sprite['stopSawDestY'], sprite['stopSawSpeed'])
-            self.delStopSawDest(sprite)
+        for sprite in self['sprites']:
+            if sprite['type'] == "saw" and "stopSawDestX" in sprite:
+                self.setSpriteDest(sprite, sprite['stopSawDestX'], sprite['stopSawDestY'], sprite['stopSawSpeed'])
+                self.delStopSawDest(sprite)

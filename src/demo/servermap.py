@@ -206,18 +206,19 @@ class ServerMap(engine.servermap.ServerMap):
             sprite['speedMultiNormalSpeed'] = sprite['moveSpeed']
             sprite['moveSpeed'] *= trigger['prop-speedMultiplier']
 
-    def stepSpriteEndSpeedMultiplier(self, sprite):
-        """SPEED MULTIPLIER MECHANIC: stepSpriteEnd method.
+    def stepMapEndSpeedMultiplier(self):
+        """SPEED MULTIPLIER MECHANIC: stepMapEnd method.
 
         This will run after stepMove methods. Restore the sprite's
         moveSpeed back to what it was.
 
         Removes attributes from sprite: speedMultiNormalSpeed
         """
-        if "speedMultiNormalSpeed" in sprite:
-            if "moveSpeed" in sprite:
-                sprite['moveSpeed'] = sprite['speedMultiNormalSpeed']
-            del sprite['speedMultiNormalSpeed']
+        for sprite in self['sprites']:
+            if "speedMultiNormalSpeed" in sprite:
+                if "moveSpeed" in sprite:
+                    sprite['moveSpeed'] = sprite['speedMultiNormalSpeed']
+                del sprite['speedMultiNormalSpeed']
 
     ########################################################
     # CHICKEN MECHANIC
@@ -227,8 +228,8 @@ class ServerMap(engine.servermap.ServerMap):
         """CHICKEN MECHANIC: init method."""
         self['CHICKENSPEED'] = 10
 
-    def stepSpriteStartChicken(self, sprite):
-        """CHICKEN MECHANIC: stepSpriteStart method.
+    def stepMapStartChicken(self):
+        """CHICKEN MECHANIC: stepMapStart method.
 
         Have the chicken move towards the closest player, but
         stop before getting to close. Note, if a chicken is
@@ -237,33 +238,34 @@ class ServerMap(engine.servermap.ServerMap):
 
         Also make chicken say random things at random times.
         """
-        if sprite['name'] == "chicken":
-            # if this chicken is not being thrown right now then have it walk to closest player.
-            # we know something is being thrown because it's moveSpeed will be self['THROWSPEED']
-            if ("moveSpeed" not in sprite or (
-                    "moveSpeed" in sprite and sprite['moveSpeed'] != self['THROWSPEED'])):
-                player = False
-                playerDistance = 0
-                # find the closet player.
-                for p in self.findObject(type="player", returnAll=True):
-                    pDis = geo.distance(sprite['anchorX'], sprite['anchorY'], p['anchorX'], p['anchorY'])
-                    if pDis < playerDistance or player == False:
-                        player = p
-                        playerDistance = pDis
-                if player and playerDistance > 50:
-                    self.setSpriteDest(sprite, player['anchorX'], player['anchorY'], self['CHICKENSPEED'])
-                else:
-                    self.delSpriteDest(sprite)
+        for sprite in self['sprites']:
+            if sprite['name'] == "chicken":
+                # if this chicken is not being thrown right now then have it walk to closest player.
+                # we know something is being thrown because it's moveSpeed will be self['THROWSPEED']
+                if ("moveSpeed" not in sprite or (
+                        "moveSpeed" in sprite and sprite['moveSpeed'] != self['THROWSPEED'])):
+                    player = False
+                    playerDistance = 0
+                    # find the closet player.
+                    for p in self.findObject(type="player", returnAll=True):
+                        pDis = geo.distance(sprite['anchorX'], sprite['anchorY'], p['anchorX'], p['anchorY'])
+                        if pDis < playerDistance or player == False:
+                            player = p
+                            playerDistance = pDis
+                    if player and playerDistance > 50:
+                        self.setSpriteDest(sprite, player['anchorX'], player['anchorY'], self['CHICKENSPEED'])
+                    else:
+                        self.delSpriteDest(sprite)
 
-            if random.randint(0, 5000) == 0:
-                # chicken sounds from https://www.chickensandmore.com/chicken-sounds/
-                text = random.choice((
-                    "cluck cluck",
-                    "Life is good, I'm having a good time.",
-                    "Take cover I think I see a hawk!",
-                    "buk, buk, buk, ba-gawk"
-                    ))
-                self.setSpriteSpeechText(sprite, text, time.perf_counter() + 2)
+                if random.randint(0, 5000) == 0:
+                    # chicken sounds from https://www.chickensandmore.com/chicken-sounds/
+                    text = random.choice((
+                        "cluck cluck",
+                        "Life is good, I'm having a good time.",
+                        "Take cover I think I see a hawk!",
+                        "buk, buk, buk, ba-gawk"
+                        ))
+                    self.setSpriteSpeechText(sprite, text, time.perf_counter() + 2)
 
     ########################################################
     # RESPAWN POINT MECHANIC

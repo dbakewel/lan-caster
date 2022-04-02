@@ -61,12 +61,13 @@ class ServerMap(engine.servermap.ServerMap):
 
         return super().checkLocation(object, newAnchorX, newAnchorY)
 
-    def stepSpriteEndSlide(self, sprite):
+    def stepMapEndSlide(self):
         """SLIDE MECHANIC: remove sliding marker from sprite.
 
         Remove the sprite sliding marker now the step is over. It will
         get added again during the next step is the sprite is still inside
         a slide trigger.
         """
-        if "sliding" in sprite:
-            del sprite["sliding"]
+        for sprite in self['sprites']:
+            if "sliding" in sprite:
+                del sprite["sliding"]

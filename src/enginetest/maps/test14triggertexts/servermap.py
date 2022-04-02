@@ -31,12 +31,12 @@ class ServerMap(engine.servermap.ServerMap):
 
         if trigger['prop-textType'] == "speech":
             self.setSpriteSpeechText(sprite, trigger["prop-text"])
-            # Note, speechText is removed a the start of every step (see engine.servermap.stepSpriteStartSpeechText())
+            # Note, speechText is removed at the start of every step (see engine.servermap.stepMapStartSpeechText())
         elif trigger['prop-textType'] == "action":
             self.setSpriteActionText(sprite, trigger["prop-text"])
             # Action text can only be set once per step. The next line will be ignored.
             self.setSpriteActionText(sprite, "SHOULD NOT SEE THIS!!!")
-            # Note, actionText is removed a the start of every step (see engine.servermap.stepSpriteStartActionText())
+            # Note, actionText is removed at the start of every step (see engine.servermap.stepMapStartActionText())
         elif trigger['prop-textType'] == "label":
             self.setSpriteLabelText(sprite, trigger["prop-text"])
             # Label changes last until something else changes them.

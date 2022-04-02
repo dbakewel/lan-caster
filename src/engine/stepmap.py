@@ -24,20 +24,14 @@ class StepMap(engine.map.Map):
 
         1) stepMapStart<MechanicName>(): Called once at the start of each step.
 
-        2) stepSpriteStart<MechanicName>(sprite): Called for every object
-            on the sprite layer.
-
-        3) trigger<MechanicName>(trigger, sprite): Called for every trigger
+        2) trigger<MechanicName>(trigger, sprite): Called for every trigger
             and sprite combination where the sprite anchor point is inside
             the trigger.
 
-        4) stepMove<MechanicName>(sprite): Called for every object
+        3) stepMove<MechanicName>(sprite): Called for every object
             on the sprite layer.
 
-        5) stepSpriteEnd<MechanicName>(sprite): Called for every object
-            on the sprite layer.
-
-        6) stepMapEnd<MechanicName>(): Called once at the end of each step.
+        4) stepMapEnd<MechanicName>(): Called once at the end of each step.
 
     <MechanicName> is replaced with the name of the game mechanic
     being implemented.
@@ -69,10 +63,8 @@ class StepMap(engine.map.Map):
 
         self['stepMethodTypes'] = (
             "stepMapStart",
-            "stepSpriteStart",
             "trigger",
             "stepMove",
-            "stepSpriteEnd",
             "stepMapEnd")
 
         self['stepMethodPriority'] = {}
@@ -114,7 +106,7 @@ class StepMap(engine.map.Map):
 
         for i in range(len(self['stepMethodTypes'])):
             methodType = f"{self['stepMethodTypes'][i]}*"
-            if "Sprite" in self['stepMethodTypes'][i] or "Move" in self['stepMethodTypes'][i]:
+            if "Move" in self['stepMethodTypes'][i]:
                 methodType += "(sprite)"
             elif self['stepMethodTypes'][i].startswith("trigger"):
                 methodType += "(trigger, sprite)"
@@ -214,12 +206,6 @@ class StepMap(engine.map.Map):
             method = getattr(self, methodName, None)
             method()
 
-        # call all self['step']SpriteStart*(sprite) methods for each sprite
-        for methodName in self['stepMethods']['stepSpriteStart']:
-            method = getattr(self, methodName, None)
-            for sprite in self['sprites']:
-                method(sprite)
-
         # for each sprite find all triggers sprite is inside and call
         # corresponding trigger* method.
         for sprite in self['sprites']:
@@ -227,12 +213,6 @@ class StepMap(engine.map.Map):
 
         # call all self['step']Move*(sprite) methods for each sprite
         for methodName in self['stepMethods']['stepMove']:
-            method = getattr(self, methodName, None)
-            for sprite in self['sprites']:
-                method(sprite)
-
-        # call all self['step']SpriteEnd*(sprite) methods  for each sprite
-        for methodName in self['stepMethods']['stepSpriteEnd']:
             method = getattr(self, methodName, None)
             for sprite in self['sprites']:
                 method(sprite)

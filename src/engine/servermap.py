@@ -258,7 +258,7 @@ class ServerMap(engine.stepmap.StepMap):
             self.addObject(holdable, objectList=self['triggers'])
 
         self.addStepMethodPriority("trigger", "triggerHoldable", 10)
-        self.addStepMethodPriority("stepSpriteEnd", "stepSpriteEndHoldable", 89)
+        self.addStepMethodPriority("stepMapEnd", "stepMapEndHoldable", 89)
 
     def triggerHoldable(self, holdable, sprite):
         """HOLDABLE MECHANIC: trigger method.
@@ -276,18 +276,18 @@ class ServerMap(engine.stepmap.StepMap):
             else:
                 self.setSpriteActionText(sprite, f"Available Action: Pick Up {holdable['name']}")
 
-    def stepSpriteEndHoldable(self, sprite):
-        """HOLDABLE MECHANIC: stepSpriteEnd method.
+    def stepMapEndHoldable(self):
+        """HOLDABLE MECHANIC: stepMapEnd method.
 
         Drop holdable if sprite has holding and action is requested by user.
         """
-
-        if "holding" in sprite:
-            if "action" in sprite:
-                self.delSpriteAction(sprite)  # consume sprite action
-                self.delHoldable(sprite)
-            else:
-                self.setSpriteActionText(sprite, f"Available Action: Drop {sprite['holding']['name']}")
+        for sprite in self['sprites']:
+            if "holding" in sprite:
+                if "action" in sprite:
+                    self.delSpriteAction(sprite)  # consume sprite action
+                    self.delHoldable(sprite)
+                else:
+                    self.setSpriteActionText(sprite, f"Available Action: Drop {sprite['holding']['name']}")
 
     def setHoldable(self, holdable, sprite):
         """HOLDABLE MECHANIC: sprite picks up holdable.
@@ -319,18 +319,19 @@ class ServerMap(engine.stepmap.StepMap):
     def initAction(self):
         """ACTION MECHANIC: init method.
 
-        Set priority of stepSpriteEndAction to be very low so all other
+        Set priority of stepMapEndAction to be very low so all other
         code has a chance to consume an action before it is removed.
         """
-        self.addStepMethodPriority("stepSpriteEnd", "stepSpriteEndAction", 90)
+        self.addStepMethodPriority("stepMapEnd", "stepMapEndAction", 90)
 
-    def stepSpriteEndAction(self, sprite):
-        """ACTION MECHANIC: stepSpriteEnd method.
+    def stepMapEndAction(self):
+        """ACTION MECHANIC: stepMapEnd method.
 
         If an action was requested but no step method was able to consume
         the action then simply delete the action (consume action it but do nothing).
         """
-        self.delSpriteAction(sprite)
+        for sprite in self['sprites']:
+            self.delSpriteAction(sprite)
 
     def setSpriteAction(self, sprite):
         """ACTION MECHANIC: flag sprite that it should perform one action.
@@ -367,12 +368,12 @@ class ServerMap(engine.stepmap.StepMap):
     # SPEECH TEXT MECHANIC
     ########################################################
 
-    def stepSpriteStartSpeechText(self, sprite):
+    def stepMapStartSpeechText(self):
         """SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out."""
-
-        if "speechTextDelAfter" not in sprite or (
-                "speechTextDelAfter" in sprite and sprite['speechTextDelAfter'] < time.perf_counter()):
-            self.delSpriteSpeechText(sprite)
+        for sprite in self['sprites']:
+            if "speechTextDelAfter" not in sprite or (
+                    "speechTextDelAfter" in sprite and sprite['speechTextDelAfter'] < time.perf_counter()):
+                self.delSpriteSpeechText(sprite)
 
     def setSpriteSpeechText(self, sprite, speechText, speechTextDelAfter=0):
         """SPEECH TEXT MECHANIC: add speechText to sprite.
@@ -434,7 +435,7 @@ class ServerMap(engine.stepmap.StepMap):
     # PLAYER ACTION TEXT MECHANIC
     ########################################################
 
-    def stepSpriteStartActionText(self, sprite):
+    def stepMapStartActionText(self):
         """PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
 
         Each step the actions available may change so start each
@@ -442,7 +443,8 @@ class ServerMap(engine.stepmap.StepMap):
         that finds an action that could be performed can set a
         new action text.
         """
-        self.delSpriteActionText(sprite)
+        for sprite in self['sprites']:
+            self.delSpriteActionText(sprite)
 
     def setSpriteActionText(self, sprite, actionText):
         """PLAYER ACTION TEXT MECHANIC: add action text to player linked to sprite.
