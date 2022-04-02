@@ -58,17 +58,17 @@ class ServerMap(demo.servermap.ServerMap):
         """
         for sprite in self['sprites']:
             if sprite['type'] == "saw":
-                if "moveDestX" not in sprite:
+                if "move" not in sprite:
                     # change direction sprite will go the next time is stops.
                     sprite['prop-speed'] *= -1
                     if sprite['prop-speed'] > 0:
-                        self.setSpriteDest(
+                        self.setMoveLinear(
                             sprite,
                             sprite['prop-maxX'],
                             sprite['anchorY'],
                             sprite['prop-speed'])
                     else:
-                        self.setSpriteDest(
+                        self.setMoveLinear(
                             sprite,
                             sprite['prop-minX'],
                             sprite['anchorY'],
@@ -115,10 +115,8 @@ class ServerMap(demo.servermap.ServerMap):
 
         Add attributes to sprite: stopSawDestX, stopSawDestY, stopSawSpeed
         """
-        if "moveDestX" in sprite:
-            sprite['stopSawDestX'] = sprite['moveDestX']
-            sprite['stopSawDestY'] = sprite['moveDestY']
-            sprite['stopSawSpeed'] = sprite['moveSpeed']
+        if "move" in sprite:
+            sprite['stopSaw'] = sprite['move']
 
     def delStopSawDest(self, sprite):
         """STOP SAW: Remove Stop Saw data from sprite.
@@ -127,10 +125,8 @@ class ServerMap(demo.servermap.ServerMap):
 
         Remove attributes from sprite: stopSawDestX, stopSawDestY, stopSawSpeed
         """
-        if "stopSawDestX" in sprite:
-            del sprite['stopSawDestX']
-            del sprite['stopSawDestY']
-            del sprite['stopSawSpeed']
+        if "stopSawDest" in sprite:
+            del sprite['stopSawDest']
 
     def triggerStopSaw(self, trigger, sprite):
         """STOP SAW: trigger method.
@@ -150,7 +146,7 @@ class ServerMap(demo.servermap.ServerMap):
         # find saw that trigger stops
         saw = self.findObject(name=trigger['prop-sawName'])
         self.setStopSawDest(saw)
-        self.delSpriteDest(saw)
+        self.delMoveLinear(saw)
 
     def stepMapEndStopSaw(self):
         """STOP SAW: stepMapEnd
@@ -159,6 +155,6 @@ class ServerMap(demo.servermap.ServerMap):
         again now that we are past stepMove methods.
         """
         for sprite in self['sprites']:
-            if sprite['type'] == "saw" and "stopSawDestX" in sprite:
-                self.setSpriteDest(sprite, sprite['stopSawDestX'], sprite['stopSawDestY'], sprite['stopSawSpeed'])
+            if sprite['type'] == "saw" and "stopSawDest" in sprite:
+                sprite['move'] = sprite['stopSawDest']
                 self.delStopSawDest(sprite)

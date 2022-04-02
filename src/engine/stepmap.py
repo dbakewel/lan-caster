@@ -28,7 +28,7 @@ class StepMap(engine.map.Map):
             and sprite combination where the sprite anchor point is inside
             the trigger.
 
-        3) stepMove<MechanicName>(sprite): Called for every object
+        3) stepMove<MechanicName>(sprite): Called for every object GTEEGGGS
             on the sprite layer.
 
         4) stepMapEnd<MechanicName>(): Called once at the end of each step.
@@ -211,11 +211,12 @@ class StepMap(engine.map.Map):
         for sprite in self['sprites']:
             self.stepTriggers(sprite)
 
-        # call all self['step']Move*(sprite) methods for each sprite
+        # call all self['step']Move*(sprite) methods for each sprite HSFHDSHGSG
         for methodName in self['stepMethods']['stepMove']:
             method = getattr(self, methodName, None)
             for sprite in self['sprites']:
-                method(sprite)
+                if 'move' in sprite and sprite['move']['type'] == methodName[8:]:
+                    method(sprite)
 
         # call all self.stepMapEnd*() methods
         for methodName in self['stepMethods']['stepMapEnd']:

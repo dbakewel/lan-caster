@@ -305,7 +305,7 @@ class Server(dict):
         if ipport in self['players']:  # if this is a player who has already joined the game
             sprite = self['players'][ipport]['sprite']
             map = self['maps'][sprite['mapName']]
-            map.setSpriteDest(sprite, msg['moveDestX'], msg['moveDestY'], self['players'][ipport]['moveSpeed'])
+            map.setMoveLinear(sprite, msg['moveDestX'], msg['moveDestY'], self['players'][ipport]['moveSpeed'])
 
     def msgPlayerAction(self, ip, port, ipport, msg):
         """Process msg of type playerAction.
@@ -362,7 +362,7 @@ class Server(dict):
                 sprite = self['players'][ipport]['sprite']
                 map = self['maps'][sprite['mapName']]
                 map.setObjectLocationByAnchor(sprite, msg['moveDestX'], msg['moveDestY'])
-                map.delSpriteDest(sprite)
+                map.delMoveLinear(sprite)
                 log(f"TEST: Player Jumped: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 
     def msgTestTogglePlayerMoveChecking(self, ip, port, ipport, msg):
@@ -433,7 +433,7 @@ class Server(dict):
                 # This can be a problem is player jumped to smaller map.
                 if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
                     destMap.setObjectLocationByAnchor(sprite, map['pixelWidth'] / 2, map['pixelHeight'] / 2)
-                destMap.delSpriteDest(sprite)
+                destMap.delMoveLinear(sprite)
                 log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 
     def msgTestPlayerNextMap(self, ip, port, ipport, msg):
@@ -475,7 +475,7 @@ class Server(dict):
                 # This can be a problem is player jumped to smaller map.
                 if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
                     destMap.setObjectLocationByAnchor(sprite, map['pixelWidth'] / 2, map['pixelHeight'] / 2)
-                destMap.delSpriteDest(sprite)
+                destMap.delMoveLinear(sprite)
                 log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 
     ########################################################

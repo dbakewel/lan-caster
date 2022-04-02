@@ -156,7 +156,7 @@ class ServerMap(engine.servermap.ServerMap):
                 self.delSpriteAction(sprite)
                 throwable = sprite['holding']
                 self.delHoldable(sprite)  # drop throwable on the ground.
-                self.setSpriteDest(
+                self.setMoveLinear(
                     throwable,
                     throwable['anchorX'] + throwArea['prop-deltaX'],
                     throwable['anchorY'] + throwArea['prop-deltaY'],
@@ -175,7 +175,7 @@ class ServerMap(engine.servermap.ServerMap):
         is thrown at an outOfBounds (such as a wall).
         """
         ignoreInBounds = False
-        if "moveSpeed" in object and object['moveSpeed'] == self['THROWSPEED']:
+        if "move" in object and object['move']['type'] == "Linear" and object['move']['s'] == self['THROWSPEED']:
             ignoreInBounds = True
 
         return super().checkLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
@@ -202,9 +202,9 @@ class ServerMap(engine.servermap.ServerMap):
             return
 
         # if sprite is moving.
-        if "moveSpeed" in sprite:
-            sprite['speedMultiNormalSpeed'] = sprite['moveSpeed']
-            sprite['moveSpeed'] *= trigger['prop-speedMultiplier']
+        if "move" in sprite and sprite['move']['type'] == "Linear":
+            sprite['speedMultiNormalSpeed'] = sprite['move']['s']
+            sprite['move']['s'] *= trigger['prop-speedMultiplier']
 
     def stepMapEndSpeedMultiplier(self):
         """SPEED MULTIPLIER MECHANIC: stepMapEnd method.
@@ -216,8 +216,8 @@ class ServerMap(engine.servermap.ServerMap):
         """
         for sprite in self['sprites']:
             if "speedMultiNormalSpeed" in sprite:
-                if "moveSpeed" in sprite:
-                    sprite['moveSpeed'] = sprite['speedMultiNormalSpeed']
+                if "move" in sprite and sprite['move']['type'] == "Linear":
+                    sprite['move']['s'] = sprite['speedMultiNormalSpeed']
                 del sprite['speedMultiNormalSpeed']
 
     ########################################################
@@ -242,8 +242,8 @@ class ServerMap(engine.servermap.ServerMap):
             if sprite['name'] == "chicken":
                 # if this chicken is not being thrown right now then have it walk to closest player.
                 # we know something is being thrown because it's moveSpeed will be self['THROWSPEED']
-                if ("moveSpeed" not in sprite or (
-                        "moveSpeed" in sprite and sprite['moveSpeed'] != self['THROWSPEED'])):
+                if ("move" not in sprite or (
+                        "move" in sprite and sprite['move']['s'] != self['THROWSPEED'])):
                     player = False
                     playerDistance = 0
                     # find the closet player.
@@ -253,9 +253,9 @@ class ServerMap(engine.servermap.ServerMap):
                             player = p
                             playerDistance = pDis
                     if player and playerDistance > 50:
-                        self.setSpriteDest(sprite, player['anchorX'], player['anchorY'], self['CHICKENSPEED'])
+                        self.setMoveLinear(sprite, player['anchorX'], player['anchorY'], self['CHICKENSPEED'])
                     else:
-                        self.delSpriteDest(sprite)
+                        self.delMoveLinear(sprite)
 
                 if random.randint(0, 5000) == 0:
                     # chicken sounds from https://www.chickensandmore.com/chicken-sounds/
@@ -287,7 +287,7 @@ class ServerMap(engine.servermap.ServerMap):
                 destMap = engine.server.SERVER['maps'][sprite['respawnMapName']]
                 self.setObjectMap(sprite, destMap)
             destMap.setObjectLocationByAnchor(sprite, sprite['respawnX'], sprite['respawnY'])
-            destMap.delSpriteDest(sprite)
+            destMap.delMoveLinear(sprite)
         else:
             # else this sprite never went through a respawn point. Perhaps it is something the player carried into over
             # the respawn area. Let's hope it's OK to leave it where it is.

@@ -44,7 +44,7 @@ class ServerMap(engine.servermap.ServerMap):
             trigger["prop-slideDirection"],
             trigger["prop-slideSpeed"] / engine.server.SERVER['fps'] * 1.001
             )
-        self.setSpriteDest(sprite, moveDestX, moveDestY, trigger["prop-slideSpeed"])
+        self.setMoveLinear(sprite, moveDestX, moveDestY, trigger["prop-slideSpeed"])
 
         # mark sprite as sliding so we know it should be allowed to move inside outOfBounds areas.
         sprite["sliding"] = True

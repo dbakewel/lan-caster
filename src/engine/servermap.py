@@ -67,12 +67,13 @@ class ServerMap(engine.stepmap.StepMap):
 
         Add attributes to sprite: direction
         """
-
-        # if sprite is moving
-        if "moveDestX" in sprite and "moveDestY" in sprite and "moveSpeed" in sprite:
+        if 'move' in sprite and sprite['move']['type'] == 'Linear':
+            moveDestX = sprite['move']['x']
+            moveDestY = sprite['move']['y'] 
+            moveSpeed = sprite['move']['s']
 
             # convert pixels per second to pixels per step
-            stepSpeed = sprite['moveSpeed'] / engine.server.SERVER['fps']
+            stepSpeed = moveSpeed / engine.server.SERVER['fps']
 
             # compute a new angle in radians which moves directly towards destination
             # sprite['direction'] is stored and never removed so client will know the last
@@ -80,17 +81,17 @@ class ServerMap(engine.stepmap.StepMap):
             sprite['direction'] = geo.angle(
                 sprite['anchorX'],
                 sprite['anchorY'],
-                sprite['moveDestX'],
-                sprite['moveDestY'])
+                moveDestX,
+                moveDestY)
 
             # while the location is not valid and we are trying to move at least 0.01 pixel.
             inBounds = False
             while not inBounds and stepSpeed > 0.01:
                 # if we can get to the dest this step then just go there.
                 if stepSpeed > geo.distance(sprite['anchorX'], sprite['anchorY'],
-                                            sprite['moveDestX'], sprite['moveDestY']):
-                    newAnchorX = sprite['moveDestX']
-                    newAnchorY = sprite['moveDestY']
+                                            moveDestX, moveDestY):
+                    newAnchorX = moveDestX
+                    newAnchorY = moveDestY
                 else:
                     # compute a new anchor x,y which moves directly towards destination
                     newAnchorX, newAnchorY = geo.project(
@@ -108,32 +109,32 @@ class ServerMap(engine.stepmap.StepMap):
             # if we cannot move directly then try sliding.
             if not inBounds:
                 # reset speed since it was probably reduced above.
-                stepSpeed = sprite['moveSpeed'] / engine.server.SERVER['fps']
+                stepSpeed = moveSpeed / engine.server.SERVER['fps']
 
-                if sprite['moveDestX'] > sprite['anchorX']:
-                    newAnchorX = sprite['anchorX'] + min(stepSpeed, sprite['moveDestX'] - sprite['anchorX'])
-                    if newAnchorX > sprite['moveDestX']:
-                        newAnchorX = sprite['moveDestX']
-                elif sprite['moveDestX'] < sprite['anchorX']:
-                    newAnchorX = sprite['anchorX'] - min(stepSpeed, sprite['anchorX'] - sprite['moveDestX'])
-                    if newAnchorX < sprite['moveDestX']:
-                        newAnchorX = sprite['moveDestX']
+                if moveDestX > sprite['anchorX']:
+                    newAnchorX = sprite['anchorX'] + min(stepSpeed, moveDestX - sprite['anchorX'])
+                    if newAnchorX > moveDestX:
+                        newAnchorX = moveDestX
+                elif moveDestX < sprite['anchorX']:
+                    newAnchorX = sprite['anchorX'] - min(stepSpeed, sprite['anchorX'] - moveDestX)
+                    if newAnchorX < moveDestX:
+                        newAnchorX = moveDestX
                 else:
-                    newAnchorX = sprite['anchorX']
+                    newAnchorX = moveDestX
 
-                if sprite['moveDestY'] > sprite['anchorY']:
-                    newAnchorY = sprite['anchorY'] + min(stepSpeed, sprite['moveDestY'] - sprite['anchorY'])
-                    if newAnchorY > sprite['moveDestY']:
-                        newAnchorY = sprite['moveDestY']
-                elif sprite['moveDestY'] < sprite['anchorY']:
-                    newAnchorY = sprite['anchorY'] - min(stepSpeed, sprite['anchorY'] - sprite['moveDestY'])
-                    if newAnchorY < sprite['moveDestY']:
-                        newAnchorY = sprite['moveDestY']
+                if moveDestY > sprite['anchorY']:
+                    newAnchorY = sprite['anchorY'] + min(stepSpeed, moveDestY - sprite['anchorY'])
+                    if newAnchorY > moveDestY:
+                        newAnchorY = moveDestY
+                elif moveDestY < sprite['anchorY']:
+                    newAnchorY = sprite['anchorY'] - min(stepSpeed, sprite['anchorY'] - moveDestY)
+                    if newAnchorY < moveDestY:
+                        newAnchorY = moveDestY
                 else:
                     newAnchorY = sprite['anchorY']
 
                 # if sprite is moving along X then try to stay at the same Y and move along only along X
-                if newAnchorX != sprite['anchorX'] and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
+                if newAnchorX != moveDestX and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
                     newAnchorY = sprite['anchorY']
                     inBounds = True
                 # elif sprite is moving along Y then try to stay at the same X and move along only along Y
@@ -142,38 +143,32 @@ class ServerMap(engine.stepmap.StepMap):
                     inBounds = True
 
             if inBounds:
-                if geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
+                if geo.distance(moveDestX, sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
                     # if sprite is only going to move less than 0.01 pixel then stop it after this move.
-                    self.delSpriteDest(sprite)
+                    self.delMoveLinear(sprite)
 
                 # move sprite to new location
                 self.setObjectLocationByAnchor(sprite, newAnchorX, newAnchorY)
             else:
                 # sprite cannot move.
-                self.delSpriteDest(sprite)
+                self.delMoveLinear(sprite)
 
-    def setSpriteDest(self, sprite, moveDestX, moveDestY, moveSpeed):
+    def setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed):
         """MOVE LINEAR MECHANIC: Set sprites destination and speed.
 
         Add attributes to sprite: moveDestX, moveDestY, moveSpeed
         """
-        sprite['moveDestX'] = moveDestX
-        sprite['moveDestY'] = moveDestY
-        sprite['moveSpeed'] = moveSpeed
+        sprite['move'] = {'type':'Linear', 'x':moveDestX, 'y': moveDestY, 's': moveSpeed}
         self.setMapChanged()
 
-    def delSpriteDest(self, sprite):
+    def delMoveLinear(self, sprite):
         """MOVE LINEAR MECHANIC: Stop Sprite
 
         Remove attributes from sprite: moveDestX, moveDestY, moveSpeed
         """
-        if "moveDestX" in sprite:
-            del sprite['moveDestX']
-        if "moveDestY" in sprite:
-            del sprite['moveDestY']
-        if "moveSpeed" in sprite:
-            del sprite['moveSpeed']
-        self.setMapChanged()
+        if 'move' in sprite and sprite['move']['type'] == 'Linear':
+            del sprite['move']
+            self.setMapChanged()
 
     ########################################################
     # MAPDOOR MECHANIC
@@ -234,7 +229,7 @@ class ServerMap(engine.stepmap.StepMap):
             if destMap.checkLocation(sprite, dest['anchorX'], dest['anchorY']):
                 self.setObjectMap(sprite, destMap)
                 destMap.setObjectLocationByAnchor(sprite, dest['anchorX'], dest['anchorY'])
-                destMap.delSpriteDest(sprite)
+                destMap.delMoveLinear(sprite)
                 return True  # stop the processing of other triggers since sprite has moved.
             else:
                 log(f"Trigger destination failed checkLocation.", "VERBOSE")
@@ -307,7 +302,7 @@ class ServerMap(engine.stepmap.StepMap):
 
         # put the dropped item at the feet of the sprite that was holding it.
         self.setObjectLocationByAnchor(dropping, sprite['anchorX'], sprite['anchorY'])
-        self.delSpriteDest(dropping)
+        self.delMoveLinear(dropping)
         self.addObject(dropping, objectList=self['sprites'])
         # add holdable type object back as a trigger so it can be picked up again.
         self.addObject(dropping, objectList=self['triggers'])
