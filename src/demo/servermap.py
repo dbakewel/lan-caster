@@ -281,12 +281,12 @@ class ServerMap(engine.servermap.ServerMap):
         do nothing and log a warning.
         """
 
-        if "respawnX" in sprite:
+        if "respawn" in sprite:
             destMap = self
-            if sprite['respawnMapName'] != self['name']:
-                destMap = engine.server.SERVER['maps'][sprite['respawnMapName']]
+            if sprite['respawn']['mapName'] != self['name']:
+                destMap = engine.server.SERVER['maps'][sprite['respawn']['mapName']]
                 self.setObjectMap(sprite, destMap)
-            destMap.setObjectLocationByAnchor(sprite, sprite['respawnX'], sprite['respawnY'])
+            destMap.setObjectLocationByAnchor(sprite, sprite['respawn']['x'], sprite['respawn']['y'])
             destMap.delMoveLinear(sprite)
         else:
             # else this sprite never went through a respawn point. Perhaps it is something the player carried into over
@@ -306,21 +306,14 @@ class ServerMap(engine.servermap.ServerMap):
         Remember sprites location so the sprite can be put back to this
         location later.
 
-        Adds attributes to sprite: respawnMapName, respawnX, respawnY
+        Adds attributes to sprite: respawn
         """
-
-        sprite['respawnMapName'] = sprite['mapName']
-        sprite['respawnX'] = sprite['anchorX']
-        sprite['respawnY'] = sprite['anchorY']
+        sprite['respawn'] = {'mapName': sprite['mapName'], 'x':sprite['anchorX'], 'y':sprite['anchorY']}
 
     def delRespawnPoint(self, sprite):
         """RESPAWN POINT MECHANIC: remove the sprites respawn point.
 
-        Removes attributes from sprite: respawnMapName, respawnX, respawnY
+        Removes attributes from sprite: respawn
         """
-        if "respawnMapName" in sprite:
-            del sprite['respawnMapName']
-        if "respawnX" in sprite:
-            del sprite['respawnX']
-        if "respawnY" in sprite:
-            del sprite['respawnY']
+        if "respawn" in sprite:
+            del sprite['respawn']
