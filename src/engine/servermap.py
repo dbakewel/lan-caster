@@ -256,6 +256,7 @@ class ServerMap(engine.stepmap.StepMap):
 
         for holdable in self.findObject(type="holdable", returnAll=True):
             self.addObject(holdable, objectList=self['triggers'])
+            self.setObjectColisionType(holdable, collisionType='rect', layerName="triggers")
 
         self.addStepMethodPriority("trigger", "triggerHoldable", 10)
         self.addStepMethodPriority("stepMapEnd", "stepMapEndHoldable", 89)

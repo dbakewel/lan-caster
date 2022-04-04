@@ -64,10 +64,10 @@ class ServerMap(engine.servermap.ServerMap):
 
             # kill (change name and tile) any raytargets that collide with the ray.
             for sprite in self.findObject(name='raytarget', returnAll=True):
-                if geo.collides(polyobject, sprite, o1CollisionType='line', o2CollisionType='rect'):
+                if geo.collides(polyobject, 'line', sprite, 'circle'):
                     for attribute in ('name', 'gid', 'tilesetName', 'tilesetTileNumber'):
                         sprite[attribute] = self['skullObject'][attribute]
-            
+
             self.checkObject(polyobject)
             self.addObject(polyobject)
 

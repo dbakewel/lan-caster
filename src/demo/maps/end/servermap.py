@@ -62,7 +62,9 @@ class ServerMap(demo.servermap.ServerMap):
         This puts the lever Tiled object on both layers at the
         same time.
         """
-        self.addObject(self.findObject(type="lever"), objectList=self['triggers'])
+        lever = self.findObject(type="lever");
+        self.addObject(lever, objectList=self['triggers'])
+        self.setObjectColisionType(lever, collisionType='rect', layerName='triggers')
 
     def triggerLever(self, trigger, sprite):
         """LEVER MECHANIC: trigger method.

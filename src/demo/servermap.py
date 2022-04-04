@@ -109,13 +109,17 @@ class ServerMap(engine.servermap.ServerMap):
                 start.setLayerVisablitybyName("rockOnStairs2", False)
                 start.setLayerVisablitybyName("rockOffStairs", True)
                 start.addObject(start['bombLadder1MapDoor'], objectList=start['triggers'])
+                self.setObjectColisionType(start['bombLadder1MapDoor'], collisionType='rect')
                 start.addObject(start['bombLadder1InBounds'], objectList=start['inBounds'])
+                self.setObjectColisionType(start['bombLadder1InBounds'], collisionType='rect')
 
                 # update under map to after the bomb has gone off.
                 under.setLayerVisablitybyName("rockOnStairs", False)
                 under.setLayerVisablitybyName("rockOffStairs", True)
                 under.addObject(under['bombLadder1MapDoor'], objectList=under['triggers'])
+                self.setObjectColisionType(under['bombLadder1MapDoor'], collisionType='rect')
                 under.addObject(under['bombLadder1InBounds'], objectList=under['inBounds'])
+                self.setObjectColisionType(under['bombLadder1InBounds'], collisionType='rect')
             else:
                 self.setSpriteActionText(sprite, f"Available Action: Set off {sprite['holding']['name']}.")
         elif sprite['type'] == "player":  # if sprite is a player
