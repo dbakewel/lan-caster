@@ -46,8 +46,22 @@ class ServerMap(engine.servermap.ServerMap):
             if geo.distance(newAnchorX, newAnchorY, object['anchorX'], object['anchorY']) > 50:
                 return False
 
+            newObjectX = newAnchorX - (object['anchorX'] - object['x'])
+            newObjectY = newAnchorY - (object['anchorY'] - object['y'])
+
             # try and find a pushable object that can be moved out of the way.
-            pushable = self.findObject(x=newAnchorX, y=newAnchorY, type='pushable', exclude=object)
+            pushable = self.findObject(
+                collidesWith={
+                    'x':newObjectX,
+                    'y':newObjectY,
+                    'anchorX':newAnchorX,
+                    'anchorY':newAnchorY,
+                    'width':object['width'],
+                    'height':object['height'],
+                    'collisionType':object['collisionType']
+                },
+                type='pushable',
+                exclude=object)
             if not pushable:
                 return False
 

@@ -49,17 +49,19 @@ class ServerMap(engine.servermap.ServerMap):
             newObjectY = newAnchorY - (object['anchorY'] - object['y'])
 
             # try and find a pushable object that can be moved out of the way.
-            if object['collisionType'] == 'anchor':
-                pushables = self.findObject(x=newAnchorX, y=newAnchorY, type='pushable', exclude=object, returnAll=True)
-            else:
-                pushables = self.findObject(
-                    x=newObjectX,
-                    y=newObjectY,
-                    width=object['width'],
-                    height=object['height'],
-                    type='pushable',
-                    exclude=object,
-                    returnAll=True)
+            pushables = self.findObject(
+                collidesWith={
+                    'x':newObjectX,
+                    'y':newObjectY,
+                    'anchorX':newAnchorX,
+                    'anchorY':newAnchorY,
+                    'width':object['width'],
+                    'height':object['height'],
+                    'collisionType':object['collisionType']
+                },
+                type='pushable',
+                exclude=object,
+                returnAll=True)
             if len(pushables) == 0:
                 return False
 

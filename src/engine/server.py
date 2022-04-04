@@ -432,7 +432,7 @@ class Server(dict):
                 # make sure player is still inside the map bounds.
                 # This can be a problem is player jumped to smaller map.
                 if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
-                    destMap.setObjectLocationByAnchor(sprite, map['pixelWidth'] / 2, map['pixelHeight'] / 2)
+                    destMap.setObjectLocationByAnchor(sprite, destMap['pixelWidth'] / 2, destMap['pixelHeight'] / 2)
                 destMap.delMoveLinear(sprite)
                 log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 
@@ -474,7 +474,7 @@ class Server(dict):
                 # make sure player is still inside the map bounds.
                 # This can be a problem is player jumped to smaller map.
                 if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
-                    destMap.setObjectLocationByAnchor(sprite, map['pixelWidth'] / 2, map['pixelHeight'] / 2)
+                    destMap.setObjectLocationByAnchor(sprite, destMap['pixelWidth'] / 2, destMap['pixelHeight'] / 2)
                 destMap.delMoveLinear(sprite)
                 log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 

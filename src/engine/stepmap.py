@@ -241,8 +241,7 @@ class StepMap(engine.map.Map):
 
         # get a list of all triggers that the sprite's anchor is inside of.
         triggers = self.findObject(
-            x=sprite['anchorX'],
-            y=sprite['anchorY'],
+            collidesWith=sprite,
             objectList=self['triggers'],
             returnAll=True,
             exclude=sprite)
