@@ -109,17 +109,13 @@ class ServerMap(engine.servermap.ServerMap):
                 start.setLayerVisablitybyName("rockOnStairs2", False)
                 start.setLayerVisablitybyName("rockOffStairs", True)
                 start.addObject(start['bombLadder1MapDoor'], objectList=start['triggers'])
-                self.setObjectColisionType(start['bombLadder1MapDoor'], collisionType='rect')
                 start.addObject(start['bombLadder1InBounds'], objectList=start['inBounds'])
-                self.setObjectColisionType(start['bombLadder1InBounds'], collisionType='rect')
 
                 # update under map to after the bomb has gone off.
                 under.setLayerVisablitybyName("rockOnStairs", False)
                 under.setLayerVisablitybyName("rockOffStairs", True)
                 under.addObject(under['bombLadder1MapDoor'], objectList=under['triggers'])
-                self.setObjectColisionType(under['bombLadder1MapDoor'], collisionType='rect')
                 under.addObject(under['bombLadder1InBounds'], objectList=under['inBounds'])
-                self.setObjectColisionType(under['bombLadder1InBounds'], collisionType='rect')
             else:
                 self.setSpriteActionText(sprite, f"Available Action: Set off {sprite['holding']['name']}.")
         elif sprite['type'] == "player":  # if sprite is a player
@@ -171,8 +167,8 @@ class ServerMap(engine.servermap.ServerMap):
         elif sprite['type'] == "player":
             self.setSpriteSpeechText(sprite, f"I could throw something from here.")
 
-    def checkLocation(self, object, newAnchorX, newAnchorY):
-        """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
+    def checkSpriteLocation(self, object, newAnchorX, newAnchorY):
+        """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkSpriteLocation().
 
         Allow things that have bee thrown to ignore inBounds so they
         can be thrown over water. This will still stop an object that
@@ -182,7 +178,7 @@ class ServerMap(engine.servermap.ServerMap):
         if "move" in object and object['move']['type'] == "Linear" and object['move']['s'] == self['THROWSPEED']:
             ignoreInBounds = True
 
-        return super().checkLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
+        return super().checkSpriteLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
 
     ########################################################
     # SPEED MULTIPLIER MECHANIC

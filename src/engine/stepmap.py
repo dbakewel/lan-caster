@@ -239,7 +239,7 @@ class StepMap(engine.map.Map):
             sprite (dict): Tiled object from the sprite layer.
         """
 
-        # get a list of all triggers that the sprite's anchor is inside of.
+        # get a list of all triggers that the sprite is colliding with.
         triggers = self.findObject(
             collidesWith=sprite,
             objectList=self['triggers'],

@@ -25,10 +25,10 @@ class ServerMap(engine.servermap.ServerMap):
         Copy (by reference) all pushable sprites to the outOfBounds layer.
         """
         for pushable in self.findObject(type="pushable", returnAll=True):
-            pushable['collisionType'] = "rect"
+            self.setObjectColisionType(pushable,"rect")
 
-    def checkLocation(self, object, newAnchorX, newAnchorY):
-        """Extend checkLocation().
+    def checkSpriteLocation(self, object, newAnchorX, newAnchorY):
+        """Extend checkSpriteLocation().
 
         If the sprite impacts a pushable then move the pushable away from the
         sprite but only if moving the pushable would be a valid move. Note,
@@ -36,7 +36,7 @@ class ServerMap(engine.servermap.ServerMap):
         """
 
         # if the move is not valid then try to move a pushable out of the way.
-        if not super().checkLocation(object, newAnchorX, newAnchorY):
+        if not super().checkSpriteLocation(object, newAnchorX, newAnchorY):
             # if the object is moving between maps then do not try and push
             if self['name'] != object['mapName']:
                 return False
@@ -103,7 +103,7 @@ class ServerMap(engine.servermap.ServerMap):
                 newPushableAnchorY = newPushableY + (pushable['anchorY'] - pushable['y'])
 
                 # if pushable can be moved to new location then set it to be moved.
-                if self.checkLocation(pushable, newPushableAnchorX, newPushableAnchorY):
+                if self.checkSpriteLocation(pushable, newPushableAnchorX, newPushableAnchorY):
                     newpushables.append((pushable, newPushableAnchorX, newPushableAnchorY))
                 else:
                     return False  # the pushable cannot be moved.
