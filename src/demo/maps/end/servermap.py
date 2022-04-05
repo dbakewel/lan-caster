@@ -62,21 +62,9 @@ class ServerMap(demo.servermap.ServerMap):
         This puts the lever Tiled object on both layers at the
         same time.
         """
-        lever = self.findObject(type="lever");
+        lever = self.findObject(type="lever")
         self.addObject(lever, objectList=self['triggers'])
         self.setObjectColisionType(lever, collisionType='rect', layerName='triggers')
-
-        """
-        The map starts with three objects on the reference layer that will be added
-        to the inBounds layer later. Objects on the triggers, inBounds, and outOfBounds
-        layers automatically get their collisionType set to 'rect' but this does not 
-        happen for objects on the reference layer. This is done here so it will be set
-        when added to the inBounds layer below
-        """
-        for name in ("bridge1InBounds","bridge2InBounds","bridge3InBounds"):
-            self.setObjectColisionType(
-                self.findObject(name=name, objectList=self['reference']), 
-                collisionType='rect')
 
     def triggerLever(self, trigger, sprite):
         """LEVER MECHANIC: trigger method.
@@ -108,9 +96,9 @@ class ServerMap(demo.servermap.ServerMap):
                     self.removeObject(
                         self.findObject(name="bridge3InBounds", objectList=self['inBounds']),
                         objectList=self['inBounds'])
-                    self.addObject(
-                        self.findObject(name="bridge1InBounds", objectList=self['reference']),
-                        objectList=self['inBounds'])
+                    b1ib = self.findObject(name="bridge1InBounds", objectList=self['reference'])
+                    self.addObject(b1ib, objectList=self['inBounds'])
+                    self.setObjectColisionType(b1ib, 'rect')
                 elif lever['gid'] == 382:  # if lever is in center then:
                     self.setLayerVisablitybyName("bridge1", False)
                     start.setLayerVisablitybyName("bridge2", True)
@@ -118,9 +106,9 @@ class ServerMap(demo.servermap.ServerMap):
                     self.removeObject(
                         self.findObject(name="bridge1InBounds", objectList=self['inBounds']),
                         objectList=self['inBounds'])
-                    start.addObject(
-                        start.findObject(name="bridge2InBounds", objectList=start['reference']),
-                        objectList=start['inBounds'])
+                    b2ib = start.findObject(name="bridge2InBounds", objectList=start['reference'])
+                    start.addObject(b2ib, objectList=start['inBounds'])
+                    start.setObjectColisionType(b2ib, 'rect')
                 elif lever['gid'] == 383:  # if lever is on right then:
                     self.setLayerVisablitybyName("bridge1", False)
                     start.setLayerVisablitybyName("bridge2", False)
@@ -131,6 +119,6 @@ class ServerMap(demo.servermap.ServerMap):
                     # the inBounds so we need to check to see if we found anything.
                     if b2ib:
                         start.removeObject(b2ib, objectList=start['inBounds'])
-                    self.addObject(
-                        self.findObject(name="bridge3InBounds", objectList=self['reference']),
-                        objectList=self['inBounds'])
+                    b3ib = self.findObject(name="bridge3InBounds", objectList=self['reference'])
+                    self.addObject(b3ib, objectList=self['inBounds'])
+                    self.setObjectColisionType(b3ib, 'rect')

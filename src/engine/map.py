@@ -342,7 +342,7 @@ class Map(dict):
 
         self.setMapChanged()
 
-    def findObject(self, name=False, type=False, collisionType = False, 
+    def findObject(self, name=False, type=False, collisionType=False, 
                    collidesWith=False, collidesWithcollisionType=False, overlap='partial',
                    objectList=False, exclude=False, returnAll=False):
         '''Find a Tiled object that matches ALL criteria provided.
