@@ -66,6 +66,18 @@ class ServerMap(demo.servermap.ServerMap):
         self.addObject(lever, objectList=self['triggers'])
         self.setObjectColisionType(lever, collisionType='rect', layerName='triggers')
 
+        """
+        The map starts with three objects on the reference layer that will be added
+        to the inBounds layer later. Objects on the triggers, inBounds, and outOfBounds
+        layers automatically get their collisionType set to 'rect' but this does not 
+        happen for objects on the reference layer. This is done here so it will be set
+        when added to the inBounds layer below
+        """
+        for name in ("bridge1InBounds","bridge2InBounds","bridge3InBounds"):
+            self.setObjectColisionType(
+                self.findObject(name=name, objectList=self['reference']), 
+                collisionType='rect')
+
     def triggerLever(self, trigger, sprite):
         """LEVER MECHANIC: trigger method.
 
