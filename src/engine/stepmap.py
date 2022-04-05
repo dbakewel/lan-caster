@@ -262,6 +262,9 @@ class StepMap(engine.map.Map):
 
         # call each triggers method. e.g. trigger['type'] == 'mapDoor' will call triggerMapDoor(trigger, sprite)
         for trigger in triggers:
+            # if the sprite is in the trigger's doNotTrigger list then do nothing.
+            if 'doNotTrigger' in trigger and sprite in trigger['doNotTrigger']:
+                continue
             triggerMethod = getattr(self, self.getTriggerMethodName(trigger), None)
             stopOtherTriggers = triggerMethod(trigger, sprite)
             if stopOtherTriggers:

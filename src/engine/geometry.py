@@ -96,13 +96,17 @@ def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
 # COLLISIONS
 ##############################################
 
-def collides(o1, o1CollisionType, o2, o2CollisionType, overlap='partial'):
+def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=False):
     """
 
-    if overlap can be 'partial' or 'full'. if overlap == 'partial' then return True
+    if overlap can be 'partial' or 'full'. if overlap == 'partail' then return True
     if o1 and o2 overlap in any way. if overlap == 'full' the return True only if o1
     is fully inside o2.
     """
+    if not o1CollisionType:
+        o1CollisionType = o1['collisionType']
+    if not o2CollisionType:
+        o2CollisionType = o2['collisionType']
 
     # do we need to reverse o1 and o2?
     if o2CollisionType == 'anchor' or \

@@ -120,7 +120,7 @@ class ServerMap(engine.servermap.ServerMap):
                     sprite['direction'],
                     newposition - pts[len(pts)-1]['dis'])
 
-            inBounds = self.checkSpriteLocation(sprite, newAnchorX, newAnchorY)
+            inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
 
             if inBounds:
                 # move sprite to new location

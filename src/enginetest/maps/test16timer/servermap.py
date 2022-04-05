@@ -8,7 +8,7 @@ import engine.time as time
 
 
 class ServerMap(engine.servermap.ServerMap):
-    """DELETE AFTER MECHANIC
+    """DELETE HOLDABLE AFTER MECHANIC
 
         If a holdable to dropped on the map then delete it
         from the game in 5 seconds unless it is picked up
@@ -18,21 +18,8 @@ class ServerMap(engine.servermap.ServerMap):
         Uses Mechanics: holdable, label text
     """
 
-    def setHoldable(self, holdable, sprite):
-        """DELETE AFTER MECHANIC: Extend engine.servermap.ServerMap.setHoldable()
-
-        Remove delAfter timer if it exists. This stops the
-        delete countdown timer from a sprite when it is
-        picked up.
-
-        Removes attributes from sprite: delAfter
-        """
-        if 'delAfter' in holdable:
-            del holdable['delAfter']
-        super().setHoldable(holdable, sprite)
-
-    def delHoldable(self, sprite):
-        """DELETE AFTER MECHANIC: Extend engine.servermap.ServerMap.delHoldable()
+    def dropHoldable(self, sprite):
+        """DELETE HOLDABLE AFTER MECHANIC: Extend engine.servermap.ServerMap.dropHoldable()
 
         Add delAfter timer to holdable that sprite is holding.
         Sprite is dropping sprite['holding'] so this will start
@@ -40,11 +27,18 @@ class ServerMap(engine.servermap.ServerMap):
 
         Add attributes to sprite: delAfter
         """
-        sprite['holding']['delAfter'] = time.perf_counter() + 5
-        super().delHoldable(sprite)
+        # got holdable from sprite before dropping it.
+        holdable = sprite['holding']
+        super().dropHoldable(sprite)
 
-    def stepMapStartDelAfter(self):
-        """DELETE AFTER MECHANIC: stepMapStart method.
+        #find trigger for the holdable that was just dropped and add timer.
+        followers = self.getFollowers(holdable)
+        for follower in followers:
+            if 'holdableSprite' in follower and follower['holdableSprite'] == holdable:
+                follower['delAfter'] = time.perf_counter() + 5
+        
+    def stepMapStartDelHoldableAfter(self):
+        """DELETE HOLDABLE AFTER MECHANIC: stepMapStart method.
 
         Delete any sprites that have a delete countdown (delAfter)
         timer that is in the past.
@@ -52,9 +46,11 @@ class ServerMap(engine.servermap.ServerMap):
         Also update label text of any sprites that are counting
         down.
         """
-        for sprite in self['sprites']:
-            if 'delAfter' in sprite:
-                if sprite['delAfter'] < time.perf_counter():
-                    self.removeObjectFromAllLayers(sprite)
+        for trigger in self['triggers']:
+            if 'holdableSprite' in trigger and 'delAfter' in trigger:
+                if trigger['delAfter'] < time.perf_counter():
+                    self.removeFollower(trigger['holdableSprite'], trigger)
+                    self.removeObjectFromAllLayers(trigger['holdableSprite'])
+                    self.removeObjectFromAllLayers(trigger)
                 else:
-                    self.setSpriteLabelText(sprite, str(math.ceil(sprite['delAfter'] - time.perf_counter())))
+                    self.setSpriteLabelText(trigger['holdableSprite'], str(math.ceil(trigger['delAfter'] - time.perf_counter())))

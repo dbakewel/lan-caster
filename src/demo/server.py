@@ -35,7 +35,7 @@ class Server(engine.server.Server):
         # set the collision type of end game object to circle
         end = self['maps']['end']
         endGame = end.findObject(name="endGame", objectList=end['reference'])
-        end.setObjectColisionType(endGame,'circle')
+        endGame['collisionType'] = 'circle'
 
         log(f"Server __init__ complete. Server Attributes:{engine.log.dictToStr(self, 1)}", "VERBOSE")
 

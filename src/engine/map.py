@@ -47,6 +47,9 @@ class Map(dict):
         # Flag to say something on this map has changed
         self.setMapChanged()
 
+        # of the form [{'leader': leaderObject, 'followers': [(followerObject, deltaAnchorX, deltaAnchorY),...]}, ...]
+        self['follow'] = []
+
         # Maps are named based on their mapDirectory
         self['name'] = mapDir.split("/")[-1]
 
@@ -163,7 +166,7 @@ class Map(dict):
                             del object[key]
 
                     if layer['name'] in ('triggers', 'inBounds', 'outOfBounds'):
-                        self.setObjectColisionType(object, 'rect')
+                        object['collisionType'] = 'rect'
 
                     # finally check the object for any other missing data or other issues that is not directly
                     # related to the tiled file format.
@@ -259,6 +262,39 @@ class Map(dict):
         exit()
 
     ########################################################
+    # FOLLOW
+    ########################################################
+
+    def addFollower(self, leaderObject, followerObject):
+        deltaAnchorX = followerObject['anchorX'] - leaderObject['anchorX']
+        deltaAnchorY = followerObject['anchorY'] - leaderObject['anchorY'] 
+        for i in range(len(self['follow'])):
+            if self['follow'][i]['leader'] == leaderObject:
+                if not followerObject in self['follow'][i]['followers']:
+                    self['follow'][i]['followers'].append((followerObject,deltaAnchorX,deltaAnchorY))
+                return
+        self['follow'].append({'leader': leaderObject, 'followers': [(followerObject,deltaAnchorX,deltaAnchorY)]})
+
+
+    def removeFollower(self, leaderObject, followerObject):
+        for i in range(len(self['follow'])):
+            if self['follow'][i]['leader'] == leaderObject:
+                if followerObject in self['follow'][i]['followers']:
+                    self['follow'][i]['followers'].remove(followerObject)
+                    if len(self['follow'][i]['followers']) == 0:
+                        self['follow'].remove(i)
+                return
+
+    def getFollowers(self, leaderObject):
+        followers = []
+        for i in range(len(self['follow'])):
+            if self['follow'][i]['leader'] == leaderObject:
+                for followerObject, deltaAnchorX, deltaAnchorY in self['follow'][i]['followers']:
+                    followers.append(followerObject)
+        return followers
+
+
+    ########################################################
     # OBJECT LIST (default objectList is self['sprites'])
     ########################################################
 
@@ -343,7 +379,7 @@ class Map(dict):
         self.setMapChanged()
 
     def findObject(self, name=False, type=False, collisionType=False, 
-                   collidesWith=False, collidesWithcollisionType=False, overlap='partial',
+                   collidesWith=False, overlap='partial',
                    objectList=False, exclude=False, returnAll=False):
         '''Find a Tiled object that matches ALL criteria provided.
 
@@ -377,29 +413,18 @@ class Map(dict):
         '''
         if not isinstance(objectList, list):
             objectList = self['sprites']
-
-        # find if layer matches a well known layer so we can use it for collision detection below.
-        layerName='default'
-        for ln in ('triggers','sprites','reference','inBounds','outOfBounds'):
-            if objectList == self[ln]:
-                layerName = ln
         
         found = []
         for object in objectList:
+            if name != False and object['name'] != name:
+                continue
             if type != False and object['type'] != type:
                 continue
-            if name != False and object['name'] != name:
+            if collisionType != False and object['collisionType'] != collisionType:
                 continue
             if exclude != False and exclude == object:
                 continue
-            if collisionType != False and object['collisionType'] != self.getObjectColisionType(object,layerName):
-                continue
-            if collidesWith != False:
-                if collidesWithcollisionType == False:
-                    collidesWithcollisionType = self.getObjectColisionType(collidesWith)
-                if not geo.collides(collidesWith, collidesWithcollisionType,
-                    object, self.getObjectColisionType(object,layerName),
-                    overlap=overlap):
+            if collidesWith != False and not geo.collides(collidesWith, object, overlap=overlap):
                     continue
             if not returnAll:
                 return object
@@ -457,7 +482,7 @@ class Map(dict):
         if "height" not in object:
             object['height'] = 0
         if "collisionType" not in object:
-            self.setObjectColisionType(object)
+            object['collisionType'] = 'anchor'
 
         # if this is a Tile Object
         if "gid" in object and ("tilesetName" not in object or "tilesetTileNumber" not in object):
@@ -481,7 +506,7 @@ class Map(dict):
         # The original object has been edited but also return it so the function can be passed
         return object
 
-    def checkSpriteLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False):
+    def checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False):
         """Check if a location for an object is valid.
 
         Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
@@ -528,15 +553,16 @@ class Map(dict):
             return False
 
         # if object does not fully collide (overlap) with the map then it is NOT valid.
-        if not geo.collides(collidesWith,self.getObjectColisionType(collidesWith,'sprite'),
+        if not geo.collides(collidesWith,
                 {
                     'x':0,
                     'y':0,
                     'anchorX':self['pixelWidth']/2,
                     'anchorY':self['pixelHeight']/2,
                     'width':self['pixelWidth'],
-                    'height':self['pixelHeight']
-                }, 'rect',
+                    'height':self['pixelHeight'],
+                    'collisionType': 'rect'
+                },
                 overlap='full'):
             return False
 
@@ -589,7 +615,8 @@ class Map(dict):
         """Set an objects location using its top/left corner.
 
         Updates an object x,y and then sets it anchor point to match.
-        Do not use without good reason. Most objects should have their
+        
+        ***Do not use without good reason.*** Most objects should have their
         location set by setObjectLocationByAnchor()
 
         Args:
@@ -636,6 +663,12 @@ class Map(dict):
             # set anchor to be the middle of the objects rect.
             object['x'] = anchorX - object['width'] / 2
             object['y'] = anchorY - object['height'] / 2
+
+        for i in range(len(self['follow'])):
+            if self['follow'][i]['leader'] == object:
+                for followerObject, deltaAnchorX, deltaAnchorY in self['follow'][i]['followers']:
+                    self.setObjectLocationByAnchor(followerObject, anchorX+deltaAnchorX, anchorY+deltaAnchorY)
+                
         self.setMapChanged()
 
     def setObjectMap(self, object, destMap):
@@ -670,31 +703,10 @@ class Map(dict):
             self.removeObject(object, objectList=self['outOfBounds'])
             destMap.addObject(object, objectList=destMap['outOfBounds'])
 
-    def setObjectColisionType(self, object, collisionType='anchor', layerName="all"):
-        if layerName == "all":
-            object['collisionType'] = collisionType
-        else:
-            if 'collisionType' not in object:
-                if layerName == 'default':
-                    object['collisionType'] = collisionType
-                else:
-                    object['collisionType'] = {'default': collisionType, layerName: collisionType}
-            elif type(object['collisionType']) is str:
-                if layerName == 'default':
-                    object['collisionType'] = collisionType
-                else:
-                    object['collisionType'] = {'default': object['collisionType'], layerName: collisionType}
-            else:
-                object['collisionType'][layerName] = collisionType
-
-    def getObjectColisionType(self, object, layerName='default'):
-        if type(object['collisionType']) is str:
-            return object['collisionType']
-        elif layerName in object['collisionType']:
-            return object['collisionType'][layerName]
-        else:
-            return object['collisionType']['default']
-
+        for i in range(len(self['follow'])):
+            if self['follow'][i]['leader'] == object:
+                for followerObject, deltaAnchorX, deltaAnchorY in self['follow'][i]['followers']:
+                    self.setObjectMap(followerObject, destMap)
 
     ########################################################
     # LAYER VISABILITY MECHANIC

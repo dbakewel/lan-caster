@@ -21,8 +21,11 @@ class ServerMap(engine.servermap.ServerMap):
         (by reference) sprites to trigger layer.
         """
         for portkey in self.findObject(type="portkey", returnAll=True):
-            self.addObject(portkey, objectList=self['triggers'])
-            self.setObjectColisionType(portkey, collisionType='rect', layerName="triggers")
+            portkeyTrigger = portkey.copy()
+            portkeyTrigger['collisionType'] = 'rect'
+            portkeyTrigger['doNotTrigger'] = [portkey]
+            self.addObject(portkeyTrigger, objectList=self['triggers'])
+            self.addFollower(portkey, portkeyTrigger)
 
     def triggerPortkey(self, portkey, sprite):
         """PORTKEY MECHANIC: trigger method.

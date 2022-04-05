@@ -103,7 +103,7 @@ class ServerMap(engine.stepmap.StepMap):
                         )
 
                 # if we are out of bounds then slow down and try again. Mabye not going as far will be in bounds.
-                inBounds = self.checkSpriteLocation(sprite, newAnchorX, newAnchorY)
+                inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
                 if not inBounds:
                     stepSpeed *= 0.9
 
@@ -135,11 +135,11 @@ class ServerMap(engine.stepmap.StepMap):
                     newAnchorY = sprite['anchorY']
 
                 # if sprite is moving along X then try to stay at the same Y and move along only along X
-                if newAnchorX != moveDestX and self.checkSpriteLocation(sprite, newAnchorX, sprite['anchorY']):
+                if newAnchorX != moveDestX and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
                     newAnchorY = sprite['anchorY']
                     inBounds = True
                 # elif sprite is moving along Y then try to stay at the same X and move along only along Y
-                elif newAnchorY != sprite['anchorY'] and self.checkSpriteLocation(sprite, sprite['anchorX'], newAnchorY):
+                elif newAnchorY != sprite['anchorY'] and self.checkLocation(sprite, sprite['anchorX'], newAnchorY):
                     newAnchorX = sprite['anchorX']
                     inBounds = True
 
@@ -206,7 +206,7 @@ class ServerMap(engine.stepmap.StepMap):
         longer in the same location.
 
         Note, sprite will only be moved if destination is valid based
-        on calling checkSpriteLocation().
+        on calling checkLocation().
 
         Returns:
             True: if sprite was moved.
@@ -231,7 +231,7 @@ class ServerMap(engine.stepmap.StepMap):
         dest = destMap.findObject(name=trigger['prop-destReference'], objectList=destMap['reference'])
         if dest:
             # if dest location is a valid location for sprite.
-            if destMap.checkSpriteLocation(sprite, dest['anchorX'], dest['anchorY']):
+            if destMap.checkLocation(sprite, dest['anchorX'], dest['anchorY']):
                 self.setObjectMap(sprite, destMap)
                 destMap.setObjectLocationByAnchor(sprite, dest['anchorX'], dest['anchorY'])
                 destMap.delMoveLinear(sprite)
@@ -255,13 +255,12 @@ class ServerMap(engine.stepmap.StepMap):
         """
 
         for holdable in self.findObject(type="holdable", returnAll=True):
-            self.addObject(holdable, objectList=self['triggers'])
-            self.setObjectColisionType(holdable, collisionType='rect', layerName="triggers")
+            self.addHoldableTrigger(holdable)
 
         self.addStepMethodPriority("trigger", "triggerHoldable", 10)
         self.addStepMethodPriority("stepMapEnd", "stepMapEndHoldable", 89)
 
-    def triggerHoldable(self, holdable, sprite):
+    def triggerHoldable(self, holdableTrigger, sprite):
         """HOLDABLE MECHANIC: trigger method.
 
         The sprite's anchor is inside the trigger.
@@ -273,9 +272,9 @@ class ServerMap(engine.stepmap.StepMap):
         if "holding" not in sprite:
             if "action" in sprite:
                 self.delSpriteAction(sprite)
-                self.setHoldable(holdable, sprite)
+                self.pickupHoldable(holdableTrigger, sprite)
             else:
-                self.setSpriteActionText(sprite, f"Available Action: Pick Up {holdable['name']}")
+                self.setSpriteActionText(sprite, f"Available Action: Pick Up {holdableTrigger['holdableSprite']['name']}")
 
     def stepMapEndHoldable(self):
         """HOLDABLE MECHANIC: stepMapEnd method.
@@ -286,32 +285,42 @@ class ServerMap(engine.stepmap.StepMap):
             if "holding" in sprite:
                 if "action" in sprite:
                     self.delSpriteAction(sprite)  # consume sprite action
-                    self.delHoldable(sprite)
+                    self.dropHoldable(sprite)
                 else:
                     self.setSpriteActionText(sprite, f"Available Action: Drop {sprite['holding']['name']}")
 
-    def setHoldable(self, holdable, sprite):
+    def pickupHoldable(self, holdableTrigger, sprite):
         """HOLDABLE MECHANIC: sprite picks up holdable.
 
         Add attributes to sprite: holding
         """
+        holdable = holdableTrigger['holdableSprite']
+        self.removeFollower(holdable,holdableTrigger)
+        self.removeObjectFromAllLayers(holdableTrigger)
         self.removeObjectFromAllLayers(holdable)
         sprite['holding'] = holdable
 
-    def delHoldable(self, sprite):
+    def dropHoldable(self, sprite):
         """HOLDABLE MECHANIC: sprite drops holding at sprite's location.
 
         Remove attributes from sprite: holding
         """
-        dropping = sprite['holding']
+        holdable = sprite['holding']
         del sprite['holding']
 
         # put the dropped item at the feet of the sprite that was holding it.
-        self.setObjectLocationByAnchor(dropping, sprite['anchorX'], sprite['anchorY'])
-        self.delMoveLinear(dropping)
-        self.addObject(dropping, objectList=self['sprites'])
-        # add holdable type object back as a trigger so it can be picked up again.
-        self.addObject(dropping, objectList=self['triggers'])
+        self.setObjectLocationByAnchor(holdable, sprite['anchorX'], sprite['anchorY'])
+        self.delMoveLinear(holdable)
+        self.addObject(holdable, objectList=self['sprites'])
+        self.addHoldableTrigger(holdable)
+
+    def addHoldableTrigger(self, holdable):
+        holdableTrigger = holdable.copy()
+        holdableTrigger['collisionType'] = 'rect'
+        holdableTrigger['doNotTrigger'] = [holdable]
+        holdableTrigger['holdableSprite'] = holdable
+        self.addObject(holdableTrigger, objectList=self['triggers'])
+        self.addFollower(holdable, holdableTrigger)
 
     ########################################################
     # ACTION MECHANIC

@@ -63,8 +63,11 @@ class ServerMap(demo.servermap.ServerMap):
         same time.
         """
         lever = self.findObject(type="lever")
-        self.addObject(lever, objectList=self['triggers'])
-        self.setObjectColisionType(lever, collisionType='rect', layerName='triggers')
+        leverTrigger = lever.copy()
+        leverTrigger['collisionType'] = 'rect'
+        leverTrigger['doNotTrigger'] = [lever]
+        self.addObject(leverTrigger, objectList=self['triggers'])
+        self.addFollower(lever, leverTrigger)
 
     def triggerLever(self, trigger, sprite):
         """LEVER MECHANIC: trigger method.
@@ -98,7 +101,7 @@ class ServerMap(demo.servermap.ServerMap):
                         objectList=self['inBounds'])
                     b1ib = self.findObject(name="bridge1InBounds", objectList=self['reference'])
                     self.addObject(b1ib, objectList=self['inBounds'])
-                    self.setObjectColisionType(b1ib, 'rect')
+                    b1ib['collisionType'] = 'rect'
                 elif lever['gid'] == 382:  # if lever is in center then:
                     self.setLayerVisablitybyName("bridge1", False)
                     start.setLayerVisablitybyName("bridge2", True)
@@ -108,7 +111,7 @@ class ServerMap(demo.servermap.ServerMap):
                         objectList=self['inBounds'])
                     b2ib = start.findObject(name="bridge2InBounds", objectList=start['reference'])
                     start.addObject(b2ib, objectList=start['inBounds'])
-                    start.setObjectColisionType(b2ib, 'rect')
+                    b2ib['collisionType'] = 'rect'
                 elif lever['gid'] == 383:  # if lever is on right then:
                     self.setLayerVisablitybyName("bridge1", False)
                     start.setLayerVisablitybyName("bridge2", False)
@@ -121,4 +124,4 @@ class ServerMap(demo.servermap.ServerMap):
                         start.removeObject(b2ib, objectList=start['inBounds'])
                     b3ib = self.findObject(name="bridge3InBounds", objectList=self['reference'])
                     self.addObject(b3ib, objectList=self['inBounds'])
-                    self.setObjectColisionType(b3ib, 'rect')
+                    b3ib['collisionType'] = 'rect'

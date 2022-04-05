@@ -54,6 +54,7 @@ class ServerMap(engine.servermap.ServerMap):
                 p['y'] -= emitter['y']
 
             polyobject = {
+                "collisionType" : 'line',
                 "lineColor": emitter['prop-rayColor'],
                 "lineThickness": emitter['prop-rayThickness'],
                 "name": "ray",
@@ -64,7 +65,7 @@ class ServerMap(engine.servermap.ServerMap):
 
             # kill (change name and tile) any raytargets that collide with the ray.
             for sprite in self.findObject(name='raytarget', returnAll=True):
-                if geo.collides(polyobject, 'line', sprite, 'circle'):
+                if geo.collides(polyobject, sprite, o2CollisionType='circle'):
                     for attribute in ('name', 'gid', 'tilesetName', 'tilesetTileNumber'):
                         sprite[attribute] = self['skullObject'][attribute]
 
@@ -191,16 +192,17 @@ class ServerMap(engine.servermap.ServerMap):
             self.setFlatReflectorRotation(sprite)
             self.setMapChanged()
 
-    def delHoldable(self, sprite):
+    def dropHoldable(self, sprite):
         """FLAT REFLECTOR MECHANIC: extend EXTEND HOLDABLE MECHANIC
 
         reset reflextor start position when dropped so it picks up where
         it was when it was picked up.
         """
         if sprite['holding']['name'] == "flatreflector":
+            sprite['holding']['startRotation'] = sprite['holding']['rotation'] - math.pi * (time.perf_counter()/self['rayReflectorRotationSpeed'] % 1)
             self.setFlatReflectorRotation(sprite['holding'])
 
-        super().delHoldable(sprite)
+        super().dropHoldable(sprite)
 
     def setFlatReflectorRotation(self, flatreflector):
         """FLAT REFLECTOR MECHANIC: set rotation of flat reflector."""

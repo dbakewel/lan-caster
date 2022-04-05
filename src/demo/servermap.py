@@ -155,7 +155,7 @@ class ServerMap(engine.servermap.ServerMap):
             if "action" in sprite:
                 self.delSpriteAction(sprite)
                 throwable = sprite['holding']
-                self.delHoldable(sprite)  # drop throwable on the ground.
+                self.dropHoldable(sprite)  # drop throwable on the ground.
                 self.setMoveLinear(
                     throwable,
                     throwable['anchorX'] + throwArea['prop-deltaX'],
@@ -167,8 +167,8 @@ class ServerMap(engine.servermap.ServerMap):
         elif sprite['type'] == "player":
             self.setSpriteSpeechText(sprite, f"I could throw something from here.")
 
-    def checkSpriteLocation(self, object, newAnchorX, newAnchorY):
-        """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkSpriteLocation().
+    def checkLocation(self, object, newAnchorX, newAnchorY):
+        """THROW AREA MECHANIC: Extend MOVE LINEAR MECHANIC checkLocation().
 
         Allow things that have bee thrown to ignore inBounds so they
         can be thrown over water. This will still stop an object that
@@ -178,7 +178,7 @@ class ServerMap(engine.servermap.ServerMap):
         if "move" in object and object['move']['type'] == "Linear" and object['move']['s'] == self['THROWSPEED']:
             ignoreInBounds = True
 
-        return super().checkSpriteLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
+        return super().checkLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
 
     ########################################################
     # SPEED MULTIPLIER MECHANIC

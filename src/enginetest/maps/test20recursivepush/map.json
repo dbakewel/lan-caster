@@ -77,7 +77,7 @@
                  "rotation":0,
                  "text":
                     {
-                     "text":"Same as \"Push Test\" map but a row of blocks can be pushed. This is done by making the checkSpriteLocation() method recursive.",
+                     "text":"Same as \"Push Test\" map but a row of blocks can be pushed. This is done by making the checkLocation() method recursive.",
                      "wrap":true
                     },
                  "type":"",

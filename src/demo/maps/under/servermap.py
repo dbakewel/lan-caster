@@ -48,8 +48,11 @@ class ServerMap(demo.servermap.ServerMap):
                 # change the saw type so it will not do anything any more.
                 saw['type'] = "sawBroken"
             else:
-                self.addObject(saw, objectList=self['triggers'])
-                self.setObjectColisionType(saw, collisionType='rect', layerName='triggers')
+                sawTrigger = saw.copy()
+                sawTrigger['collisionType'] = 'rect'
+                sawTrigger['doNotTrigger'] = [saw]
+                self.addObject(sawTrigger, objectList=self['triggers'])
+                self.addFollower(saw, sawTrigger)
 
     def stepMapStartSaw(self):
         """SAW: stepMapStart method.
