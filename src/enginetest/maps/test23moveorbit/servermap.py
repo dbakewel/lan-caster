@@ -53,7 +53,7 @@ class ServerMap(engine.servermap.ServerMap):
                         newAngle,
                         radius)
 
-            inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
+            inBounds = self.checkSpriteLocation(sprite, newAnchorX, newAnchorY)
 
             if inBounds:
                 # move sprite to new location

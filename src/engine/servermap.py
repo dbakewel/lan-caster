@@ -103,7 +103,7 @@ class ServerMap(engine.stepmap.StepMap):
                         )
 
                 # if we are out of bounds then slow down and try again. Mabye not going as far will be in bounds.
-                inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
+                inBounds = self.checkSpriteLocation(sprite, newAnchorX, newAnchorY)
                 if not inBounds:
                     stepSpeed *= 0.9
 
@@ -135,11 +135,11 @@ class ServerMap(engine.stepmap.StepMap):
                     newAnchorY = sprite['anchorY']
 
                 # if sprite is moving along X then try to stay at the same Y and move along only along X
-                if newAnchorX != moveDestX and self.checkLocation(sprite, newAnchorX, sprite['anchorY']):
+                if newAnchorX != moveDestX and self.checkSpriteLocation(sprite, newAnchorX, sprite['anchorY']):
                     newAnchorY = sprite['anchorY']
                     inBounds = True
                 # elif sprite is moving along Y then try to stay at the same X and move along only along Y
-                elif newAnchorY != sprite['anchorY'] and self.checkLocation(sprite, sprite['anchorX'], newAnchorY):
+                elif newAnchorY != sprite['anchorY'] and self.checkSpriteLocation(sprite, sprite['anchorX'], newAnchorY):
                     newAnchorX = sprite['anchorX']
                     inBounds = True
 
@@ -206,7 +206,7 @@ class ServerMap(engine.stepmap.StepMap):
         longer in the same location.
 
         Note, sprite will only be moved if destination is valid based
-        on calling checkLocation().
+        on calling checkSpriteLocation().
 
         Returns:
             True: if sprite was moved.
@@ -231,7 +231,7 @@ class ServerMap(engine.stepmap.StepMap):
         dest = destMap.findObject(name=trigger['prop-destReference'], objectList=destMap['reference'])
         if dest:
             # if dest location is a valid location for sprite.
-            if destMap.checkLocation(sprite, dest['anchorX'], dest['anchorY']):
+            if destMap.checkSpriteLocation(sprite, dest['anchorX'], dest['anchorY']):
                 self.setObjectMap(sprite, destMap)
                 destMap.setObjectLocationByAnchor(sprite, dest['anchorX'], dest['anchorY'])
                 destMap.delMoveLinear(sprite)
@@ -256,6 +256,7 @@ class ServerMap(engine.stepmap.StepMap):
 
         for holdable in self.findObject(type="holdable", returnAll=True):
             self.addObject(holdable, objectList=self['triggers'])
+            self.setObjectColisionType(holdable, collisionType='rect', layerName="triggers")
 
         self.addStepMethodPriority("trigger", "triggerHoldable", 10)
         self.addStepMethodPriority("stepMapEnd", "stepMapEndHoldable", 89)

@@ -59,7 +59,7 @@ def distance(x1, y1, x2, y2):
 # GAME ENGINE SPECIFIC GEOMETRY
 ##############################################
 
-def angleLable(a):
+def angleLabel(a):
     """ Returns the label ('Up', 'Down', 'Left', 'Right') of angle a """
     if a < math.pi / 4:
         label = 'Right'
@@ -96,35 +96,171 @@ def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
 # COLLISIONS
 ##############################################
 
-
-def objectContains(object, x, y, width=0, height=0):
-    """ Returns True if rect defined by x, y, width, height overlaps object's rect else returns False.
-
-    Note, a rect with width=0 and height==0 is a point.
+def collides(o1, o1CollisionType, o2, o2CollisionType, overlap='partial'):
     """
 
-    if width == 0 and height == 0:
-        # if object's rect contains point defined by x,y
-        if object['x'] <= x and x <= object['x'] + object['width'] and \
-           object['y'] <= y and y <= object['y'] + object['height']:
-            return True
-    else:
-        # if object's rect overlaps rect defined by x, y, width, height
-        if objectContains({'x': x, 'y': y, 'width': width, 'height': height}, object['x'], object['y']) or \
-                objectContains(object, x, y) or \
-                objectContains(object, x + width, y) or \
-                objectContains(object, x, y + height) or \
-                objectContains(object, x + width, y + height):
+    if overlap can be 'partial' or 'full'. if overlap == 'partial' then return True
+    if o1 and o2 overlap in any way. if overlap == 'full' the return True only if o1
+    is fully inside o2.
+    """
+
+    # do we need to reverse o1 and o2?
+    if o2CollisionType == 'anchor' or \
+            o1CollisionType == 'rect' and o2CollisionType == 'line' or \
+            o1CollisionType == 'circle' and o2CollisionType == 'line' or \
+            o1CollisionType == 'circle' and o2CollisionType == 'rect':
+        o1, o2 = o2, o1
+        o1CollisionType, o2CollisionType = o2CollisionType, o1CollisionType
+
+    # none and anything never collide. anchor and anchor never collide.
+    if o1CollisionType == 'none' or o2CollisionType == 'none' or o2CollisionType == 'anchor':
+        return False
+
+    for o,ct in ((o1,o1CollisionType),(o2,o2CollisionType)):
+        if ct == 'line' and 'polyline' not in o and 'polygon' not in o:
+                log("collision type line requires polyline or polygon object.", "ERROR")
+                return False
+        if ct == 'circle' and o['width'] != o['height']:
+                log("collision type circle assumes width == height which it does not.", "WARMING")
+                return False
+
+    if o1CollisionType == 'anchor' and o2CollisionType == 'rect':
+        if o2['x'] <= o1['anchorX'] and o1['anchorX'] <= o2['x'] + o2['width'] and \
+            o2['y'] <= o1['anchorY'] and o1['anchorY'] <= o2['y'] + o2['height']:
             return True
 
+    elif o1CollisionType == 'anchor' and o2CollisionType == 'circle':
+        if distance(o1['anchorX'],o1['anchorY'],o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) <= o2['width']/2:
+            return True
+
+    elif o1CollisionType == 'line' and o2CollisionType == 'line':
+        log("line/line collisions not yet supported.", "WARNING")
+
+    elif o1CollisionType == 'line' and o2CollisionType == 'rect':
+        if 'polyline' in o1:
+            lpts = o1['polyline']
+        else:
+            lpts = o1['polygon']
+        if overlap=='partial':
+            # if one of the points in the poly is inside the rect.
+            for i in range(0,len(lpts)):
+                if collides({'anchorX': o1['x']+lpts[i]['x'], 'anchorY':o1['y']+lpts[i]['y']},'anchor', o2, 'rect'):
+                    return True
+            # if one of the line segments from line intersects rect.
+            for i in range(1,len(lpts)):
+                if intersectLineRect(
+                    o1['x']+lpts[i-1]['x'], o1['y']+lpts[i-1]['y'], 
+                    o1['x']+lpts[i]['x'], o1['y']+lpts[i]['y'], 
+                    o2['x'], o2['y'], o2['width'], o2['height']):
+                    return True
+            # check last leg of polygon
+            if 'polygon' in o1:
+                if intersectLineRect(
+                    o1['x']+lpts[0]['x'], o1['y']+lpts[0]['y'], 
+                    o1['x']+lpts[len(lpts)-1]['x'], o1['y']+lpts[len(lpts)-1]['y'], 
+                    o2['x'], o2['y'], o2['width'], o2['height']):
+                    return True
+        else:
+            # if all of the points in the poly are inside the rect.
+            for i in range(0,len(lpts)):
+                if not collides({'anchorX': o1['x']+lpts[i]['x'], 'anchorY':o1['y']+lpts[i]['y']},'anchor',o2,'rect'):
+                    return False
+            return True
+
+    elif o1CollisionType == 'line' and o2CollisionType == 'circle':
+        if 'polyline' in o1:
+            lpts = o1['polyline']
+        else:
+            lpts = o1['polygon']
+        if overlap=='partial':
+            # if one of the points in the poly is inside the circle.
+            for i in range(0,len(lpts)):
+                if distance(o1['x']+lpts[0]['x'], o1['y']+lpts[0]['y'],
+                        o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) <= o2['width']/2:
+                    return True
+            # if one of the line segments from line intersects circle.
+            for i in range(1,len(lpts)):
+                if intersectLineCircle(
+                    o1['x']+lpts[i-1]['x'], o1['y']+lpts[i-1]['y'], 
+                    o1['x']+lpts[i]['x'], o1['y']+lpts[i]['y'], 
+                    o2['x'] + o2['width']/2,o2['y'] + o2['height']/2, o2['width']/2):
+                    return True
+            # check last leg of polygon
+            if 'polygon' in o1:
+                if intersectLineCircle(
+                    o1['x']+lpts[0]['x'], o1['y']+lpts[0]['y'], 
+                    o1['x']+lpts[len(lpts)-1]['x'], o1['y']+lpts[len(lpts)-1]['y'], 
+                    o2['x'] + o2['width']/2,o2['y'] + o2['height']/2, o2['width']/2):
+                    return True
+        else:
+            # if all of the points in the poly are inside the circle.
+            for i in range(0,len(lpts)):
+                if not distance(o1['x']+lpts[0]['x'], o1['y']+lpts[0]['y'],
+                        o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) <= o2['width']/2:
+                    return False
+            return True
+
+    elif o1CollisionType == 'rect' and o2CollisionType == 'rect':
+        if overlap=='partial':
+            if not o1['x']+o1['width'] < o2['x'] and \
+                not o1['y']+o1['height'] < o2['y'] and \
+                not o1['x'] > o2['x']+o2['width'] and \
+                not o1['y'] > o2['y']+o2['height']:
+                    return True
+        else:  # o1 must be fully inside o2
+            for pt in ((o1['x'], o1['y']),
+                (o1['x'], o1['y']+o1['height']),
+                (o1['x']+o1['width'], o1['y']),
+                (o1['x']+o1['width'], o1['y']+o1['height'])):
+                if not (o2['x'] <= pt[0] and pt[0] <= o2['x'] + o2['width'] and \
+                    o2['y'] <= pt[1] and pt[1] <= o2['y'] + o2['height']):
+                    return False
+            return True
+
+    elif o1CollisionType == 'rect' and o2CollisionType == 'circle':
+        # first check rect/rect collision.
+        if collides(o1, 'rect',o2, 'rect',overlap=overlap):
+            # quick check if rect anchor is inside circle
+            if overlap=='partial':
+                if collides(o1, 'anchor',o2, 'circle'):
+                    return True
+                # now check if a line from the rect intersects circle.
+                for line in ((o1['x'], o1['y'], o1['x']+o1['width'], o1['y']),
+                    (o1['x'], o1['y'], o1['x'], o1['y']+o1['height']),
+                    (o1['x']+o1['width'], o1['y'], o1['x']+o1['width'], o1['y']+o1['height']),
+                    (o1['x'], o1['y']+o1['height'], o1['x']+o1['width'], o1['y']+o1['height'])):
+                    if intersectLineCircle(line[0], line[1], line[2], line[3], \
+                            o2['x'] + o2['width']/2,o2['y'] + o2['height']/2, o2['width']/2):
+                        return True
+            else:  # o1 must be fully inside o2
+                # if all 4 rect points are inside circle.
+                for pt in ((o1['x'], o1['y']),
+                    (o1['x'], o1['y']+o1['height']),
+                    (o1['x']+o1['width'], o1['y']),
+                    (o1['x']+o1['width'], o1['y']+o1['height'])):
+                    if not distance(pt[0],pt[1],o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) <= o2['width']/2:
+                        return False
+                return True
+
+    elif o1CollisionType == 'circle' and o2CollisionType == 'circle':
+        if overlap=='partial':
+            if distance(o1['x'] + o1['width']/2,o1['y'] + o1['height']/2, \
+                o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) < o1['width']/2 + o2['width']/2:
+                return True
+        else:
+            if distance(o1['x'] + o1['width']/2,o1['y'] + o1['height']/2, \
+                o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) + o1['width']/2 < o2['width']/2:
+                return True
+
     return False
+
 
 ##############################################
 # INTERSECTIONS
 ##############################################
 
 
-def intersectLines(x1, y1, x2, y2, x3, y3, x4, y4):
+def intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4):
     '''Returns intersection point between line segments or None
     Returns intersection point between line segment ((x1,y1), (x2,y2)) and
     line segment ((x3,y3), (x4,y4)). If line segments do not intersect then
@@ -156,7 +292,7 @@ def intersectLineRect(x1, y1, x2, y2, rx, ry, rwidth, rheight):
                (rx, ry, rx, ry + rheight),
                (rx + rwidth, ry, rx + rwidth, ry + rheight),
                (rx, ry + rheight, rx + rwidth, ry + rheight)]:
-        ipt = intersectLines(x1, y1, x2, y2, pt[0], pt[1], pt[2], pt[3])
+        ipt = intersectLineLine(x1, y1, x2, y2, pt[0], pt[1], pt[2], pt[3])
         if ipt:
             ipoints.append(ipt)
 
@@ -223,6 +359,15 @@ def intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius):
         ipoints.pop()
 
     return ipoints
+
+def intersectRectRect(r1x, r1y, r1width, r1height, r2x, r2y, r2width, r2height):
+    log("Not yet supported.", "WARNING")
+
+def intersectRectCircle(rx, ry, rwidth, rheight, cx, cy, cradius):
+    log("Not yet supported.", "WARNING")
+
+def intersectCircleCircle(c1x, c1y, c1radius, c2x, c2y, c2radius):
+    log("Not yet supported.", "WARNING")
 
 ##############################################
 # VECTOR

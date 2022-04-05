@@ -22,6 +22,7 @@ class ServerMap(engine.servermap.ServerMap):
         """
         for portkey in self.findObject(type="portkey", returnAll=True):
             self.addObject(portkey, objectList=self['triggers'])
+            self.setObjectColisionType(portkey, collisionType='rect', layerName="triggers")
 
     def triggerPortkey(self, portkey, sprite):
         """PORTKEY MECHANIC: trigger method.

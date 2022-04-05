@@ -48,15 +48,6 @@ class ServerMap(engine.servermap.ServerMap):
             if not polyline:
                 continue
 
-            # kill (change name and tile) any raytargets that intersect the ray.
-            # for each segment of ray, see if a raytarget intersects it.
-            for i in range(1, len(polyline)):
-                for sprite in self.findObject(name='raytarget', returnAll=True):
-                    if geo.intersectLineRect(polyline[i - 1]['x'], polyline[i - 1]['y'], polyline[i]['x'], polyline[i]['y'],
-                                             sprite['x'], sprite['y'], sprite['width'], sprite['height']):
-                        for att in ('name', 'gid', 'tilesetName', 'tilesetTileNumber'):
-                            sprite[att] = self['skullObject'][att]
-
             # convert polyline from map origin to emitter/polyobject (x,y) origin
             for p in polyline:
                 p['x'] -= emitter['x']
@@ -70,6 +61,13 @@ class ServerMap(engine.servermap.ServerMap):
                 "x": emitter['x'],
                 "y": emitter['y']
                 }
+
+            # kill (change name and tile) any raytargets that collide with the ray.
+            for sprite in self.findObject(name='raytarget', returnAll=True):
+                if geo.collides(polyobject, 'line', sprite, 'circle'):
+                    for attribute in ('name', 'gid', 'tilesetName', 'tilesetTileNumber'):
+                        sprite[attribute] = self['skullObject'][attribute]
+
             self.checkObject(polyobject)
             self.addObject(polyobject)
 
@@ -109,7 +107,7 @@ class ServerMap(engine.servermap.ServerMap):
                 (self['pixelWidth'], 0, self['pixelWidth'], self['pixelHeight']),  # right
                 (0, self['pixelHeight'], self['pixelWidth'], self['pixelHeight'])  # bottom
                 ):
-            ipt = geo.intersectLines(x1, y1, x2, y2, l[0], l[1], l[2], l[3],)
+            ipt = geo.intersectLineLine(x1, y1, x2, y2, l[0], l[1], l[2], l[3],)
             if ipt:
                 intersections.append(ipt + (geo.distance(x1, y1, ipt[0], ipt[1]), "stop", None))
 
@@ -118,7 +116,7 @@ class ServerMap(engine.servermap.ServerMap):
             if o['name'] == 'flatreflector':
                 rx1, ry1 = geo.project(o['anchorX'], o['anchorY'], o['rotation'], o['width'] / 2)
                 rx2, ry2 = geo.project(o['anchorX'], o['anchorY'], o['rotation'] + math.pi, o['width'] / 2)
-                ipt = geo.intersectLines(x1, y1, x2, y2, rx1, ry1, rx2, ry2)
+                ipt = geo.intersectLineLine(x1, y1, x2, y2, rx1, ry1, rx2, ry2)
                 if ipt:
                     intersections.append(ipt + (geo.distance(x1, y1, ipt[0], ipt[1]), "flatreflector", o))
             elif o['name'] == 'circlereflector':

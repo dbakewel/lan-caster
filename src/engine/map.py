@@ -162,6 +162,9 @@ class Map(dict):
                         if key in object:
                             del object[key]
 
+                    if layer['name'] in ('triggers', 'inBounds', 'outOfBounds'):
+                        self.setObjectColisionType(object, 'rect')
+
                     # finally check the object for any other missing data or other issues that is not directly
                     # related to the tiled file format.
                     self.checkObject(object)
@@ -339,12 +342,13 @@ class Map(dict):
 
         self.setMapChanged()
 
-    def findObject(self, x=None, y=None, width=0, height=0, forceCollisionType=False,
-                   collisionType=False, name=False, type=False,
+    def findObject(self, name=False, type=False, collisionType = False, 
+                   collidesWith=False, collidesWithcollisionType=False, overlap='partial',
                    objectList=False, exclude=False, returnAll=False):
         '''Find a Tiled object that matches ALL criteria provided.
 
         Args:
+        LKJDFLKSDFJSLDOKFJLDSFJSDLFJSDLKFSJDLKFJSDK
             Collision detection can be done one of 2 ways:
                 1) x (float), y (float), width==0, height==0:
                     Find object which collides (overlaps) with point: x, y
@@ -374,10 +378,12 @@ class Map(dict):
         if not isinstance(objectList, list):
             objectList = self['sprites']
 
-        # check for layers where we force rect collision for all objects on layer
-        if objectList in (self['triggers'], self['inBounds'], self['outOfBounds']):
-            forceCollisionType = 'rect'
-
+        # find if layer matches a well known layer so we can use it for collision detection below.
+        layerName='default'
+        for ln in ('triggers','sprites','reference','inBounds','outOfBounds'):
+            if objectList == self[ln]:
+                layerName = ln
+        
         found = []
         for object in objectList:
             if type != False and object['type'] != type:
@@ -386,20 +392,15 @@ class Map(dict):
                 continue
             if exclude != False and exclude == object:
                 continue
-            if collisionType != False and object['collisionType'] != collisionType:
+            if collisionType != False and object['collisionType'] != self.getObjectColisionType(object,layerName):
                 continue
-            if x is not None and y is not None:
-                if forceCollisionType == 'anchor' or (
-                        forceCollisionType == False and object['collisionType'] == 'anchor'):
-                    if not geo.objectContains({'x': x, 'y': y, 'width': width, 'height': height},
-                                              object['anchorX'], object['anchorY']):
-                        continue
-                elif forceCollisionType == 'rect' or (forceCollisionType == False and object['collisionType'] == 'rect'):
-                    if not geo.objectContains(object, x, y, width, height):
-                        continue
-                else:
+            if collidesWith != False:
+                if collidesWithcollisionType == False:
+                    collidesWithcollisionType = self.getObjectColisionType(collidesWith)
+                if not geo.collides(collidesWith, collidesWithcollisionType,
+                    object, self.getObjectColisionType(object,layerName),
+                    overlap=overlap):
                     continue
-
             if not returnAll:
                 return object
             found.append(object)
@@ -456,7 +457,7 @@ class Map(dict):
         if "height" not in object:
             object['height'] = 0
         if "collisionType" not in object:
-            object['collisionType'] = "anchor"
+            self.setObjectColisionType(object)
 
         # if this is a Tile Object
         if "gid" in object and ("tilesetName" not in object or "tilesetTileNumber" not in object):
@@ -480,7 +481,7 @@ class Map(dict):
         # The original object has been edited but also return it so the function can be passed
         return object
 
-    def checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False):
+    def checkSpriteLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False):
         """Check if a location for an object is valid.
 
         Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
@@ -510,59 +511,46 @@ class Map(dict):
         if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
             return True
 
-        if object['collisionType'] == 'anchor':
-            newX = newAnchorX
-            newY = newAnchorY
-            width = 0
-            height = 0
-            # Only check for other sprites with collisionType=='rect' since we allow
-            # two sprites with collisionType=='anchor' to overlap.
-            otherSpriteCollisionType = 'rect'
-        elif object['collisionType'] == 'rect':
-            newX = newAnchorX - (object['anchorX'] - object['x'])
-            newY = newAnchorY - (object['anchorY'] - object['y'])
-            width = object['width']
-            height = object['height']
-            # these types of objects can collide with all other types of sprites.
-            otherSpriteCollisionType = False
-        else:
-            log(f"collisionType is not supported.", "ERROR")
-            return False
+        newX = newAnchorX - (object['anchorX'] - object['x'])
+        newY = newAnchorY - (object['anchorY'] - object['y'])
+        collidesWith = {
+            'x':newX,
+            'y':newY,
+            'anchorX':newAnchorX,
+            'anchorY':newAnchorY,
+            'width':object['width'],
+            'height':object['height'],
+            'collisionType':object['collisionType']
+        }
 
         # if object collides (overlaps) with another sprite then it is NOT valid.
-        if self.findObject(x=newX, y=newY, width=width, height=height,
-                           collisionType=otherSpriteCollisionType, exclude=object):
+        if self.findObject(collidesWith=collidesWith, exclude=object):
             return False
 
         # if object does not fully collide (overlap) with the map then it is NOT valid.
-        if 0 > newX or newX + width > self['pixelWidth'] or 0 > newY or newY + height > self['pixelHeight']:
+        if not geo.collides(collidesWith,self.getObjectColisionType(collidesWith,'sprite'),
+                {
+                    'x':0,
+                    'y':0,
+                    'anchorX':self['pixelWidth']/2,
+                    'anchorY':self['pixelHeight']/2,
+                    'width':self['pixelWidth'],
+                    'height':self['pixelHeight']
+                }, 'rect',
+                overlap='full'):
             return False
 
         # if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-        if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
-            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']):
-                return False
-        else:
-            if self.findObject(x=newX, y=newY, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX + width, y=newY, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX, y=newY + height, objectList=self['outOfBounds']) or \
-                    self.findObject(x=newX + width, y=newY + height, objectList=self['outOfBounds']):
-                return False
+        if self.findObject(collidesWith=collidesWith, objectList=self['outOfBounds']):
+            return False
 
         # if the inBounds layer is empty then it IS valid
         if len(self['inBounds']) == 0 or ignoreInBounds:
             return True
 
         # if object is fully inside an object or objects on the inBounds layer then it IS valid.
-        if width == 0 and height == 0:  # for speed only do one check in this case since the 4 below are all the same.
-            if self.findObject(x=newX, y=newY, objectList=self['inBounds']):
-                return True
-        else:
-            if self.findObject(x=newX, y=newY, objectList=self['inBounds']) and \
-                    self.findObject(x=newX + width, y=newY, objectList=self['inBounds']) and \
-                    self.findObject(x=newX, y=newY + height, objectList=self['inBounds']) and \
-                    self.findObject(x=newX + width, y=newY + height, objectList=self['inBounds']):
-                return True
+        if self.findObject(collidesWith=collidesWith, overlap='full', objectList=self['inBounds']):
+            return True
 
         # else it is NOT valid.
         return False
@@ -639,16 +627,6 @@ class Map(dict):
             y (float)
         """
 
-        # make sure object stays on map:
-        if anchorX < 0:
-            anchorX = 0
-        elif anchorX >= self['pixelWidth']:
-            anchorX = self['pixelWidth'] - 1
-        if anchorY < 0:
-            anchorY = 0
-        elif anchorY >= self['pixelHeight']:
-            anchorY = self['pixelHeight'] - 1
-
         object['anchorX'], object['anchorY'] = anchorX, anchorY
 
         if "gid" in object:
@@ -691,6 +669,32 @@ class Map(dict):
         if object in self['outOfBounds']:
             self.removeObject(object, objectList=self['outOfBounds'])
             destMap.addObject(object, objectList=destMap['outOfBounds'])
+
+    def setObjectColisionType(self, object, collisionType='anchor', layerName="all"):
+        if layerName == "all":
+            object['collisionType'] = collisionType
+        else:
+            if 'collisionType' not in object:
+                if layerName == 'default':
+                    object['collisionType'] = collisionType
+                else:
+                    object['collisionType'] = {'default': collisionType, layerName: collisionType}
+            elif type(object['collisionType']) is str:
+                if layerName == 'default':
+                    object['collisionType'] = collisionType
+                else:
+                    object['collisionType'] = {'default': object['collisionType'], layerName: collisionType}
+            else:
+                object['collisionType'][layerName] = collisionType
+
+    def getObjectColisionType(self, object, layerName='default'):
+        if type(object['collisionType']) is str:
+            return object['collisionType']
+        elif layerName in object['collisionType']:
+            return object['collisionType'][layerName]
+        else:
+            return object['collisionType']['default']
+
 
     ########################################################
     # LAYER VISABILITY MECHANIC

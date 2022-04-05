@@ -103,8 +103,8 @@ class Server(engine.server.Server):
         if self['mode'] == "gameOn":
             end = self['maps']['end']
             endGame = end.findObject(name="endGame", objectList=end['reference'])
-            playersIn = end.findObject(x=endGame['x'], y=endGame['y'], width=endGame['width'], height=endGame['height'],
-                                       type='player', returnAll=True)
+            endGame['collisionType'] = 'rect'
+            playersIn = end.findObject(collidesWith=endGame, type='player', returnAll=True)
             # if all players have made it to the end.
             if len(playersIn) == len(self['players']):
                 self['mode'] = "gameOver"
