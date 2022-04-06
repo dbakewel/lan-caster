@@ -104,44 +104,71 @@ FUNCTIONS
     angle(x1, y1, x2, y2)
         Returns angle from (x1,y1) and (x2,y2) in radians.
     
-    angleLable(a)
+    angleLabel(a)
         Returns the label ('Up', 'Down', 'Left', 'Right') of angle a
+    
+    collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=False)
+        Returns True if o1 overlaps o2 else returns False.
+        
+        Valid collisionType values are 'none', 'anchor', 'rect', and circle.
+        
+        Args:
+            o1, o2 (dict): These are game objects which much cotain at least: x, y, width, 
+                height, anchoX, anchorY, and collisionType.
+            overlap (str): overlap must be one of 'partial' or 'full'.
+                If overlap == 'partial' then collides() returns True if any part of o1
+                and o2 overlap. If overlap == 'full' the collides only returns True if
+                o2 fully overlaps o1 (i.e. o1 is fully inside o2).
+            o1CollisionType (bool, str): If False then use o1['collisionType']. If str
+                then use o1CollisionType in place of o1['collisionType'].
+            o2CollisionType (bool, str): If False then use o2['collisionType']. If str
+                then use o2CollisionType in place of o2['collisionType'].
+        Returns:
+            Boolean.
     
     distance(x1, y1, x2, y2)
         Returns distance between (x1,y1) and (x2,y2)
     
+    intersectCircleCircle(c1x, c1y, c1radius, c2x, c2y, c2radius)
+    
     intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius)
+        Returns intersection point(s) between a line and circle, or None
+        
         Return list of intersection points between line segment (x1,y1) and
         (x2,y2) circle centered at (cx,cy) with radius cradius, or None if line
         segment is entirely inside or outside circle.
+        
         Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
+    
+    intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4)
+        Returns intersection point between line segments or None
+        
+        Returns intersection point between line segment ((x1,y1), (x2,y2)) and
+        line segment ((x3,y3), (x4,y4)). If line segments do not intersect then
+        return None.
+        
+        Based on code from https://gist.github.com/kylemcdonald/6132fc1c29fd3767691442ba4bc84018
     
     intersectLineRect(x1, y1, x2, y2, rx, ry, rwidth, rheight)
         Returns list of intersection points between line segment and Rect or None
+        
         Returns intersection point between line segment ((x1,y1), (x2,y2)) and
         rect (rx, ry, rwidth, rheight). If line segment does not intersect then
         return None.
     
-    intersectLines(x1, y1, x2, y2, x3, y3, x4, y4)
-        Returns intersection point between line segments or None
-        Returns intersection point between line segment ((x1,y1), (x2,y2)) and
-        line segment ((x3,y3), (x4,y4)). If line segments do not intersect then
-        return None.
-        Based on code from https://gist.github.com/kylemcdonald/6132fc1c29fd3767691442ba4bc84018
+    intersectRectCircle(rx, ry, rwidth, rheight, cx, cy, cradius)
+    
+    intersectRectRect(r1x, r1y, r1width, r1height, r2x, r2y, r2width, r2height)
     
     normalizeAngle(a)
         Returns angle a in the normalized range of 0 - 2pi. Angle a must be in radians.
-    
-    objectContains(object, x, y, width=0, height=0)
-        Returns True if rect defined by x, y, width, height overlaps object's rect else returns False.
-        
-        Note, a rect with width=0 and height==0 is a point.
     
     project(x, y, rad, dis)
         Returns point (x',y') where angle from (x,y) to (x',y')
         is rad and distance from (x,y) to (x',y') is dis.
     
     sgn(x)
+        Utily function used by other geometry functions
     
     sortRightDown(listOfGameObs, maxWidth, useAnchor=True)
         Sort list of game objects by y and then x.

@@ -625,7 +625,7 @@ class ClientMap(engine.map.Map):
 
     def blitPolyObject(self, destImage, offset, polyObject,
                        lineColor=(0, 0, 0, 255), lineThickness=1):
-        """Draw a Poly Object onto destImage"""
+        """Draw a Poly Object (polyline or polygon) onto destImage"""
 
         image = pygame.Surface(
             (self['width'] *

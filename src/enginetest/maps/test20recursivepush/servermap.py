@@ -13,8 +13,9 @@ class ServerMap(engine.servermap.ServerMap):
         collides with it. However this will only occur if the pushable sprite
         can be moved away from the player while still staying in bounds.
 
-        Note, if two pushables start overlapping then this will cause
-        serious recursion problems since they start in an invalid state.
+        Note, if two pushables start (from the map.json file) overlapping 
+        then this will cause serious recursion problems since they start 
+        in an invalid state.
 
         Uses Mechanics: move
     """

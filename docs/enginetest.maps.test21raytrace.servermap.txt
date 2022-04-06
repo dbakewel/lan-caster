@@ -28,7 +28,7 @@ CLASSES
      |  
      |  Methods defined here:
      |  
-     |  delHoldable(self, sprite)
+     |  dropHoldable(self, sprite)
      |      FLAT REFLECTOR MECHANIC: extend EXTEND HOLDABLE MECHANIC
      |      
      |      reset reflextor start position when dropped so it picks up where
@@ -45,7 +45,8 @@ CLASSES
      |      
      |      Copy (by reference) all pushable sprites to the outOfBounds layer.
      |      
-     |      Note, only part of pushable code included here so there are some objects with collisionType == rect.
+     |      Note, only part of pushable code included here so there are some objects 
+     |      with collisionType == rect in this test map.
      |  
      |  initRayEmitter(self)
      |      RAY MECHANIC: init method
@@ -82,6 +83,9 @@ CLASSES
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from engine.servermap.ServerMap:
+     |  
+     |  addHoldableTrigger(self, holdable)
+     |      HOLDABLE MECHANIC: copy holdable sprite and make it a trigger.
      |  
      |  delMoveLinear(self, sprite)
      |      MOVE LINEAR MECHANIC: Stop Sprite
@@ -136,12 +140,12 @@ CLASSES
      |      This ensures a sprite goes through the mapDoor first
      |      and other triggers are stopped after the sprite moves.
      |  
-     |  setHoldable(self, holdable, sprite)
+     |  pickupHoldable(self, holdableTrigger, sprite)
      |      HOLDABLE MECHANIC: sprite picks up holdable.
      |      
      |      Add attributes to sprite: holding
      |  
-     |  setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed)
+     |  setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed, slide=True)
      |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
      |      
      |      Add attributes to sprite: move
@@ -218,7 +222,7 @@ CLASSES
      |      
      |      Add attributes to sprite: direction
      |  
-     |  triggerHoldable(self, holdable, sprite)
+     |  triggerHoldable(self, holdableTrigger, sprite)
      |      HOLDABLE MECHANIC: trigger method.
      |      
      |      The sprite's anchor is inside the trigger.
@@ -300,6 +304,10 @@ CLASSES
      |      since objects may be on the sprite and trigger layer at the
      |      same time.
      |      
+     |      A trigger may optionally contain an array of sprite references.
+     |      Sprites in that list will not set off the trigger:
+     |      e.g. trigger['doNotTrigger'] = [sprite1, sprite2, ...]
+     |      
      |      Args:
      |          sprite (dict): Tiled object from the sprite layer.
      |  
@@ -308,6 +316,17 @@ CLASSES
      |  
      |  __str__(self)
      |      Return str(self).
+     |  
+     |  addFollower(self, leaderObject, followerObject)
+     |      Add leaderObject/followerObject relationship to self['follow']
+     |      This also records the relative position of the objects.
+     |      
+     |      This information is used by setObjectLocationByAnchor() and setObjectMap()
+     |      and causes the followerObject to follow the position of the leaderObject.
+     |      
+     |      Once a followerObject has been added it should not longer be used with
+     |      setObjectLocationByAnchor() or setObjectMap(), only the leaderObject
+     |      should.
      |  
      |  addObject(self, object, objectList=False)
      |      Add a Tiled object to an object list.
@@ -375,7 +394,7 @@ CLASSES
      |          'height': (float)
      |          'anchorX': (float)
      |          'anchorY': (float)
-     |          'collisionType': (str)
+     |          'collisionType': (str) One of 'none', 'anchor', 'rect', 'circle'
      |          'mapName': (str) The last map the object was on (or is still on).
      |      
      |          Only for tile objects have the following:
@@ -418,24 +437,16 @@ CLASSES
      |      Returns:
      |          tileGid (int): A map global tile number.
      |  
-     |  findObject(self, x=None, y=None, width=0, height=0, forceCollisionType=False, collisionType=False, name=False, type=False, objectList=False, exclude=False, returnAll=False)
+     |  findObject(self, name=False, type=False, collisionType=False, collidesWith=False, overlap='partial', objectList=False, exclude=False, returnAll=False)
      |      Find a Tiled object that matches ALL criteria provided.
      |      
      |      Args:
-     |          Collision detection can be done one of 2 ways:
-     |              1) x (float), y (float), width==0, height==0:
-     |                  Find object which collides (overlaps) with point: x, y
-     |              2) x (float), y (float), width (float), height (float):
-     |                  Find object which collides (overlaps) with rect: x, y, width, height.
-     |              For 1) and 2) above:
-     |                  - if width == 0 and height == 0 in arguments or in object
-     |                    then it is treated as a point.
-     |                  - if forceCollisionType != False then forceCollisionType will be used
-     |                    in place of object['collisionType']. Some layers automatically have
-     |                    forceCollisionType set to 'rect': triggers, inBounds, outOfBounds.
-     |          collisionType(str): Find object with object['collisionType'] == collisionType
      |          name (str): Find object with object['name'] == name
-     |          type (str): Find object with object['type'] == type
+     |          type (str): Find object with object['type'] == type   
+     |          collisionType(str): Find object with object['collisionType'] == collisionType
+     |          collidesWith(dict): Find object which collides with object provided. See
+     |              geometry.collides() for details.
+     |          overlap(str): Only used if collidesWith is given. Passed to geometry.collides() 
      |          objectList (dict): a list of objects to search. default is self['sprites']
      |          exclude (dict): a Tiled object. Skip this object while searching. Normally used
      |              to ensure an object does not find itself.
@@ -456,6 +467,9 @@ CLASSES
      |      Returns:
      |          tilesetName (str): name of tileset which contians tileGid
      |          tilesetTileNumber (int): tileNumber relative to tilesetName
+     |  
+     |  getFollowers(self, leaderObject)
+     |      Returns array of objects that follow leaderObject: [object,object,object]
      |  
      |  getLayerVisablityMask(self)
      |      LAYER VISABILITY MECHANIC: Return bit mask for the visibility of all layers in self['layers']
@@ -482,6 +496,12 @@ CLASSES
      |      
      |      Returns:
      |          bool
+     |  
+     |  logFollow(self, m)
+     |      log() a human readable version of m['follow'] (for debugging)
+     |  
+     |  removeFollower(self, leaderObject, followerObject)
+     |      Remove leaderObject/followerObject relationship from self['follow']
      |  
      |  removeObject(self, object, objectList=False)
      |      Remove a Tiled object from an object list.
@@ -545,6 +565,7 @@ CLASSES
      |      Set an objects location using its anchor point.
      |      
      |      Updates an object anchor point and then sets it x, y to match.
+     |      Also updates the relative position of any following objects.
      |      
      |      Args:
      |          object (dict): A Tiled Object
@@ -555,8 +576,9 @@ CLASSES
      |      Set an objects location using its top/left corner.
      |      
      |      Updates an object x,y and then sets it anchor point to match.
-     |      Do not use without good reason. Most objects should have their
-     |      location set by setObjectLocationByAnchor()
+     |      
+     |      ***Do not use without good reason. Most objects should have their
+     |      location set by setObjectLocationByAnchor()***
      |      
      |      Args:
      |          object (dict): A Tiled Object
@@ -564,10 +586,11 @@ CLASSES
      |          y (float)
      |  
      |  setObjectMap(self, object, destMap)
-     |      Move a Tiled object to a differnt map.
+     |      Move a Tiled object to a different map.
      |      
      |      Remove object from all known layers on this map and add
-     |      it to the same layers on destMap.
+     |      it to the same layers on destMap. Also move any following
+     |      objects to the new map.
      |      
      |      Args:
      |          object (dict): Tiled object

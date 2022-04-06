@@ -47,8 +47,9 @@ class Map(dict):
         # Flag to say something on this map has changed
         self.setMapChanged()
 
-        # a list of game objects that follow other game objects.
+        # self['follow'] is an array of game objects that follow other game objects.
         # Form: [{'leader': leaderObject, 'followers': [(followerObject, deltaAnchorX, deltaAnchorY),...]}, ...]
+        # See FOLLOW section below.
         self['follow'] = []
 
         # Maps are named based on their mapDirectory
@@ -166,7 +167,9 @@ class Map(dict):
                         if key in object:
                             del object[key]
 
-                    # default all objects on these layers to have collisonType == 'rect'
+                    # default all objects on these layers to have collisonType == 'rect'. If they were left
+                    # with collisionType=='anchor' then they would not collid with anything and would not
+                    # function as expected.
                     if layer['name'] in ('triggers', 'inBounds', 'outOfBounds'):
                         object['collisionType'] = 'rect'
 
@@ -268,6 +271,16 @@ class Map(dict):
     ########################################################
 
     def addFollower(self, leaderObject, followerObject):
+        """Add leaderObject/followerObject relationship to self['follow']
+        This also records the relative position of the objects.
+
+        This information is used by setObjectLocationByAnchor() and setObjectMap()
+        and causes the followerObject to follow the position of the leaderObject.
+
+        Once a followerObject has been added it should not longer be used with
+        setObjectLocationByAnchor() or setObjectMap(), only the leaderObject
+        should.
+        """
         deltaAnchorX = followerObject['anchorX'] - leaderObject['anchorX']
         deltaAnchorY = followerObject['anchorY'] - leaderObject['anchorY'] 
         for i in range(len(self['follow'])):
@@ -281,6 +294,8 @@ class Map(dict):
 
 
     def removeFollower(self, leaderObject, followerObject):
+        """Remove leaderObject/followerObject relationship from self['follow']"""
+
         for i in range(len(self['follow'])):
             if self['follow'][i]['leader'] == leaderObject:
                 for fo in self['follow'][i]['followers']:
@@ -291,6 +306,7 @@ class Map(dict):
                 return
 
     def getFollowers(self, leaderObject):
+        """Returns array of objects that follow leaderObject: [object,object,object]"""
         followers = []
         for i in range(len(self['follow'])):
             if self['follow'][i]['leader'] == leaderObject:
@@ -399,21 +415,12 @@ class Map(dict):
         '''Find a Tiled object that matches ALL criteria provided.
 
         Args:
-        LKJDFLKSDFJSLDOKFJLDSFJSDLFJSDLKFSJDLKFJSDK
-            Collision detection can be done one of 2 ways:
-                1) x (float), y (float), width==0, height==0:
-                    Find object which collides (overlaps) with point: x, y
-                2) x (float), y (float), width (float), height (float):
-                    Find object which collides (overlaps) with rect: x, y, width, height.
-                For 1) and 2) above:
-                    - if width == 0 and height == 0 in arguments or in object
-                      then it is treated as a point.
-                    - if forceCollisionType != False then forceCollisionType will be used
-                      in place of object['collisionType']. Some layers automatically have
-                      forceCollisionType set to 'rect': triggers, inBounds, outOfBounds.
-            collisionType(str): Find object with object['collisionType'] == collisionType
             name (str): Find object with object['name'] == name
-            type (str): Find object with object['type'] == type
+            type (str): Find object with object['type'] == type   
+            collisionType(str): Find object with object['collisionType'] == collisionType
+            collidesWith(dict): Find object which collides with object provided. See
+                geometry.collides() for details.
+            overlap(str): Only used if collidesWith is given. Passed to geometry.collides() 
             objectList (dict): a list of objects to search. default is self['sprites']
             exclude (dict): a Tiled object. Skip this object while searching. Normally used
                 to ensure an object does not find itself.
@@ -470,7 +477,7 @@ class Map(dict):
             'height': (float)
             'anchorX': (float)
             'anchorY': (float)
-            'collisionType': (str)
+            'collisionType': (str) One of 'none', 'anchor', 'rect', 'circle'
             'mapName': (str) The last map the object was on (or is still on).
 
             Only for tile objects have the following:
@@ -634,8 +641,8 @@ class Map(dict):
 
         Updates an object x,y and then sets it anchor point to match.
         
-        ***Do not use without good reason.*** Most objects should have their
-        location set by setObjectLocationByAnchor()
+        ***Do not use without good reason. Most objects should have their
+        location set by setObjectLocationByAnchor()***
 
         Args:
             object (dict): A Tiled Object
@@ -665,6 +672,7 @@ class Map(dict):
         """Set an objects location using its anchor point.
 
         Updates an object anchor point and then sets it x, y to match.
+        Also updates the relative position of any following objects.
 
         Args:
             object (dict): A Tiled Object
@@ -693,7 +701,8 @@ class Map(dict):
         """Move a Tiled object to a different map.
 
         Remove object from all known layers on this map and add
-        it to the same layers on destMap.
+        it to the same layers on destMap. Also move any following
+        objects to the new map.
 
         Args:
             object (dict): Tiled object

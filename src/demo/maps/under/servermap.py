@@ -35,10 +35,12 @@ class ServerMap(demo.servermap.ServerMap):
     def initSaws(self):
         """SAW: init method.
 
-        copy (by reference) all sprites of type == saw from the
-        sprite layer to the trigger layer. Type "saw" will act
-        as both a sprite and a trigger. Note, when we move the
-        sprite the trigger will also move, because it is the
+        Saw sprites need to be triggers so copy
+        sprites to trigger layer. Details on this
+        method are in engine.servermap.ServerMap.addHoldableTrigger()
+
+        Type "saw" will act as both a sprite and a trigger. Note, when 
+        we move the sprite the trigger will also move, because it is the
         same object.
         """
 

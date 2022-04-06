@@ -315,11 +315,29 @@ class ServerMap(engine.stepmap.StepMap):
         self.addHoldableTrigger(holdable)
 
     def addHoldableTrigger(self, holdable):
+        """HOLDABLE MECHANIC: copy holdable sprite and make it a trigger."""
+        
+        # shallow copy holdable (sprite)
         holdableTrigger = holdable.copy()
+
+        # change collisionType to 'rect' so sprites can collide with the trigger.
         holdableTrigger['collisionType'] = 'rect'
+
+        # set doNotTrigger to be a list with just holdable. If this is not
+        # not done then holdable (sprite) will collide with trigger each
+        # step and set of the trigger each step. This stops that from
+        # happening.
         holdableTrigger['doNotTrigger'] = [holdable]
+
+        # Save a reference in the trigger for the sprite that this trigger
+        # will pick up.
         holdableTrigger['holdableSprite'] = holdable
+
+        # add trigger to the triggers layer.
         self.addObject(holdableTrigger, objectList=self['triggers'])
+
+        # set trigger to follow sprite. If the sprites moves then
+        # so will the trigger.
         self.addFollower(holdable, holdableTrigger)
 
     ########################################################

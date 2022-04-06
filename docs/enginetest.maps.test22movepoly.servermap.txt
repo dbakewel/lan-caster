@@ -1,7 +1,7 @@
-Help on module enginetest.maps.test13triggerlayers.servermap in enginetest.maps.test13triggerlayers:
+Help on module enginetest.maps.test22movepoly.servermap in enginetest.maps.test22movepoly:
 
 NAME
-    enginetest.maps.test13triggerlayers.servermap - ServerMap for Engine Test Map.
+    enginetest.maps.test22movepoly.servermap - ServerMap for Engine Test Map.
 
 CLASSES
     engine.servermap.ServerMap(engine.stepmap.StepMap)
@@ -10,12 +10,9 @@ CLASSES
     class ServerMap(engine.servermap.ServerMap)
      |  ServerMap(tilesets, mapDir)
      |  
-     |  LAYER SHOW MECHANIC
+     |  This servermap implements ray emitter and reflector mechanics.
      |  
-     |  Only show a layer during steps that a sprite
-     |  is inside a trigger.
-     |  
-     |  Uses Mechanics: layer visibility.
+     |  POLY MOVE
      |  
      |  Method resolution order:
      |      ServerMap
@@ -27,23 +24,23 @@ CLASSES
      |  
      |  Methods defined here:
      |  
-     |  stepMapStartLayerShow(self)
-     |      LAYER SHOW MECHANIC: stepMapStart method.
+     |  delMovePoly(self, sprite)
+     |      MOVE POLY MECHANIC: Stop Sprite
      |      
-     |      Hide all layers that in listed in layerShow
-     |      trigger properties.
-     |      
-     |      This needs to be done every step since we don't
-     |      know if a sprite is inside a trigger yet during
-     |      this step.
+     |      Remove attributes from sprite: move
      |  
-     |  triggerLayerShow(self, trigger, sprite)
-     |      LAYER SHOW MECHANIC: stepMapStart method.
+     |  initMovePoly(self)
+     |      Set up sprites for poly movement.
+     |  
+     |  setMovePoly(self, sprite, polyName, moveSpeed, disfrac=0, bounce=False)
+     |      MOVE POLY MECHANIC: Set sprites poly to follow and speed.
      |      
-     |      Show layer based on trigger properties.
+     |      Add attributes to sprite: move
+     |  
+     |  stepMovePoly(self, sprite)
+     |      MOVE POLY MECHANIC: stepMove method.
      |      
-     |      Trigger Properties:
-     |          layerName: The name of the layer to show.
+     |      Add attributes to sprite: direction
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from engine.servermap.ServerMap:

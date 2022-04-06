@@ -17,8 +17,9 @@ class ServerMap(engine.servermap.ServerMap):
     def initPortkey(self):
         """PORTKEY MECHANIC: init method.
 
-        Portkey sprites need to be triggers copy
-        (by reference) sprites to trigger layer.
+        Portkey sprites need to be triggers so copy
+        sprites to trigger layer. Details on this
+        method are in engine.servermap.ServerMap.addHoldableTrigger()
         """
         for portkey in self.findObject(type="portkey", returnAll=True):
             portkeyTrigger = portkey.copy()

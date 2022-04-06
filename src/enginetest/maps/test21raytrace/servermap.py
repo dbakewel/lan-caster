@@ -219,7 +219,8 @@ class ServerMap(engine.servermap.ServerMap):
 
         Copy (by reference) all pushable sprites to the outOfBounds layer.
 
-        Note, only part of pushable code included here so there are some objects with collisionType == rect.
+        Note, only part of pushable code included here so there are some objects 
+        with collisionType == rect in this test map.
         """
         for pushable in self.findObject(type="pushable", returnAll=True):
             pushable['collisionType'] = "rect"

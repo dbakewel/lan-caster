@@ -97,11 +97,23 @@ def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
 ##############################################
 
 def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=False):
-    """
+    """Returns True if o1 overlaps o2 else returns False.
 
-    if overlap can be 'partial' or 'full'. if overlap == 'partail' then return True
-    if o1 and o2 overlap in any way. if overlap == 'full' the return True only if o1
-    is fully inside o2.
+    Valid collisionType values are 'none', 'anchor', 'rect', and circle.
+
+    Args:
+        o1, o2 (dict): These are game objects which much cotain at least: x, y, width, 
+            height, anchoX, anchorY, and collisionType.
+        overlap (str): overlap must be one of 'partial' or 'full'.
+            If overlap == 'partial' then collides() returns True if any part of o1
+            and o2 overlap. If overlap == 'full' the collides only returns True if
+            o2 fully overlaps o1 (i.e. o1 is fully inside o2).
+        o1CollisionType (bool, str): If False then use o1['collisionType']. If str
+            then use o1CollisionType in place of o1['collisionType'].
+        o2CollisionType (bool, str): If False then use o2['collisionType']. If str
+            then use o2CollisionType in place of o2['collisionType'].
+    Returns:
+        Boolean.
     """
     if not o1CollisionType:
         o1CollisionType = o1['collisionType']
@@ -266,9 +278,11 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
 
 def intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4):
     '''Returns intersection point between line segments or None
+
     Returns intersection point between line segment ((x1,y1), (x2,y2)) and
     line segment ((x3,y3), (x4,y4)). If line segments do not intersect then
     return None.
+
     Based on code from https://gist.github.com/kylemcdonald/6132fc1c29fd3767691442ba4bc84018
     '''
     denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
@@ -287,6 +301,7 @@ def intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4):
 
 def intersectLineRect(x1, y1, x2, y2, rx, ry, rwidth, rheight):
     '''Returns list of intersection points between line segment and Rect or None
+
     Returns intersection point between line segment ((x1,y1), (x2,y2)) and
     rect (rx, ry, rwidth, rheight). If line segment does not intersect then
     return None.
@@ -306,16 +321,19 @@ def intersectLineRect(x1, y1, x2, y2, rx, ry, rwidth, rheight):
 
 
 def sgn(x):
+    """Utily function used by other geometry functions"""
     if x < 0:
         return -1
     return 1
 
 
 def intersectLineCircle(x1, y1, x2, y2, cx, cy, cradius):
-    """
+    """Returns intersection point(s) between a line and circle, or None
+
     Return list of intersection points between line segment (x1,y1) and
     (x2,y2) circle centered at (cx,cy) with radius cradius, or None if line
     segment is entirely inside or outside circle.
+
     Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
     """
 
@@ -478,7 +496,6 @@ class Vector2D:
 ##############################################
 # TESTS
 ##############################################
-
 
 if __name__ == '__main__':
     #v1 = Vector2D(2, 5/3)

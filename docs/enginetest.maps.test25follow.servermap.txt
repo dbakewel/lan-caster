@@ -1,7 +1,7 @@
-Help on module enginetest.maps.test13triggerlayers.servermap in enginetest.maps.test13triggerlayers:
+Help on module enginetest.maps.test25follow.servermap in enginetest.maps.test25follow:
 
 NAME
-    enginetest.maps.test13triggerlayers.servermap - ServerMap for Engine Test Map.
+    enginetest.maps.test25follow.servermap - ServerMap for Engine Test Map.
 
 CLASSES
     engine.servermap.ServerMap(engine.stepmap.StepMap)
@@ -10,12 +10,48 @@ CLASSES
     class ServerMap(engine.servermap.ServerMap)
      |  ServerMap(tilesets, mapDir)
      |  
-     |  LAYER SHOW MECHANIC
+     |  The ServerMap implements several basic game mechanics.
      |  
-     |  Only show a layer during steps that a sprite
-     |  is inside a trigger.
+     |  MOVE LINEAR MECHANIC
+     |      Move a sprite along a linear path at a consent speed.
+     |      Stops the sprite if it reaches the destination or
+     |      any further movement would be invalid.
      |  
-     |  Uses Mechanics: layer visibility.
+     |  MAPDOOR MECHANIC
+     |      A mapDoor trigger can relocate a sprite to a new location
+     |      (only if a valid location) on the same or different map.
+     |  
+     |  HOLDABLE MECHANIC
+     |      Allows a sprite to request (using ACTION MECHANIC) to pickup
+     |      and drop other sprites of type == holdable.
+     |  
+     |      Uses Mechanics: action, player action text
+     |  
+     |  ACTION MECHANIC
+     |      Allows a sprite to request to perform some action during
+     |      the next step. This request is only valid for one step.
+     |      The action mechanic does nothing on it own. Other game
+     |      mechanics can consume the action and perform some function.
+     |  
+     |  SPEECH TEXT MECHANIC
+     |      Used by other game mechanics to show text above a
+     |      sprite. Speech text only last one step or until
+     |      a specific time after which it is removed.
+     |  
+     |  LABEL TEXT MECHANIC
+     |      Used by other game mechanics to show text below a
+     |      sprite. Label text remains until changed.
+     |  
+     |  PLAYER ACTION TEXT MECHANIC
+     |      Used by other game mechanics to display available action
+     |      to a player. (what will probably happen if player hits
+     |      the action button.) This is removed at the start of
+     |      each step and can only be set once per step (other
+     |      attempts to set will be ignored.)
+     |  
+     |  PLAYER MARQUEE TEXT MECHANIC
+     |      Used by other game mechanics to display marquee text
+     |      to a player. Marquee text remains until changed.
      |  
      |  Method resolution order:
      |      ServerMap
@@ -27,23 +63,15 @@ CLASSES
      |  
      |  Methods defined here:
      |  
-     |  stepMapStartLayerShow(self)
-     |      LAYER SHOW MECHANIC: stepMapStart method.
+     |  triggerAddFollow(self, trigger, sprite)
+     |      Add follows to follow player. 
      |      
-     |      Hide all layers that in listed in layerShow
-     |      trigger properties.
-     |      
-     |      This needs to be done every step since we don't
-     |      know if a sprite is inside a trigger yet during
-     |      this step.
+     |      This is hardcoded to make it a simple test.
      |  
-     |  triggerLayerShow(self, trigger, sprite)
-     |      LAYER SHOW MECHANIC: stepMapStart method.
+     |  triggerRemoveFollow(self, trigger, sprite)
+     |      Remove follows from player. 
      |      
-     |      Show layer based on trigger properties.
-     |      
-     |      Trigger Properties:
-     |          layerName: The name of the layer to show.
+     |      This is hardcoded to make it a simple test.
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from engine.servermap.ServerMap:

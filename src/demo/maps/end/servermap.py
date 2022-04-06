@@ -58,9 +58,9 @@ class ServerMap(demo.servermap.ServerMap):
     def initLever(self):
         """LEVER MECHANIC: init method.
 
-        Copy (by refernce) the lever sprite to the trigger layer.
-        This puts the lever Tiled object on both layers at the
-        same time.
+        Lever sprite needs to be trigger so copy
+        sprite to trigger layer. Details on this
+        method are in engine.servermap.ServerMap.addHoldableTrigger()
         """
         lever = self.findObject(type="lever")
         leverTrigger = lever.copy()

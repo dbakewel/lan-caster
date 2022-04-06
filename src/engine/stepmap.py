@@ -26,7 +26,9 @@ class StepMap(engine.map.Map):
 
         2) trigger<MechanicName>(trigger, sprite): Called for every trigger
             and sprite combination where the sprite anchor point is inside
-            the trigger.
+            the trigger, with two exceptions:
+                1) if the trigger and sprite are the same object;
+                2) if the sprite is in trigger['doNotTrigger'] array.
 
         3) stepMove<MechanicName>(sprite): Called for every object
             on the sprite layer which contains:
@@ -234,6 +236,10 @@ class StepMap(engine.map.Map):
         The search excludes the sprite itself from the search
         since objects may be on the sprite and trigger layer at the
         same time.
+
+        A trigger may optionally contain an array of sprite references.
+        Sprites in that list will not set off the trigger:
+        e.g. trigger['doNotTrigger'] = [sprite1, sprite2, ...]
 
         Args:
             sprite (dict): Tiled object from the sprite layer.

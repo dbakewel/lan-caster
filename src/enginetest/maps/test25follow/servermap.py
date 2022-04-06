@@ -8,6 +8,10 @@ import engine.server
 class ServerMap(engine.servermap.ServerMap):
 
     def triggerAddFollow(self, trigger, sprite):
+        """Add follows to follow player. 
+
+        This is hardcoded to make it a simple test.
+        """
         p = self.findObject(type='player')
         f1 = self.findObject(name="f1")
         f2 = self.findObject(name="f2")
@@ -22,6 +26,10 @@ class ServerMap(engine.servermap.ServerMap):
             #self.logFollow(self)
 
     def triggerRemoveFollow(self, trigger, sprite):
+        """Remove follows from player. 
+        
+        This is hardcoded to make it a simple test.
+        """
         p = self.findObject(type='player')
         f1 = self.findObject(name="f1")
         f2 = self.findObject(name="f2")
