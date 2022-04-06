@@ -9,9 +9,12 @@ import engine.geometry as geo
 
 
 class ServerMap(engine.servermap.ServerMap):
-    """This servermap implements ray emitter and reflector mechanics.
+    """This servermap implements a circular move mechanic.
 
     ORBIT MOVE
+
+    Better comments to be added later.
+
 
     """
 
@@ -20,11 +23,16 @@ class ServerMap(engine.servermap.ServerMap):
     ########################################################
 
     def initMoveOrbit(self):
-        """Set up sprites for poly movement."""
+        """Set up sprites for orbit movement."""
+
+        # add the sun and planet to the reference layer so other sprites can orbit them.
         self.addObject(self.findObject(name='sun'), objectList=self['reference'])
         self.addObject(self.findObject(name='planet'), objectList=self['reference'])
 
+        # set the planet on the sprite layer to orbit the 'sun' on the reference layer.
         self.setMoveOrbit(self.findObject(name='planet'), 'sun', 200, bounce=True, radius=False)
+
+        # set the moon on the sprite layer to orbit the 'planet' on the reference layer.
         self.setMoveOrbit(self.findObject(name='moon'), 'planet', 100, bounce=True, radius=False)
 
     def stepMoveOrbit(self, sprite):
@@ -77,9 +85,11 @@ class ServerMap(engine.servermap.ServerMap):
             log(f"OrbitObject {orbitName} not found on reference layer.", "ERROR")
             return
 
+        # if radius not provided then use the current distance between sprite and what it orbits.
         if not radius:
             radius = geo.distance(orbitObject['anchorX'],orbitObject['anchorY'],sprite['anchorX'],sprite['anchorY'])
 
+        # if start angle not provided then use the current angle between sprite and what it orbits.
         if not angle:
             angle = geo.angle(orbitObject['anchorX'],orbitObject['anchorY'],sprite['anchorX'],sprite['anchorY'])
 

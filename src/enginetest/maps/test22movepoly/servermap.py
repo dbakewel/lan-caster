@@ -9,9 +9,11 @@ import engine.geometry as geo
 
 
 class ServerMap(engine.servermap.ServerMap):
-    """This servermap implements ray emitter and reflector mechanics.
+    """This servermap implements a move mechanic that follows a poly object.
 
     POLY MOVE
+
+    Better comments to be added later.
 
     """
 
@@ -139,6 +141,20 @@ class ServerMap(engine.servermap.ServerMap):
 
     def setMovePoly(self, sprite, polyName, moveSpeed, disfrac=0, bounce=False):
         """MOVE POLY MECHANIC: Set sprites poly to follow and speed.
+    
+
+        In the sprite['move'] dict the attributes for 'type' == 'Poly' are:
+
+        'polyName' is the poly object on the reference layer to follow.
+
+        'df' is the current position of the sprite represented as a 
+        fraction between 0 and 1 of the total length (distance) of
+        the poly object.
+
+        's' is the move speed in pixels/sec
+
+        'b'' is weather or not to bounce (reverse) at the end of the poly
+        or not.
 
         Add attributes to sprite: move
         """
