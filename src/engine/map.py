@@ -47,7 +47,8 @@ class Map(dict):
         # Flag to say something on this map has changed
         self.setMapChanged()
 
-        # of the form [{'leader': leaderObject, 'followers': [(followerObject, deltaAnchorX, deltaAnchorY),...]}, ...]
+        # a list of game objects that follow other game objects.
+        # Form: [{'leader': leaderObject, 'followers': [(followerObject, deltaAnchorX, deltaAnchorY),...]}, ...]
         self['follow'] = []
 
         # Maps are named based on their mapDirectory
@@ -165,6 +166,7 @@ class Map(dict):
                         if key in object:
                             del object[key]
 
+                    # default all objects on these layers to have collisonType == 'rect'
                     if layer['name'] in ('triggers', 'inBounds', 'outOfBounds'):
                         object['collisionType'] = 'rect'
 
@@ -215,7 +217,7 @@ class Map(dict):
         self.changed = changed
 
     ########################################################
-    # TILE GID
+    # TILE GID (Tile Map Global Identifier)
     ########################################################
 
     def findTile(self, tileGid):
@@ -270,8 +272,10 @@ class Map(dict):
         deltaAnchorY = followerObject['anchorY'] - leaderObject['anchorY'] 
         for i in range(len(self['follow'])):
             if self['follow'][i]['leader'] == leaderObject:
-                if not followerObject in self['follow'][i]['followers']:
-                    self['follow'][i]['followers'].append((followerObject,deltaAnchorX,deltaAnchorY))
+                for fo in self['follow'][i]['followers']:
+                    if fo[0] == followerObject:
+                        return  # followerObject has already been added.
+                self['follow'][i]['followers'].append((followerObject,deltaAnchorX,deltaAnchorY))
                 return
         self['follow'].append({'leader': leaderObject, 'followers': [(followerObject,deltaAnchorX,deltaAnchorY)]})
 
@@ -279,10 +283,11 @@ class Map(dict):
     def removeFollower(self, leaderObject, followerObject):
         for i in range(len(self['follow'])):
             if self['follow'][i]['leader'] == leaderObject:
-                if followerObject in self['follow'][i]['followers']:
-                    self['follow'][i]['followers'].remove(followerObject)
+                for fo in self['follow'][i]['followers']:
+                    if fo[0] == followerObject:
+                        self['follow'][i]['followers'].remove(fo)
                     if len(self['follow'][i]['followers']) == 0:
-                        self['follow'].remove(i)
+                        del self['follow'][i]
                 return
 
     def getFollowers(self, leaderObject):
@@ -292,6 +297,16 @@ class Map(dict):
                 for followerObject, deltaAnchorX, deltaAnchorY in self['follow'][i]['followers']:
                     followers.append(followerObject)
         return followers
+
+    def logFollow(self, m):
+        """log() a human readable version of m['follow'] (for debugging)"""
+        f=m['follow']
+        log(f"***** {m['name']}['follow'] ****")
+        for a in f:
+            line = f"{a['leader']['name']} -> "
+            for b in a['followers']:
+                line = f"{line} {b[0]['name']} "
+            log(line)
 
 
     ########################################################
@@ -570,11 +585,14 @@ class Map(dict):
         if self.findObject(collidesWith=collidesWith, objectList=self['outOfBounds']):
             return False
 
-        # if the inBounds layer is empty then it IS valid
+        # if the inBounds layer is empty or explicitly ignoring inBounds then it IS valid
         if len(self['inBounds']) == 0 or ignoreInBounds:
             return True
 
         # if object is fully inside an object or objects on the inBounds layer then it IS valid.
+        # ============================================
+        # BUG: THIS CODE DOES NOT WORK IF OBJECTS NEEDS TO BE ON MULTIPLE inBounds OBJECTS TO BE INBOUNDS.
+        # ============================================
         if self.findObject(collidesWith=collidesWith, overlap='full', objectList=self['inBounds']):
             return True
 
@@ -672,7 +690,7 @@ class Map(dict):
         self.setMapChanged()
 
     def setObjectMap(self, object, destMap):
-        """Move a Tiled object to a differnt map.
+        """Move a Tiled object to a different map.
 
         Remove object from all known layers on this map and add
         it to the same layers on destMap.
@@ -682,6 +700,10 @@ class Map(dict):
             destMap (engine.map.Map)
 
         """
+
+        # if we are moving the object from one map to the same map then we are done.
+        if(self == destMap):
+            return
 
         if object in self['triggers']:
             self.removeObject(object, objectList=self['triggers'])
@@ -703,10 +725,12 @@ class Map(dict):
             self.removeObject(object, objectList=self['outOfBounds'])
             destMap.addObject(object, objectList=destMap['outOfBounds'])
 
-        for i in range(len(self['follow'])):
-            if self['follow'][i]['leader'] == object:
-                for followerObject, deltaAnchorX, deltaAnchorY in self['follow'][i]['followers']:
-                    self.setObjectMap(followerObject, destMap)
+        followObjects = self.getFollowers(object)
+        for f in followObjects:
+            self.removeFollower(object,f)
+            self.setObjectMap(f, destMap)
+            destMap.addFollower(object,f)
+
 
     ########################################################
     # LAYER VISABILITY MECHANIC
