@@ -274,7 +274,7 @@ class Client(dict):
             # process any user input and send it to the server as required.
             self.processEvents()
 
-            # busy wait (for accuracy) until next step should start.
+            # wait until next step should start.
             ptime = time.perf_counter()
             if ptime < nextStepAt:
                 sleepTime += nextStepAt - ptime
@@ -285,12 +285,11 @@ class Client(dict):
                     startAt = ptime
                     nextStatusAt = startAt + self['busySec']
                     sleepTime = 0
-                while ptime < nextStepAt:
-                    ptime = time.perf_counter()
+                time.sleep(until=nextStepAt)
             else:
                 log("Client running slower than " + str(self['fps']) + " fps.", "VERBOSE")
 
-            nextStepAt = ptime + (1.0 / self['fps'])
+            nextStepAt = time.perf_counter() + (1.0 / self['fps'])
 
     ########################################################
     # NETWORK MESSAGE PROCESSING

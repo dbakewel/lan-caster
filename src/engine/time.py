@@ -34,10 +34,21 @@ def perf_counter():
     return time.perf_counter() + DELTA
 
 
-def sleep(sec):
-    """Function does not return until sec seconds have passed.
+def sleep(sec=False, until=False):
+    """Function does not return until a specified time has passed.
+
+    one of 'sec' or 'until' must be provided. 'sec' will
+    use the OS sleep function while 'until' will busy 
+    wait for greater accuracy.
 
     Args:
         sec (float): seconds to sleep.
+        until (float): time to sleep until
     """
-    time.sleep(sec)
+    if sec:
+        time.sleep(sec)
+
+    if until:
+        global DELTA
+        while time.perf_counter() + DELTA < until:
+            pass

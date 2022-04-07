@@ -61,7 +61,7 @@ def startServer():
 
     if(args.pause):
         log(f"Pausing for {args.pause} seconds before starting server.")
-        time.sleep(args.pause)
+        time.sleep(sec=args.pause)
 
     module = engine.loaders.loadModule("server", game=args.game)
     module.Server(args).run()

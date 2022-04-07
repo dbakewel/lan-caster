@@ -71,7 +71,7 @@ def startClient():
 
     if(args.pause):
         log(f"Pausing for {args.pause} seconds before starting client.")
-        time.sleep(args.pause)
+        time.sleep(sec=args.pause)
 
     module = engine.loaders.loadModule("client", game=args.game)
     module.Client(args).run()

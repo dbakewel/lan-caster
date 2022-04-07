@@ -100,7 +100,7 @@ class Connector(dict):
             # process messages from servers and clients (recvReplyMsgs calls msg<msgType> for each msg received)
             self['socket'].recvReplyMsgs()
             self.checkTimeouts()
-            time.sleep(1)
+            time.sleep(sec=1)
 
     def checkTimeouts(self):
         """Remove any serverName from self['serverlist'] that have timed out.
