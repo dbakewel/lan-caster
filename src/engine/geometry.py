@@ -102,7 +102,7 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
     Valid collisionType values are 'none', 'anchor', 'rect', and circle.
 
     Args:
-        o1, o2 (dict): These are game objects which much cotain at least: x, y, width, 
+        o1, o2 (dict): These are game objects which must contain at least: x, y, width, 
             height, anchoX, anchorY, and collisionType.
         overlap (str): overlap must be one of 'partial' or 'full'.
             If overlap == 'partial' then collides() returns True if any part of o1
@@ -120,6 +120,10 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
     if not o2CollisionType:
         o2CollisionType = o2['collisionType']
 
+    if o1CollisionType == 'line' and o2CollisionType == 'line':
+        log("line/line collisions not yet supported.", "WARNING")
+        return False
+
     # do we need to reverse o1 and o2?
     if o2CollisionType == 'anchor' or \
             o1CollisionType == 'rect' and o2CollisionType == 'line' or \
@@ -128,17 +132,46 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
         o1, o2 = o2, o1
         o1CollisionType, o2CollisionType = o2CollisionType, o1CollisionType
 
-    # none and anything never collide. anchor and anchor never collide.
-    if o1CollisionType == 'none' or o2CollisionType == 'none' or o2CollisionType == 'anchor':
-        return False
-
     for o,ct in ((o1,o1CollisionType),(o2,o2CollisionType)):
         if ct == 'line' and 'polyline' not in o and 'polygon' not in o:
                 log("collision type line requires polyline or polygon object.", "ERROR")
                 return False
         if ct == 'circle' and o['width'] != o['height']:
-                log("collision type circle assumes width == height which it does not.", "WARMING")
+                log("collision type circle assumes width == height which it does not.", "WARNING")
                 return False
+
+    return collidesFast(o1, o1CollisionType, o2, o2CollisionType, overlap)
+
+def collidesFast(o1, o1CollisionType, o2, o2CollisionType, overlap='partial'):
+    """Fast version of collides() with no error checking.
+
+    Valid collisionType values are 'none', 'anchor', 'line', rect', and circle.
+
+    If collisionType == 'line' then object must contain a polyline or polygon.
+
+    The only supported collisionType combinations are:
+        o1CollisionType     o1CollisionType
+        ---------------     ---------------
+        anchor              rect
+        anchor              circle
+        line                rect
+        line                circle
+        rect                rect
+        rect                circle
+        circle              circle
+        All other combinations will return false.
+
+    Args:
+        o1, o2 (dict): These are game objects which must contain at least: x, y, width, 
+            height, anchoX, anchorY.
+        o1CollisionType, o2CollisionType (str): collisionType for o1 and o2
+        overlap (str): overlap must be one of 'partial' or 'full'.
+            If overlap == 'partial' then collides() returns True if any part of o1
+            and o2 overlap. If overlap == 'full' the collides only returns True if
+            o2 fully overlaps o1 (i.e. o1 is fully inside o2).
+    Returns:
+        Boolean.
+    """
 
     if o1CollisionType == 'anchor' and o2CollisionType == 'rect':
         if o2['x'] <= o1['anchorX'] and o1['anchorX'] <= o2['x'] + o2['width'] and \
@@ -149,9 +182,6 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
         if distance(o1['anchorX'],o1['anchorY'],o2['x'] + o2['width']/2,o2['y'] + o2['height']/2) <= o2['width']/2:
             return True
 
-    elif o1CollisionType == 'line' and o2CollisionType == 'line':
-        log("line/line collisions not yet supported.", "WARNING")
-
     elif o1CollisionType == 'line' and o2CollisionType == 'rect':
         if 'polyline' in o1:
             lpts = o1['polyline']
@@ -160,7 +190,7 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
         if overlap=='partial':
             # if one of the points in the poly is inside the rect.
             for i in range(0,len(lpts)):
-                if collides({'anchorX': o1['x']+lpts[i]['x'], 'anchorY':o1['y']+lpts[i]['y']},'anchor', o2, 'rect'):
+                if collidesFast({'anchorX': o1['x']+lpts[i]['x'], 'anchorY':o1['y']+lpts[i]['y']},'anchor', o2, 'rect'):
                     return True
             # if one of the line segments from line intersects rect.
             for i in range(1,len(lpts)):
@@ -179,7 +209,7 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
         else:
             # if all of the points in the poly are inside the rect.
             for i in range(0,len(lpts)):
-                if not collides({'anchorX': o1['x']+lpts[i]['x'], 'anchorY':o1['y']+lpts[i]['y']},'anchor',o2,'rect'):
+                if not collidesFast({'anchorX': o1['x']+lpts[i]['x'], 'anchorY':o1['y']+lpts[i]['y']},'anchor',o2,'rect'):
                     return False
             return True
 
@@ -235,10 +265,10 @@ def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=F
 
     elif o1CollisionType == 'rect' and o2CollisionType == 'circle':
         # first check rect/rect collision.
-        if collides(o1, 'rect',o2, 'rect',overlap=overlap):
+        if collidesFast(o1, 'rect',o2, 'rect',overlap=overlap):
             # quick check if rect anchor is inside circle
             if overlap=='partial':
-                if collides(o1, 'anchor',o2, 'circle'):
+                if collidesFast(o1, 'anchor',o2, 'circle'):
                     return True
                 # now check if a line from the rect intersects circle.
                 for line in ((o1['x'], o1['y'], o1['x']+o1['width'], o1['y']),

@@ -67,7 +67,7 @@ class ServerMap(engine.servermap.ServerMap):
             for sprite in self.findObject(name='raytarget', returnAll=True):
                 # we need to call collides() (rather than using colloidesWith in findObject()) because
                 # we want to use collisionType='circle' for raytargets rather than their default of 'anchor'.
-                if geo.collides(polyobject, sprite, o2CollisionType='circle'):
+                if geo.collidesFast(polyobject, 'line', sprite, 'circle'):
                     for attribute in ('name', 'gid', 'tilesetName', 'tilesetTileNumber'):
                         sprite[attribute] = self['skullObject'][attribute]
 

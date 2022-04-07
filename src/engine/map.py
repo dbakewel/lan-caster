@@ -558,6 +558,9 @@ class Map(dict):
         if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
             return True
 
+        if object['collisionType'] == 'none':
+            return True
+
         newX = newAnchorX - (object['anchorX'] - object['x'])
         newY = newAnchorY - (object['anchorY'] - object['y'])
         collidesWith = {
@@ -571,26 +574,37 @@ class Map(dict):
         }
 
         # if object collides (overlaps) with another sprite then it is NOT valid.
-        if self.findObject(collidesWith=collidesWith, exclude=object):
-            return False
+        # The next two lines were removed and replaced with the lines below to increase performance.
+        #if self.findObject(collidesWith=collidesWith, exclude=object):
+        #    return False
+        for o in self['sprites']:
+            # using collidesFast() assumes sprite objects have collision types of rect or circle. Others will return False
+            if o != object and geo.collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']):
+                    return False
 
         # if object does not fully collide (overlap) with the map then it is NOT valid.
-        if not geo.collides(collidesWith,
+        if not geo.collidesFast(collidesWith,
+                collidesWith['collisionType'],
                 {
                     'x':0,
                     'y':0,
                     'anchorX':self['pixelWidth']/2,
                     'anchorY':self['pixelHeight']/2,
                     'width':self['pixelWidth'],
-                    'height':self['pixelHeight'],
-                    'collisionType': 'rect'
+                    'height':self['pixelHeight']
                 },
+                'rect',
                 overlap='full'):
             return False
 
         # if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-        if self.findObject(collidesWith=collidesWith, objectList=self['outOfBounds']):
-            return False
+        # The next two lines were removed and replaced with the lines below to increase performance.
+        #if self.findObject(collidesWith=collidesWith, objectList=self['outOfBounds']):
+        #    return False
+        for o in self['outOfBounds']:
+            # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
+            if o != object and geo.collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']):
+                return False
 
         # if the inBounds layer is empty or explicitly ignoring inBounds then it IS valid
         if len(self['inBounds']) == 0 or ignoreInBounds:
@@ -600,8 +614,13 @@ class Map(dict):
         # ============================================
         # BUG: THIS CODE DOES NOT WORK IF OBJECTS NEEDS TO BE ON MULTIPLE inBounds OBJECTS TO BE INBOUNDS.
         # ============================================
-        if self.findObject(collidesWith=collidesWith, overlap='full', objectList=self['inBounds']):
-            return True
+        # The next two lines were removed and replaced with the lines below to increase performance.
+        #if self.findObject(collidesWith=collidesWith, overlap='full', objectList=self['inBounds']):
+        #    return True
+        for o in self['inBounds']:
+            # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
+            if o != object and geo.collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType'], overlap='full'):
+                return True
 
         # else it is NOT valid.
         return False

@@ -246,11 +246,13 @@ class StepMap(engine.map.Map):
         """
 
         # get a list of all triggers that the sprite is colliding with.
-        triggers = self.findObject(
-            collidesWith=sprite,
-            objectList=self['triggers'],
-            returnAll=True,
-            exclude=sprite)
+        # The next line was removed and replaced with the lines below to increase performance.
+        #triggers = self.findObject(collidesWith=sprite,objectList=self['triggers'],returnAll=True,exclude=sprite)
+        triggers = []
+        for t in self['triggers']:
+            # using collidesFast() assumes t objects have collision types of rect or circle. Others will return False
+            if t != sprite and geo.collidesFast(sprite,sprite['collisionType'], t, t['collisionType']):
+                triggers.append(t)
 
         # remove any triggers that do not have trigger* methods to call.
         # log warning since this should not happen.
