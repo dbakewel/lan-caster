@@ -33,6 +33,11 @@ def quit(signal=None, frame=None):
     except BaseException:
         pass
 
+    global profiler
+    if profiler:
+        profiler.stop()
+        profiler.print()
+
     log("Quiting", "INFO")
     exit()
 
@@ -76,9 +81,23 @@ class Client(dict):
         Set up the Client data, open client network ip:port, join the server,
         open the game window, load Tiled data (maps and tilesets)
         """
+
+        # enable SIGINT so quit() will be called on Cntl-C
         global CLIENT
         CLIENT = self
         signal.signal(signal.SIGINT, quit)
+
+        # enable profiler if -profile was given on command line.
+        global profiler
+        profiler = False
+        if args.profile:
+            try:
+                from pyinstrument import Profiler
+            except BaseException:
+                log("Python package missing for -profile option. Install with something similar to:\n py -3 -m pip install pyinstrument", "FAILURE")
+                exit()
+            profiler = Profiler()
+            profiler.start()
 
         self['game'] = args.game
         self['playerDisplayName'] = args.playerDisplayName

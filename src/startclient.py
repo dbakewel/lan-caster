@@ -58,6 +58,8 @@ def startClient():
     parser.add_argument('-pause', metavar='secs', dest='pause', type=int,
                         default=0, help='Duration to pause in seconds before starting client (for testing)')
 
+    parser.add_argument('-profile', dest='profile', action='store_true',
+                        default=False, help='Print function performance profile on exit.')
     parser.add_argument('-verbose', dest='verbose', action='store_true',
                         default=False, help='Print VERBOSE level log messages')
     parser.add_argument('-debug', dest='debug', action='store_true',

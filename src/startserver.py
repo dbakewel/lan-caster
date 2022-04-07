@@ -48,6 +48,8 @@ def startServer():
     parser.add_argument('-test', dest='testMode', action='store_true',
                         default=False, help='Start server in test mode')
 
+    parser.add_argument('-profile', dest='profile', action='store_true',
+                        default=False, help='Print function performance profile on exit.')
     parser.add_argument('-verbose', dest='verbose', action='store_true',
                         default=False, help='Print VERBOSE level log messages')
     parser.add_argument('-debug', dest='debug', action='store_true',

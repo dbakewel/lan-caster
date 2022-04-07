@@ -31,6 +31,11 @@ def quit(signal=None, frame=None):
     except BaseException:
         pass
 
+    global profiler
+    if profiler:
+        profiler.stop()
+        profiler.print()
+
     log("Quiting", "INFO")
     exit()
 
@@ -81,10 +86,24 @@ class Server(dict):
         Args:
             args: output from argparse. see startserver.py
         """
+
+        # enable SIGINT so quit() will be called on Cntl-C
         global SERVER
         SERVER = self
         signal.signal(signal.SIGINT, quit)
         random.seed()
+
+        # enable profiler if -profile was given on command line.
+        global profiler
+        profiler = False
+        if args.profile:
+            try:
+                from pyinstrument import Profiler
+            except BaseException:
+                log("Python package missing for -profile option. Install with something similar to:\n py -3 -m pip install pyinstrument", "FAILURE")
+                exit()
+            profiler = Profiler()
+            profiler.start()
 
         self['game'] = args.game
         self['registerName'] = args.registerName
