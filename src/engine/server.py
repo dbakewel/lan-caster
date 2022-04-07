@@ -26,10 +26,20 @@ def quit(signal=None, frame=None):
     """
 
     # If the socket has been created then print network stats.
+    global SERVER
+
     try:
-        log(engine.server.SERVER['socket'].getStats())
+        log(SERVER['socket'].getStats())
     except BaseException:
         pass
+
+    #try:
+    str="\nAverage Map Step Time:"
+    for mapName in SERVER['maps']:
+        str += f"\n    {mapName:20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
+    log(str)
+    #except BaseException:
+    # #   pass
 
     global profiler
     if profiler:
@@ -86,11 +96,12 @@ class Server(dict):
         Args:
             args: output from argparse. see startserver.py
         """
-
-        # enable SIGINT so quit() will be called on Cntl-C
         global SERVER
         SERVER = self
+
+        # enable SIGINT so quit() will be called on Cntl-C
         signal.signal(signal.SIGINT, quit)
+
         random.seed()
 
         # enable profiler if -profile was given on command line.

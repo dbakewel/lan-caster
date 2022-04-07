@@ -64,6 +64,9 @@ class StepMap(engine.map.Map):
 
         super().__init__(tilesets, mapDir)
 
+        self['stepsProcessed'] = 0
+        self['stepProcessingTime'] = 0
+
         self['stepMethodTypes'] = (
             "stepMapStart",
             "trigger",
@@ -197,12 +200,20 @@ class StepMap(engine.map.Map):
             return
         self['stepMethodPriority'][stepMethodType][stepMethodName] = priority
 
+    def getStatsAvgMs(self):
+        """Returns the avg ms to process each stepMap for this map."""
+        if self['stepsProcessed'] == 0:
+            return 0.0
+        return  (self['stepProcessingTime']/self['stepsProcessed']) * 1000
+
     ########################################################
     # STEP DISPATCHER (Order of steps matters!)
     ########################################################
 
     def stepMap(self):
         """Move the map forward one step in time"""
+
+        startTime = time.perf_counter()
 
         # call all self.stepMapStart*() methods
         for methodName in self['stepMethods']['stepMapStart']:
@@ -226,6 +237,9 @@ class StepMap(engine.map.Map):
         for methodName in self['stepMethods']['stepMapEnd']:
             method = getattr(self, methodName, None)
             method()
+
+        self['stepsProcessed'] += 1
+        self['stepProcessingTime'] += (time.perf_counter()-startTime)
 
     def stepTriggers(self, sprite):
         """Process all triggers for a sprite.
