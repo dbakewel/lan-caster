@@ -451,10 +451,24 @@ class ClientMap(engine.map.Map):
         fontFilename = f"src/{self['game']}/fonts/{textObject['text']['fontfamily']}.ttf"
         if not os.path.isfile(fontFilename):
             fontFilename = None
+
+        if not 'fonts' in self:
+            self['fonts'] = {}
+
         if fontFilename:
-            font = pygame.freetype.Font(fontFilename, textObject['text']['pixelsize'])
+            fontKey = f"{fontFilename}-{textObject['text']['pixelsize']}"
+            if fontKey in self['fonts']:
+                font = self['fonts'][fontKey]
+            else:  
+                font = pygame.freetype.Font(fontFilename, textObject['text']['pixelsize'])
+                self['fonts'][fontKey] = font
         else:
-            font = pygame.freetype.SysFont(textObject['text']['fontfamily'], textObject['text']['pixelsize'])
+            fontKey = f"{textObject['text']['fontfamily']}-{textObject['text']['pixelsize']}"
+            if fontKey in self['fonts']:
+                font = self['fonts'][fontKey]
+            else:
+                font = pygame.freetype.SysFont(textObject['text']['fontfamily'], textObject['text']['pixelsize'])
+                self['fonts'][fontKey] = font
 
         font.strong = textObject['text']['bold']
         font.underline = textObject['text']['underline']
