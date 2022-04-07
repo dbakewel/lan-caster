@@ -115,27 +115,6 @@ class Map(dict):
             if self['layers'][layerIndex]['visible'] == True:
                 self.setLayerVisablitybyIndex(layerIndex, True)
 
-        # set up quick reference to object lists of well known object layers.
-        # these can be used directly rather than searching for these layers over and over.
-        # it also ensures all these layers exist (via these refernces) in case they were not in the Tiled file.
-        self['triggers'] = []
-        self['sprites'] = []
-        self['reference'] = []
-        self['inBounds'] = []
-        self['outOfBounds'] = []
-        for l in self['layers']:
-            if l['type'] == "objectgroup":
-                if l['name'] == "triggers":
-                    self['triggers'] = l['objects']
-                elif l['name'] == "sprites":
-                    self['sprites'] = l['objects']
-                elif l['name'] == "reference":
-                    self['reference'] = l['objects']
-                elif l['name'] == "inBounds":
-                    self['inBounds'] = l['objects']
-                elif l['name'] == "outOfBounds":
-                    self['outOfBounds'] = l['objects']
-
         '''
         layers and objects loaded from tiled need some data conversion and clean up to be useful
         '''
@@ -176,6 +155,29 @@ class Map(dict):
                     # finally check the object for any other missing data or other issues that is not directly
                     # related to the tiled file format.
                     self.checkObject(object)
+                # sort objects by area from largest to smallest. This will make finding collisions slightly faster.
+                layer['objects'].sort(key=lambda o: o['width']*o['height'], reverse=True)
+
+        # set up quick reference to object lists of well known object layers.
+        # these can be used directly rather than searching for these layers over and over.
+        # it also ensures all these layers exist (via these refernces) in case they were not in the Tiled file.
+        self['triggers'] = []
+        self['sprites'] = []
+        self['reference'] = []
+        self['inBounds'] = []
+        self['outOfBounds'] = []
+        for l in self['layers']:
+            if l['type'] == "objectgroup":
+                if l['name'] == "triggers":
+                    self['triggers'] = l['objects']
+                elif l['name'] == "sprites":
+                    self['sprites'] = l['objects']
+                elif l['name'] == "reference":
+                    self['reference'] = l['objects']
+                elif l['name'] == "inBounds":
+                    self['inBounds'] = l['objects']
+                elif l['name'] == "outOfBounds":
+                    self['outOfBounds'] = l['objects']
 
     def __str__(self):
         return engine.log.objectToStr(self, depth=2)
