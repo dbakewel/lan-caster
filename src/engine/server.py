@@ -29,15 +29,15 @@ def quit(signal=None, frame=None):
     global SERVER
 
     try:
-        log(SERVER['socket'].getStats())
+        log(SERVER['socket'].getStats(), "VERBOSE")
     except BaseException:
         pass
 
     #try:
-    str="\nAverage Map Step Time:"
+    str="\n\n          ==== Average Map Step Time ====\n"
     for mapName in SERVER['maps']:
-        str += f"\n    {mapName:20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
-    log(str)
+        str += f"\n    {mapName:>20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
+    log(str + "\n", "VERBOSE")
     #except BaseException:
     # #   pass
 

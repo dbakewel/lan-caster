@@ -140,7 +140,7 @@ class Socket:
 
     def getStats(self):
         """ Return str of Socket stats. """
-        output = "\n\n                 ====== Stats ======"
+        output = "\n\n             ====== Network Stats ======"
 
         if self.sendRecvMessageCalls:
             output += \

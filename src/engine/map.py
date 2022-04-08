@@ -168,6 +168,7 @@ class Map(dict):
         self['outOfBounds'] = []
         for l in self['layers']:
             if l['type'] == "objectgroup":
+                log(f"Object layer '{l['name']}' contains {len(l['objects'])} objects.","VERBOSE")
                 if l['name'] == "triggers":
                     self['triggers'] = l['objects']
                 elif l['name'] == "sprites":
