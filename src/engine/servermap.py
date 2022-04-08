@@ -74,7 +74,7 @@ class ServerMap(engine.stepmap.StepMap):
             slide = sprite['move']['sl']
 
             # convert pixels per second to pixels per step
-            stepSpeed = moveSpeed / engine.server.SERVER['fps']
+            startStepSpeed = stepSpeed = moveSpeed / engine.server.SERVER['fps']
 
             # compute a new angle in radians which moves directly towards destination
             # sprite['direction'] is stored and never removed so client will know the last
@@ -87,7 +87,7 @@ class ServerMap(engine.stepmap.StepMap):
 
             # while the location is not valid and we are trying to move at least 0.01 pixel.
             inBounds = False
-            while not inBounds and stepSpeed > 0.01:
+            while not inBounds and stepSpeed > 0:
                 # if we can get to the dest this step then just go there.
                 if stepSpeed > geo.distance(sprite['anchorX'], sprite['anchorY'],
                                             moveDestX, moveDestY):
@@ -105,12 +105,12 @@ class ServerMap(engine.stepmap.StepMap):
                 # if we are out of bounds then slow down and try again. Mabye not going as far will be in bounds.
                 inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
                 if not inBounds:
-                    stepSpeed *= 0.9
+                    stepSpeed -= startStepSpeed * 0.9
 
             # if we cannot move directly then try sliding (if enabled).
             if not inBounds and slide:
                 # reset speed since it was probably reduced above.
-                stepSpeed = moveSpeed / engine.server.SERVER['fps']
+                stepSpeed = startStepSpeed
 
                 if moveDestX > sprite['anchorX']:
                     newAnchorX = sprite['anchorX'] + min(stepSpeed, moveDestX - sprite['anchorX'])
@@ -149,7 +149,7 @@ class ServerMap(engine.stepmap.StepMap):
                     stop it after this move.
                 """
                 if (moveDestX == newAnchorX and moveDestY == newAnchorY) or \
-                        geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.01:
+                        geo.distance(sprite['anchorX'], sprite['anchorY'], newAnchorX, newAnchorY) < 0.04:
                     self.delMoveLinear(sprite)
 
                 # move sprite to new location
