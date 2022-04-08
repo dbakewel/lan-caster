@@ -5,6 +5,7 @@ import os
 import engine.log
 from engine.log import log
 import engine.geometry as geo
+from engine.geometry import collidesFast
 
 
 class Map(dict):
@@ -580,13 +581,14 @@ class Map(dict):
         # The next two lines were removed and replaced with the lines below to increase performance.
         #if self.findObject(collidesWith=collidesWith, exclude=object):
         #    return False
+
         for o in self['sprites']:
             # using collidesFast() assumes sprite objects have collision types of rect or circle. Others will return False
-            if o != object and geo.collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']):
+            if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
                     return False
 
         # if object does not fully collide (overlap) with the map then it is NOT valid.
-        if not geo.collidesFast(collidesWith,
+        if not collidesFast(collidesWith,
                 collidesWith['collisionType'],
                 {
                     'x':0,
@@ -606,7 +608,7 @@ class Map(dict):
         #    return False
         for o in self['outOfBounds']:
             # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
-            if o != object and geo.collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']):
+            if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
                 return False
 
         # if the inBounds layer is empty or explicitly ignoring inBounds then it IS valid
@@ -622,7 +624,7 @@ class Map(dict):
         #    return True
         for o in self['inBounds']:
             # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
-            if o != object and geo.collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType'], overlap='full'):
+            if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType'], overlap='full') and o != object:
                 return True
 
         # else it is NOT valid.
