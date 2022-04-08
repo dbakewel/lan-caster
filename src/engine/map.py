@@ -271,6 +271,62 @@ class Map(dict):
         exit()
 
     ########################################################
+    # LOCATION CODES
+    ########################################################
+
+    def getZoneCode(self,object,maxlength = 8):
+        """
+        ox1,oy2 : top left corner of object
+        ox2,oy2 : bottom left corner of object.
+        ax1,ay2 : top left corner of object
+        ax2,ay2 : bottom left corner of object.
+        """
+        code = ""
+        ox1 = object['x']
+        oy1 = object['y']
+        ox2 = object['x'] + object['width']
+        oy2 = object['y'] + object['height']
+        ax1 = 0
+        ay1 = 0
+        ax2 = self['pixelWidth']
+        ay2 = self['pixelHeight']
+        for i in range(maxlength):
+            axm = ax1+(ax2-ax1)/2
+            aym = ay1+(ay2-ay1)/2
+            # if fully in zone A (top left quadrant)
+            if ox2 < axm and oy2 < aym:
+                code += "A"
+                ax2 = axm
+                ay2 = aym
+            # if fully in zone B (top right quadrant)
+            elif axm < ox1 and oy2 < aym:
+                code += "B"
+                ax1 = axm
+                ay2 = aym
+            # if fully in zone C (bottom left quadrant)
+            elif ox2 < axm and aym < oy1:
+                code += "C"
+                ax2 = axm
+                ay1 = aym
+            # if fully in zone D (bottom right quadrant)
+            elif axm < ox1 and aym < oy1:
+                code += "D"
+                ax1 = axm
+                ay1 = aym
+            # overlaps more than one zone
+            else:
+                break
+        #log(f"{code} {round(object['x'],1)}, {round(object['y'],1)}, {round(object['x'] + object['width'],1)}, {round(object['y'] + object['height'],1)} ")
+        return code
+
+    def checkZoneCode(self, z1, z2):
+        if len(z2) > len(z1):
+            z1, z2 = z2, z1
+        if z1.startswith(z2):
+            return True
+        return False
+
+    ########################################################
     # FOLLOW
     ########################################################
 
@@ -509,6 +565,8 @@ class Map(dict):
             object['height'] = 0
         if "collisionType" not in object:
             object['collisionType'] = 'anchor'
+        if "zone" not in object:
+            object['zone'] = self.getZoneCode(object)
 
         # if this is a Tile Object
         if "gid" in object and ("tilesetName" not in object or "tilesetTileNumber" not in object):
@@ -576,6 +634,7 @@ class Map(dict):
             'height':object['height'],
             'collisionType':object['collisionType']
         }
+        newzone = self.getZoneCode(collidesWith)
 
         # if object collides (overlaps) with another sprite then it is NOT valid.
         # The next two lines were removed and replaced with the lines below to increase performance.
@@ -583,9 +642,15 @@ class Map(dict):
         #    return False
 
         for o in self['sprites']:
+            if len(newzone) > len(o['zone']):
+                if not newzone.startswith(o['zone']):
+                    continue
+            else:
+                if not o['zone'].startswith(newzone):
+                    continue
             # using collidesFast() assumes sprite objects have collision types of rect or circle. Others will return False
             if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
-                    return False
+                return False
 
         # if object does not fully collide (overlap) with the map then it is NOT valid.
         if not collidesFast(collidesWith,
@@ -607,6 +672,12 @@ class Map(dict):
         #if self.findObject(collidesWith=collidesWith, objectList=self['outOfBounds']):
         #    return False
         for o in self['outOfBounds']:
+            if len(newzone) > len(o['zone']):
+                if not newzone.startswith(o['zone']):
+                    continue
+            else:
+                if not o['zone'].startswith(newzone):
+                    continue
             # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
             if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
                 return False
@@ -623,6 +694,12 @@ class Map(dict):
         #if self.findObject(collidesWith=collidesWith, overlap='full', objectList=self['inBounds']):
         #    return True
         for o in self['inBounds']:
+            if len(newzone) > len(o['zone']):
+                if not newzone.startswith(o['zone']):
+                    continue
+            else:
+                if not o['zone'].startswith(newzone):
+                    continue
             # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
             if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType'], overlap='full') and o != object:
                 return True
@@ -690,6 +767,8 @@ class Map(dict):
             object['anchorX'] = object['x'] + object['width'] / 2
             object['anchorY'] = object['y'] + object['height'] / 2
 
+        object['zone'] = self.getZoneCode(object)
+
         self.setMapChanged()
 
     def setObjectLocationByAnchor(self, object, anchorX, anchorY):
@@ -718,7 +797,9 @@ class Map(dict):
             if self['follow'][i]['leader'] == object:
                 for followerObject, deltaAnchorX, deltaAnchorY in self['follow'][i]['followers']:
                     self.setObjectLocationByAnchor(followerObject, anchorX+deltaAnchorX, anchorY+deltaAnchorY)
-                
+
+        object['zone'] = self.getZoneCode(object)
+
         self.setMapChanged()
 
     def setObjectMap(self, object, destMap):
@@ -757,6 +838,8 @@ class Map(dict):
         if object in self['outOfBounds']:
             self.removeObject(object, objectList=self['outOfBounds'])
             destMap.addObject(object, objectList=destMap['outOfBounds'])
+
+        object['zone'] = destMap.getZoneCode(object)
 
         followObjects = self.getFollowers(object)
         for f in followObjects:
