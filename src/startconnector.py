@@ -17,7 +17,7 @@ import engine.connector
 try:
     import msgpack
 except BaseException:
-    log("Python package missing. Install with something similar to:\n py -3 -m pip install msgpack-python", "FAILURE")
+    log("Python package missing. Install with something similar to:\n py -3 -m pip install msgpack", "FAILURE")
     exit()
 
 import engine.network

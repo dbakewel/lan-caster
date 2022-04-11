@@ -19,12 +19,12 @@ LAN-Caster requires two added python modules to be installed.
 
 To install pygame and msgpack on Windows use:
 ```
-py -3 -m pip install pygame msgpack-python
+py -3 -m pip install pygame msgpack
 ```
 
 To install pygame and msgpack on Linux use:
 ```
-pip3 install pygame msgpack-python
+pip3 install pygame msgpack
 ```
 
 Note, if a computer is only running the LAN-Caster server then the pygame module is not required.

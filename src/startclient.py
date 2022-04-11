@@ -16,7 +16,7 @@ try:
     import pygame
     import msgpack
 except BaseException:
-    log("Python packages missing. Install with something similar to:\n py -3 -m pip install pygame msgpack-python", "FAILURE")
+    log("Python packages missing. Install with something similar to:\n py -3 -m pip install pygame msgpack", "FAILURE")
     exit()
 
 import engine.network
