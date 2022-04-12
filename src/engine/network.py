@@ -476,7 +476,7 @@ class SocketException(Exception):
 def resolve(hostname):
     """Return an IP address for hostname."""
     if not isinstance(hostname, str):
-        log("Hostname/IP is type " + str(type(ip)) + " but must be type str: {hostname}", "ERROR")
+        log("Hostname/IP is type " + str(type(hostname)) + " but must be type str: {hostname}", "ERROR")
     if isValidIP(hostname):
         return (hostname)
     ip = socket.gethostbyname(hostname)
