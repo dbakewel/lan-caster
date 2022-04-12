@@ -35,7 +35,7 @@ class Map(dict):
 
         Note, all Tiled properties will be converted into an easier to access form.
             from: {object['properties'][{name: name1, value: value1}],[...]}
-            to: {object.prop-name1=value1,...}
+            to: {object['prop-name1']=value1,...}
         Note, duplicate property names is not supported!
 
         Args:
