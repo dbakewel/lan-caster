@@ -10,7 +10,7 @@ LAN-Caster is a simple game engine for game development. Key features of LAN-Cas
   * Extendable classes for client and server that implement game logic, network messaging, rendering and user input handling;
   * Extensive code level comments;
   * Demo Game and Game Engine Tester which demonstrate how to use and extend LAN-Caster to make your own game;
-  * Tutorial Videos which explain most aspects of LAN-Caster (Coming Soon).
+  * Tutorial Videos which explain most aspects of LAN-Caster.
 
 ## Examples From Demo Game
 
