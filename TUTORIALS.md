@@ -1,144 +1,99 @@
 [ [ABOUT](README.md) | [SETUP and RUN](SETUP.md) | [CREATE A GAME](CREATE.md) | **TUTORIALS** | [CONTRIBUTING](CONTRIBUTING.md) ]
 
-# LAN-Caster - Tutorials (UNDER DEVELOPMENT)
+# LAN-Caster - Tutorials
 
-The following videos provide an overview of how to use LAN-Caster to build your own game.
+The following links and videos provide an overview of how to use LAN-Caster to build your own game. More will be added as content is created.
 
-### Videos to add:
+## Python Basics
 
-* Engine Overview
-```
-General purpose, enhancement, and limitations of the engine
-What the engine can do (see enginetest)
-How the engine can be expanded (see demo)
-architecture: 
-  Input data (Tiled): maps and tilesets
-  server and clients
-    server side(game logic, steps and mechanics), 
-    clients/players side (input and display), 
-  LAN networking
-```
+To write a game with LAN-Caster, you should have a basic familiarity with python 3. The links below will help:
 
-* How to write a game with LAN-Caster
-```
-Design
-  Game Concept and Story
-  Game Mechanics
-  Engine Enhancements and Limitations
-  Details: Game and Maps
+* [Python for Java Programmers (YouTube 1:00:00)](https://www.youtube.com/watch?v=xLovcfIugy8)
+* [Python Introductions](https://docs.python-guide.org/intro/learning/)
+* Important Python types: [dict](https://docs.python.org/3/tutorial/datastructures.html#dictionaries), [str](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str), [int and float](https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex).
+* Other important python skills: [default arguments](https://www.geeksforgeeks.org/default-arguments-in-python/) and [exceptions](https://docs.python.org/3/tutorial/errors.html). 
 
-Implementation
-  file structure and loaders
-  Maps and Tilesets
-  launcher
-  adding code
-  build for testing (back doors and test suites)
-  incremental improvement
+## [LAN-Caster Game Engine Overview](https://youtu.be/jUvnkdJJ1os)
+* What is LAN-Caster?
+* Where to get it: https://github.com/dbakewel/lan-caster
+* File Organization
+* Running the Demo
+* Architecture:
+  * Input data (Tiled): Maps and Tilesets
+  * Processes
+  * Server: game logic, steps, and mechanics
+  * Clients (aka players): input and display 
+  * Networking
+* How to make your own game?
 
-Watch the other videos for detailed examples
-```
+## [How to write a game with LAN-Caster](https://youtu.be/S1vMXXxbLMw)
+* Design
+  * Game Concept and Story
+  * Game Mechanics
+  * Engine Enhancements and Limitations
+  * Tilesets, Maps, and Code
+  * Working in a Team
 
-* Engine Maps and Tilesets
-```
-Tiled
-map requirements
-layer types
-tilesets
-tile layers
-object layers
-well defined (known or special) layers
-  sprites
-  anchor points vs x y
-layer order (using black layer to help)
-```
+* Implementation
+  * File Structure and Revision Control
+  * Maps and Tilesets
+  * Launcher
+  * Adding Code
+  * Testing (-verbose, -profile, -test)
+  * Incremental Improvement
 
-* Engine Client and ClientMap Class
-```
-designed to be a single instance class
-map and tileset and clienttileset classes
-clientmap class (blitting and validUntil)
-limitation (what parts of Tiled are not supported)
-```
+## [Tilesets in LAN-Caster](https://youtu.be/Ays2itJTVPY)
+* Tiled Tilesets 
+* Images (png) files
+  * Where to find and how to give credit.
+  * How to make your own
+* Create Tileset file
+* Animated tiles
+* Character tiles
+* Anchor point
+* Using Tiles on a Map:
+  * Tile layers
+  * Tile objects
 
-* Engine Server Class
-```
-designed to be a single instance class
-init
-main loop
-  message processing
-  step processing
-  sending steps
-  loop timing (fps)
-```
+## [Maps in LAN-Caster](https://youtu.be/W3ni7JxcZiI)
+* Tiled Maps
+* Map Requirements
+* Tilesets
+* Adding External Tilesets
+Layers Types:
+  * Tile Layers
+  * Object Layers
+  * Well Defined (known or special) Layers
+    * sprites
+    * triggers
+    * inbounds
+    * outofBounds
+    * reference
+* Layer Order (using black layer to help)
+* Object Anchor Points vs. (x, y)
+* Properties
 
-* Engine ServerMap Class (stepping and game mechanics)
-```
-servermap class
-  init
-  step processing (start, sprites, end)
-  testing game engine mechanics with test-engine
-  engine mechanics
-  ACTIONS
-    client user input and action message, set action in sprite
-    dispacther, 
-    pickup, 
-    use, 
-    drop
-  ACTIONTEXT 
-    following through to display by client
-  TRIGGERS
-    dispacther
-    mapDoor
-    popUpText
-  MOVE
-    client user input, set dest message
+## LAN-Caster Client Code Overview
+* startclient.py
+* Client Class
+  * Main Loop
+    * Message Processing
+    * Update Screen
+    * User Input Event Processing
+    * Loop Timing
+* ClientMap Class (intro to map rendering)
 
-LABELTEXT
-SPEACHTEXT
-```
-
-* Demo overview
-```
-  file strucutre, subclassing and loaders review
-
-  Maps and Tileset data
-
-  Tangent: General vs. Hardcoded Design Decisions
-
-  Demo Server
-    stepEnd
-
-  Demo Client
-    open and ending text (user interface overlay)
-
-```
-
-* Demo game mechanics
-```
-  
-  Making General vs. Hardcoded Design Decisions
-
-  Demo ServerMap
-    Chicken, 
-    Throw, 
-    SpeedMultiplier (mud), 
-    Bomb,
-    RespawnPoint mechanics (designed to work between maps but demo does not use that feature)
-
-  Start Map ServerMap
-    lockedMapDoor
-
-  Under Map ServerMap
-    Saw
-    Use of Respawn points
-    StopSaw
-
-  Under Map ClientMap
-    Darkness
-
-  End Map ServerMap
-    Lever
-    Magic Wand
-
-
-```
+## LAN-Caster Server Code Overview
+* startserver.py
+* Server Class
+  * Main Loop
+    * Message Processing
+    * Step Processing
+    * Send Steps
+    * Loop Timing
+* ServerMap Class (intro to mechanics)
+* StepMap Class
+  * Server and Map Stepping
+  * Step Methods
+  * Basic of Game Mechanics
+  * -verbose server startup messages
