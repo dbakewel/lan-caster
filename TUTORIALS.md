@@ -73,27 +73,69 @@ Layers Types:
 * Object Anchor Points vs. (x, y)
 * Properties
 
-## LAN-Caster Client Code Overview
+## [LAN-Caster Client Code Overview](https://youtu.be/ccoLowFDico)
 * startclient.py
 * Client Class
-  * Main Loop
+  * init()
+  * run()
     * Message Processing
     * Update Screen
     * User Input Event Processing
     * Loop Timing
 * ClientMap Class (intro to map rendering)
+* Subclassing
 
-## LAN-Caster Server Code Overview
+## [LAN-Caster Server Code Overview](https://youtu.be/6rHjjfqX-YY)
 * startserver.py
 * Server Class
-  * Main Loop
+  * init()
+  * run()
     * Message Processing
     * Step Processing
     * Send Steps
     * Loop Timing
 * ServerMap Class (intro to mechanics)
+* Subclassing
+
+## [LAN-Caster Server Stepping](https://youtu.be/vB2HY1xLVAg)
 * StepMap Class
-  * Server and Map Stepping
-  * Step Methods
-  * Basic of Game Mechanics
-  * -verbose server startup messages
+* Server Stepping
+* Step Methods used for Game Mechanics
+  * initMechanicName(): Called only once when the map is loaded.
+  * stepMapStartMechanicName(): Called once at the start of each step.
+  * triggerMechanicName(trigger, sprite): Called for every trigger/sprite collision
+  * stepMoveMechanicName(sprite): Called for every sprite that is moving
+  * stepMapEndMechanicName(): Called once at the end of each step.
+* -verbose server startup messages
+
+# Videos to be added...
+
+## LAN-Caster engineTest Explanation (part 1)
+* Player Sprites
+* Move Linear Mechanic (also, intro to collisions)
+* MapDoor Mechanic
+* Holdable Mechanic
+* Rendering (layers, shapes, map size)
+* Text Styles
+* Tile Animation and Character Tiles
+
+## LAN-Caster engineTest Explanation (part 2)
+* Triggers and Layer Visibility
+* Ways to show text
+* Extending a Mechanic
+  * PortKey Mechanic
+  * Timer Mechanic
+* Sprite Dictionary
+* Advanced Tests
+
+## LAN-Caster Demo Game Overview
+
+## LAN-Caster Demo Game Mechanics
+
+## Tiled Properties in LAN-Caster
+
+## Collisions in LAN-Caster
+
+## How To Add User Inputs to LAN-Caster
+
+## How To Add Interface Elements to LAN-Caster

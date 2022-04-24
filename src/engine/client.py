@@ -125,7 +125,7 @@ class Client(dict):
             "valign": "center"
             }
 
-        self['testMode'] = False  # True is server is in testMode. Server provides this in joinReply message.
+        self['testMode'] = False  # True if server is in testMode. Server provides this in joinReply message.
 
         # Set up network, send joinRequest msg to server, and wait for joinReply to be sent back from server.
 
