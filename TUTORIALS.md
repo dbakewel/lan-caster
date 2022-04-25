@@ -110,6 +110,23 @@ Layers Types:
 
 # Videos to be added...
 
+## Create Hello World Game in LAN-Caster
+* Concept and Design
+* Create Launcher and Directories
+* Download Graphics and Add Credits
+* Tileset
+* Map
+* "sprites" Layer
+* Player Object on sprites Layer
+* First Test
+* "ground" Layer and Tiles
+* "outOfBounds" Layer and Objects
+* "trigger" Layer
+* "helloworld" Object on trigger Layer
+* servermap.py
+* hellowworld code
+* final test
+
 ## LAN-Caster engineTest Explanation (part 1)
 * Player Sprites
 * Move Linear Mechanic (also, intro to collisions)
@@ -128,13 +145,63 @@ Layers Types:
 * Sprite Dictionary
 * Advanced Tests
 
-## LAN-Caster Demo Game Overview
-
-## LAN-Caster Demo Game Mechanics
-
 ## Tiled Properties in LAN-Caster
+* Properties can be added in Tiled for:
+  * Tileset
+  * Tile
+  * Map
+  * Layer
+  * Object
+* How Properties are Loaded
+* Duplicate Properties
+* Accessing Properties (prop-...)
 
 ## Collisions in LAN-Caster
+* Object collisionType
+* collisionType default by Layer
+* engine.geometry.collides()
+  * example collisions
+  * overlap
+* Example uses of collides()
+  * engine.stepmap.stepTriggers()
+  * engine.map.checkLocation()
+  * engine.map.findObject()
+
+## LAN-Caster Demo Game Overview
+* File structure
+* Maps and Tilesets
+* Tangent: General vs. Hardcoded Design Decisions
+* Demo Server (Global Game Logic)
+  * Game Mode (waitingForPlayers, gameOn, gameOver)
+  * waitingForPlayers Marquee Text
+  * Detecting gameOn
+  * GameOn Marquee Text and Player Clearing of Marquee Text
+  * Detecting gameOver
+  * Tracking Time
+  * GameOver Marquee Text
+* Demo Client
+  * Fonts
+
+## LAN-Caster Demo Game Mechanics
+* Making General vs. Hardcoded Design Decisions
+* Demo ServerMap
+  * Chicken, 
+  * Throw, 
+  * SpeedMultiplier (mud), 
+  * Bomb,
+  * RespawnPoint mechanics
+* Start Map ServerMap
+  * lockedMapDoor
+* Under Map ServerMap
+  * Saw
+  * Use of RespawnPoint
+  * StopSaw
+* Under Map ClientMap
+  * Darkness
+* End Map ServerMap
+  * Lever
+  * Magic Wand
+
 
 ## How To Add User Inputs to LAN-Caster
 

@@ -99,7 +99,7 @@ def sortRightDown(listOfGameObs, maxWidth, useAnchor=True):
 def collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=False):
     """Returns True if o1 overlaps o2 else returns False.
 
-    Valid collisionType values are 'none', 'anchor', 'rect', and circle.
+    Valid collisionType values are 'none', 'anchor', 'line', rect', and circle.
 
     Args:
         o1, o2 (dict): These are game objects which must contain at least: x, y, width, 
