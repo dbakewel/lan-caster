@@ -42,6 +42,23 @@ To write a game with LAN-Caster, you should have a basic familiarity with python
   * Testing (-verbose, -profile, -test)
   * Incremental Improvement
 
+## [Create Hello World Game in LAN-Caster](https://youtu.be/rvbrWbRBEVQ)
+* Concept and Design
+* Create Launcher and Directories
+* Download Graphics and Add Credits
+* Tileset
+* Map
+* "sprites" Layer
+* Player Object on sprites Layer
+* First Test
+* "ground" Layer and Tiles
+* "outOfBounds" Layer and Objects
+* "trigger" Layer
+* "helloworld" Object on trigger Layer
+* servermap.py
+* trigger code
+* final test
+
 ## [Tilesets in LAN-Caster](https://youtu.be/Ays2itJTVPY)
 * Tiled Tilesets 
 * Images (png) files
@@ -108,26 +125,7 @@ Layers Types:
   * stepMapEndMechanicName(): Called once at the end of each step.
 * -verbose server startup messages
 
-# Videos to be added...
-
-## Create Hello World Game in LAN-Caster
-* Concept and Design
-* Create Launcher and Directories
-* Download Graphics and Add Credits
-* Tileset
-* Map
-* "sprites" Layer
-* Player Object on sprites Layer
-* First Test
-* "ground" Layer and Tiles
-* "outOfBounds" Layer and Objects
-* "trigger" Layer
-* "helloworld" Object on trigger Layer
-* servermap.py
-* hellowworld code
-* final test
-
-## LAN-Caster engineTest Explanation (part 1)
+## [LAN-Caster engineTest Explanation (part 1)](https://youtu.be/RfbBl11pc20)
 * Player Sprites
 * Move Linear Mechanic (also, intro to collisions)
 * MapDoor Mechanic
@@ -136,14 +134,17 @@ Layers Types:
 * Text Styles
 * Tile Animation and Character Tiles
 
-## LAN-Caster engineTest Explanation (part 2)
-* Triggers and Layer Visibility
-* Ways to show text
+## [LAN-Caster engineTest Explanation (part 2)](https://youtu.be/tWpVATUisDM)
+* Triggers and Layer Visibility (Adding a Mechanic)
+* Ways to Show Text
 * Extending a Mechanic
   * PortKey Mechanic
   * Timer Mechanic
 * Sprite Dictionary
 * Advanced Tests
+
+# Videos to be added...
+
 
 ## Tiled Properties in LAN-Caster
 * Properties can be added in Tiled for:
@@ -166,6 +167,10 @@ Layers Types:
   * engine.stepmap.stepTriggers()
   * engine.map.checkLocation()
   * engine.map.findObject()
+
+## How To Use User Action Mechanic in LAN-Caster
+
+## How To Add User Inputs to LAN-Caster
 
 ## LAN-Caster Demo Game Overview
 * File structure
@@ -203,6 +208,4 @@ Layers Types:
   * Magic Wand
 
 
-## How To Add User Inputs to LAN-Caster
 
-## How To Add Interface Elements to LAN-Caster
