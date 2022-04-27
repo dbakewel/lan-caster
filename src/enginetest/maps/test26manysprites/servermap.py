@@ -6,6 +6,8 @@ import engine.server
 
 
 class ServerMap(engine.servermap.ServerMap):
+    """This servermap tests servers performance."""
+
     def stepMapStartChase(self):
         """CHASE MECHANIC: stepMapStart method.
 

@@ -10,9 +10,11 @@ CLASSES
     class ServerMap(engine.servermap.ServerMap)
      |  ServerMap(tilesets, mapDir)
      |  
-     |  This servermap implements ray emitter and reflector mechanics.
+     |  This servermap implements a circular move mechanic.
      |  
      |  ORBIT MOVE
+     |  
+     |  Better comments to be added later.
      |  
      |  Method resolution order:
      |      ServerMap
@@ -30,7 +32,7 @@ CLASSES
      |      Remove attributes from sprite: move
      |  
      |  initMoveOrbit(self)
-     |      Set up sprites for poly movement.
+     |      Set up sprites for orbit movement.
      |  
      |  setMoveOrbit(self, sprite, orbitName, moveSpeed, bounce=False, radius=False, angle=False)
      |      MOVE ORBIT MECHANIC: Set sprites orbit to follow and speed.
@@ -245,6 +247,9 @@ CLASSES
      |  
      |  getAllMethodsStr(self)
      |      Return a multi-line human readable string of all map init*, step*, and trigger* methods.
+     |  
+     |  getStatsAvgMs(self)
+     |      Returns the avg ms to process each stepMap for this map.
      |  
      |  getTriggerMethodName(self, trigger)
      |      Convert a trigger type  to method

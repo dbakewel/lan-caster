@@ -110,10 +110,10 @@ FUNCTIONS
     collides(o1, o2, overlap='partial', o1CollisionType=False, o2CollisionType=False)
         Returns True if o1 overlaps o2 else returns False.
         
-        Valid collisionType values are 'none', 'anchor', 'rect', and circle.
+        Valid collisionType values are 'none', 'anchor', 'line', rect', and circle.
         
         Args:
-            o1, o2 (dict): These are game objects which much cotain at least: x, y, width, 
+            o1, o2 (dict): These are game objects which must contain at least: x, y, width, 
                 height, anchoX, anchorY, and collisionType.
             overlap (str): overlap must be one of 'partial' or 'full'.
                 If overlap == 'partial' then collides() returns True if any part of o1
@@ -123,6 +123,36 @@ FUNCTIONS
                 then use o1CollisionType in place of o1['collisionType'].
             o2CollisionType (bool, str): If False then use o2['collisionType']. If str
                 then use o2CollisionType in place of o2['collisionType'].
+        Returns:
+            Boolean.
+    
+    collidesFast(o1, o1CollisionType, o2, o2CollisionType, overlap='partial')
+        Fast version of collides() with no error checking.
+        
+        Valid collisionType values are 'none', 'anchor', 'line', rect', and circle.
+        
+        If collisionType == 'line' then object must contain a polyline or polygon.
+        
+        The only supported collisionType combinations are:
+            o1CollisionType     o1CollisionType
+            ---------------     ---------------
+            anchor              rect
+            anchor              circle
+            line                rect
+            line                circle
+            rect                rect
+            rect                circle
+            circle              circle
+            All other combinations will return false.
+        
+        Args:
+            o1, o2 (dict): These are game objects which must contain at least: x, y, width, 
+                height, anchoX, anchorY.
+            o1CollisionType, o2CollisionType (str): collisionType for o1 and o2
+            overlap (str): overlap must be one of 'partial' or 'full'.
+                If overlap == 'partial' then collides() returns True if any part of o1
+                and o2 overlap. If overlap == 'full' the collides only returns True if
+                o2 fully overlaps o1 (i.e. o1 is fully inside o2).
         Returns:
             Boolean.
     

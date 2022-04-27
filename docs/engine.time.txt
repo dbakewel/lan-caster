@@ -25,11 +25,16 @@ FUNCTIONS
         Args:
             serverTime (float): server time in seconds.
     
-    sleep(sec)
-        Function does not return until sec seconds have passed.
+    sleep(sec=False, until=False)
+        Function does not return until a specified time has passed.
+        
+        one of 'sec' or 'until' must be provided. 'sec' will
+        use the OS sleep function while 'until' will busy 
+        wait for greater accuracy.
         
         Args:
             sec (float): seconds to sleep.
+            until (float): time to sleep until
 
 DATA
     DELTA = 0
