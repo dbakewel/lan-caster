@@ -707,6 +707,7 @@ class Server(dict):
 
     def addPlayer(self, ip, port, ipport, msg):
         """Add a client as a new player. Assumes client is not already a player (not yet in self['players']).
+        Also, assumes there are still still players in self['unassignedPlayerSprites']
 
         Args:
             ip (str): IP Address of sender.
