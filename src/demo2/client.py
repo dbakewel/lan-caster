@@ -18,8 +18,6 @@ class Client(engine.client.Client):
 
         self['MARQUEETEXT'].update({
             "pixelsize": 24,
-            "bgcolor": "#00000080",
-            "bgbordercolor": "#00000080",
             "bgborderThickness": 8,
             "bgroundCorners": 10,
             })

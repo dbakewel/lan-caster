@@ -22,10 +22,15 @@ class ClientMap(engine.clientmap.ClientMap):
 
         self['DEFAULTTEXT'].update({
             "fontfamily": "Orbitron-Regular",
-            "bgcolor": "#00000088",
-            "bgbordercolor": "#00000088",
+            "bgcolor": "#000000b0",
+            "bgbordercolor": "#000000b0",
             "bgborderThickness": 4,
             "bgroundCorners": 4
+            })
+
+        self['SPEACHTEXT'].update({
+            "bgcolor": "#00000080",
+            "bgbordercolor": "#00000080"
             })
 
         # labelText defaults that differ from DEFAULTTEXT
