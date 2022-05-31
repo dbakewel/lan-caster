@@ -31,10 +31,12 @@ class Server(engine.server.Server):
 
         # server will quit after this time.
         self['quitAfter'] = sys.float_info.max
-        self['gameStartSec'] = False
+        self['gameStartSec'] = 0
         self['mode'] = "waitingForPlayers"
         self['redPoints'] = 0
         self['bluePoints'] = 0
+
+        self['GAMETIME'] = 60.0*10  # game leangth in seconds
         self['MAXHEALTH'] = 100.0
         self['HEALTHREGENSEC'] = 60.0 # seconds to regen full health from 0
         self['MAXENDUR'] = 3.0 # seconds
@@ -42,6 +44,16 @@ class Server(engine.server.Server):
         self['RUNSPEED'] = 2.0  # multiplier of running vs. normal speed.
 
         log(f"Server __init__ complete. Server Attributes:{engine.log.dictToStr(self, 1)}", "VERBOSE")
+
+    def msgReadyRequest(self, ip, port, ipport, msg):
+        """msgReadyRequest()"""
+        if self['mode'] != "waitingForPlayers":
+            return
+
+        if ipport in self['players']:
+            self['players'][ipport]['ready'] = True
+            self.updateWaiting()
+        return {'type': 'readyReply'}
 
     def msgPlayerMove(self, ip, port, ipport, msg):
         """Extends msgPlayerMove()
@@ -52,11 +64,10 @@ class Server(engine.server.Server):
         Once all players have joined game, if a player moves then
         remove their marqueeTest.
         """
-        if self['mode'] != "gameOn":
+        if self['mode'] == "waitingForPlayers":
             return
-
-        # clear start marqueeText if player has moved and game is ongoing.
-        if ipport in self['players']:
+        elif self['mode'] == 'gameOn' and ipport in self['players']:
+            # clear start marqueeText if player has moved and game is ongoing.
             self.delPlayerMarqueeText(self['players'][ipport]['playerNumber'])
         
         return super().msgPlayerMove(ip, port, ipport, msg)
@@ -66,25 +77,27 @@ class Server(engine.server.Server):
 
         ignore playerAction msgs until all players have joined game.
         """
-        if self['mode'] != "gameOn":
+        if self['mode'] == "waitingForPlayers":
             return
 
         return super().msgPlayerAction(ip, port, ipport, msg)
 
-    def msgReadyRequest(self, ip, port, ipport, msg):
-        """msgReadyRequest()"""
-
-        if ipport in self['players'] and self['mode'] == "waitingForPlayers":
-            self['players'][ipport]['ready'] = True
-            self.updateWaiting()
-        return {'type': 'readyReply'}
-
     def msgRun(self, ip, port, ipport, msg):
-        if ipport in self['players'] and self['mode'] == "gameOn":
+        if self['mode'] == "waitingForPlayers":
+            return
+
+        if ipport in self['players']:
             sprite = self['players'][ipport]['sprite']
             if 'move' in sprite and self['players'][ipport]['endur'] > 0:
                 sprite['move']['s'] *= self['RUNSPEED']
                 sprite['move']['run'] = True
+
+    def msgFire(self, ip, port, ipport, msg):
+        if self['mode'] == "waitingForPlayers":
+            return
+
+        if ipport in self['players']:
+            log("fire!")
 
     def addPlayer(self, ip, port, ipport, msg):
         """Extends addPlayer()"""
@@ -127,12 +140,20 @@ class Server(engine.server.Server):
     def getStepMsg(self, player):
         """Extends engine.getStepMsg()"""
 
+        if self['mode'] == "gameOn":
+            timeRemaining = self['GAMETIME'] - (time.perf_counter() - self['gameStartSec'])
+        elif self['mode'] == 'gameOver':
+            timeRemaining = 0.0
+        else:
+            timeRemaining = self['GAMETIME']
+
         msg = super().getStepMsg(player)
         msg.update({
             'health': player['health'],
             'endur': player['endur'],
             'redPoints': self['redPoints'],
-            'bluePoints': self['bluePoints']
+            'bluePoints': self['bluePoints'],
+            'timeRemaining': timeRemaining
             })
 
         return msg
@@ -142,36 +163,51 @@ class Server(engine.server.Server):
 
         super().stepServerStart()
 
-        # if game is in progress
-        if self['mode'] == "gameOn":
-            for playerNumber in self['playersByNum']:
-                player = self['playersByNum'][playerNumber]
+        for playerNumber in self['playersByNum']:
+            player = self['playersByNum'][playerNumber]
 
-                if player['health'] <= 0:
-                    # if a players health is below 0 then respawn the player
-                    self.respawnPlayer(playerNumber)
-                elif player['health'] < self['MAXHEALTH']:
-                    # regenerate health
-                    player['health'] += self['MAXHEALTH'] / (self['HEALTHREGENSEC'] * self['fps'])
-                    player['changed'] = True
-                    if player['health'] > self['MAXHEALTH']:
-                        player['health'] = self['MAXHEALTH']
+            if player['health'] <= 0:
+                # if a players health is below 0 then respawn the player
+                self.respawnPlayer(playerNumber)
+            elif player['health'] < self['MAXHEALTH']:
+                # regenerate health
+                player['health'] += self['MAXHEALTH'] / (self['HEALTHREGENSEC'] * self['fps'])
+                player['changed'] = True
+                if player['health'] > self['MAXHEALTH']:
+                    player['health'] = self['MAXHEALTH']
 
-                if 'move' in player['sprite'] and 'run' in player['sprite']['move']:
-                    # if player is running then reduce endurance. if endurance == 0 then stop running
-                    player['endur'] -= 1.0/self['fps']
+            if 'move' in player['sprite'] and 'run' in player['sprite']['move']:
+                # if player is running then reduce endurance. if endurance == 0 then stop running
+                player['endur'] -= 1.0/self['fps']
+                player['changed'] = True
+                if player['endur'] <= 0:
+                    del player['sprite']['move']['run']
+                    player['sprite']['move']['s'] /= self['RUNSPEED']
+                    player['endur'] = -self['MAXENDUR']
+            else:
+                #regenerate endurance
+                if player['endur'] < self['MAXENDUR']:
+                    player['endur'] += self['MAXENDUR'] / (self['ENDURREGENSEC'] * self['fps'])
                     player['changed'] = True
-                    if player['endur'] <= 0:
-                        del player['sprite']['move']['run']
-                        player['sprite']['move']['s'] /= self['RUNSPEED']
-                        player['endur'] = -self['MAXENDUR']
-                else:
-                    #regenerate endurance
-                    if player['endur'] < self['MAXENDUR']:
-                        player['endur'] += self['MAXENDUR'] / (self['ENDURREGENSEC'] * self['fps'])
-                        player['changed'] = True
-                        if player['endur'] > self['MAXENDUR']:
-                            player['endur'] = self['MAXENDUR']
+                    if player['endur'] > self['MAXENDUR']:
+                        player['endur'] = self['MAXENDUR']
+
+            if self['mode'] == "gameOn":
+                timeRemaining = self['GAMETIME'] - (time.perf_counter() - self['gameStartSec'])
+                if timeRemaining < 0:
+                    self['mode'] = 'gameOver'
+                    self['quitAfter'] = time.perf_counter() + 30
+                    log("GAME OVER: Quiting in 30 seconds")
+
+                    if self['redPoints'] > self['bluePoints']:
+                        winnerText = "RED WINS!"
+                    elif self['redPoints'] == self['bluePoints']:
+                        winnerText = "IT'S A TIE!"
+                    else:
+                        winnerText = "BLUE WINS!"
+                    for playerNumber in self['playersByNum']:
+                        self.setPlayerMarqueeText(playerNumber,
+                            f"Game Over\n\nBlue={self['bluePoints']}  Red={self['redPoints']}\n\n{winnerText}")
 
         # check if it is time for server to quit
         if self['quitAfter'] < time.perf_counter():
@@ -187,26 +223,51 @@ class Server(engine.server.Server):
     def respawnPlayer(self, playerNumber):
         """Move player back to where they started and reset health, endur, etc..."""
 
-        if playerNumber in self['playersByNum']:
-            player = self['playersByNum'][playerNumber]
-            sprite = player['sprite']
+        player = self['playersByNum'][playerNumber]
+        sprite = player['sprite']
 
-            # STILL NEED TO DROP ALL ITEMS BEFORE MOVING!!!
+        # give point to other team
+        if sprite['prop-team'] == 'red':
+            self['bluePoints'] += 1
+        else:
+            self['redPoints'] += 1
 
-            destMap = self['maps'][player['startMapName']]
-            if sprite['mapName'] != player['startMapName']:
-                map = self['maps'][sprite['mapName']]
-                map.setObjectMap(sprite, destMap)
-            destMap.setObjectLocationByAnchor(sprite, player['startAnchorX'], player['startAnchorY'])
-            destMap.delMoveLinear(sprite)
+        # put held items back to where they were picked up.
+        for item in ('weapon','key','idol'):
+            if item in sprite:
+                drop = sprite[item]
+                destmap = self['maps'][drop['mapName']]
+                destmap.dropHoldable(drop, item)
 
-            player['health'] = self['MAXHEALTH']
-            player['endur'] = self['MAXENDUR']
+        # put player back to where they started.
+        destMap = self['maps'][player['startMapName']]
+        if sprite['mapName'] != player['startMapName']:
+            map = self['maps'][sprite['mapName']]
+            map.setObjectMap(sprite, destMap)
+        destMap.setObjectLocationByAnchor(sprite, player['startAnchorX'], player['startAnchorY'])
+        destMap.delMoveLinear(sprite)
+
+        self.restoreStats(playerNumber)
+        destMap.setSpriteSpeechText(sprite, "I died but I have been reborn!", time.perf_counter() + 8)
+
+    def restoreStats(self, playerNumber):
+        player = self['playersByNum'][playerNumber]
+        player['health'] = self['MAXHEALTH']
+        player['endur'] = self['MAXENDUR']
+
+    def resetPlayerChanged(self, player):
+        """Extends resetPlayerChanged()"""
+        player['changed'] = False
+        super().resetPlayerChanged(player)
 
     def getPlayerChanged(self, player):
         """Extends engine.getPlayerChanged() - Detect if player changed based on player['changed']"""
 
         if player['changed']:
-            player['changed'] = False
             return True
+
+        if player['lastStepMsgSent']+1 < time.perf_counter():
+            # send a least one update per sec so player can see time increasing.
+            return True
+
         return super().getPlayerChanged(player)

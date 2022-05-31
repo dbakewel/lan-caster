@@ -20,6 +20,22 @@ class ClientMap(engine.clientmap.ClientMap):
 
         super().__init__(tilesets, mapDir)
 
+        self['DEFAULTTEXT'].update({
+            "fontfamily": "Orbitron-Regular",
+            "bgcolor": "#00000088",
+            "bgbordercolor": "#00000088",
+            "bgborderThickness": 4,
+            "bgroundCorners": 4
+            })
+
+        # labelText defaults that differ from DEFAULTTEXT
+        self['LABELTEXT'].update({
+            "pixelsize": 8,
+            "bgcolor": "#00000000",
+            "bgborderThickness": 0,
+            "bgroundCorners": 0
+            })
+
     def blitObject(self, destImage, offset, object):
         """Extends blitObject()"""
 
@@ -31,10 +47,10 @@ class ClientMap(engine.clientmap.ClientMap):
                 validUntil.append(self.blitHeldObject(destImage, offset, object, object['weapon'], math.pi))
             if 'key' in object:
                 validUntil.append(self.blitHeldObject(destImage, offset, object, object['key'], 0))
-            if 'idle' in object:
+            if 'idol' in object:
                 now = time.perf_counter()
                 if round(now*10)%2:
-                    validUntil.append(self.blitHeldObject(destImage, offset, object, object['idle'], math.pi*0.5))
+                    validUntil.append(self.blitHeldObject(destImage, offset, object, object['idol'], math.pi*0.5))
                 validUntil.append(now+0.1)
             return min(validUntil)
         else:

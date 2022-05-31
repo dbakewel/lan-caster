@@ -19,8 +19,10 @@ class Messages(engine.messages.Messages):
             'bluePoints': 'int',
             'redPoints': 'int',
             'health': 'float',
-            'endur': 'float'
+            'endur': 'float',
+            'timeRemaining': 'float'
             })
         self['messageDefinitions']['readyRequest'] = {}
         self['messageDefinitions']['readyReply'] = {}
         self['messageDefinitions']['run'] = {}
+        self['messageDefinitions']['fire'] = {}
