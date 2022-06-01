@@ -376,8 +376,11 @@ class Map(dict):
         if not isinstance(objectList, list):
             objectList = self['sprites']
 
-        objectList.remove(object)
-        self.setMapChanged()
+        try:  # ignore error is object is not in objectlist.
+            objectList.remove(object)
+            self.setMapChanged()
+        except:
+            pass
 
     def removeObjectFromAllLayers(self, object):
         """Remove a Tiled object from all layers of this map.
