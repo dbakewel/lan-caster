@@ -72,6 +72,7 @@ class ServerMap(engine.stepmap.StepMap):
             moveDestY = sprite['move']['y']
             moveSpeed = sprite['move']['s']
             slide = sprite['move']['sl']
+            easeIn = sprite['move']['ei']
 
             # convert pixels per second to pixels per step
             startStepSpeed = stepSpeed = moveSpeed / engine.server.SERVER['fps']
@@ -104,8 +105,10 @@ class ServerMap(engine.stepmap.StepMap):
 
                 # if we are out of bounds then slow down and try again. Mabye not going as far will be in bounds.
                 inBounds = self.checkLocation(sprite, newAnchorX, newAnchorY)
-                if not inBounds:
+                if not inBounds and easeIn:
                     stepSpeed -= startStepSpeed * 0.9
+                else:
+                    break
 
             # if we cannot move directly then try sliding (if enabled).
             if not inBounds and slide:
@@ -158,12 +161,12 @@ class ServerMap(engine.stepmap.StepMap):
                 # sprite cannot move.
                 self.delMoveLinear(sprite)
 
-    def setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed, slide=True):
+    def setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed, slide=True, easeIn=True):
         """MOVE LINEAR MECHANIC: Set sprites destination and speed.
 
         Add attributes to sprite: move
         """
-        sprite['move'] = {'type': 'Linear', 'x': moveDestX, 'y': moveDestY, 's': moveSpeed, 'sl': slide}
+        sprite['move'] = {'type': 'Linear', 'x': moveDestX, 'y': moveDestY, 's': moveSpeed, 'sl': slide, 'ei': easeIn}
         self.setMapChanged()
 
     def delMoveLinear(self, sprite):
