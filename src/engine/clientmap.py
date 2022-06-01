@@ -600,6 +600,16 @@ class ClientMap(engine.map.Map):
                        borderColor=(0, 0, 0, 255), borderThickness=1, roundCorners=0):
         """Draw a Rectangle Object onto destImage"""
 
+        # allow colors to be provided in polyObject
+        if 'fillColor' in rectObject:
+            fillColor = rectObject['fillColor']
+        if 'borderColor' in rectObject:
+            borderColor = rectObject['borderColor']
+        if 'borderThickness' in rectObject:
+            borderThickness = rectObject['borderThickness']
+        if 'roundCorners' in rectObject:
+            roundCorners = rectObject['roundCorners']
+
         image = pygame.Surface((rectObject['width'], rectObject['height']), pygame.SRCALPHA, 32)
         image = image.convert_alpha()
 
@@ -617,6 +627,14 @@ class ClientMap(engine.map.Map):
     def blitRoundObject(self, destImage, offset, roundObject, fillColor=(0, 0, 0, 0),
                         borderColor=(0, 0, 0, 255), borderThickness=1):
         """Draw a Circle or Ellipse Object onto destImage"""
+
+        # allow colors to be provided in polyObject
+        if 'fillColor' in roundObject:
+            fillColor = roundObject['fillColor']
+        if 'borderColor' in roundObject:
+            borderColor = roundObject['borderColor']
+        if 'borderThickness' in roundObject:
+            borderThickness = roundObject['borderThickness']
 
         width = roundObject['width']
         height = roundObject['height']
@@ -640,6 +658,12 @@ class ClientMap(engine.map.Map):
     def blitPolyObject(self, destImage, offset, polyObject,
                        lineColor=(0, 0, 0, 255), lineThickness=1):
         """Draw a Poly Object (polyline or polygon) onto destImage"""
+
+        # allow lineColor and lineThickness to be provided in polyObject
+        if 'lineColor' in polyObject:
+            lineColor = polyObject['lineColor']
+        if 'lineThickness' in polyObject:
+            lineThickness = polyObject['lineThickness']
 
         image = pygame.Surface(
             (self['width'] *

@@ -117,7 +117,7 @@ class ServerMap(engine.servermap.ServerMap):
                 under.addObject(under['bombLadder1MapDoor'], objectList=under['triggers'])
                 under.addObject(under['bombLadder1InBounds'], objectList=under['inBounds'])
             else:
-                self.setSpriteActionText(sprite, f"Available Action: Set off {sprite['holding']['name']}.")
+                self.setSpriteActionText(sprite, f"Set off {sprite['holding']['name']} (space)")
         elif sprite['type'] == "player":  # if sprite is a player
             # if the rock has not been blown up yet.
             start = engine.server.SERVER['maps']['start']
@@ -163,7 +163,7 @@ class ServerMap(engine.servermap.ServerMap):
                     self['THROWSPEED']
                     )
             else:
-                self.setSpriteActionText(sprite, f"Available Action: Throw {sprite['holding']['name']}")
+                self.setSpriteActionText(sprite, f"Throw {sprite['holding']['name']} (space)")
         elif sprite['type'] == "player":
             self.setSpriteSpeechText(sprite, f"I could throw something from here.")
 
@@ -174,11 +174,13 @@ class ServerMap(engine.servermap.ServerMap):
         can be thrown over water. This will still stop an object that
         is thrown at an outOfBounds (such as a wall).
         """
-        ignoreInBounds = False
         if "move" in object and object['move']['type'] == "Linear" and object['move']['s'] == self['THROWSPEED']:
-            ignoreInBounds = True
+            o = object.copy()
+            o['checkLocationOn'] = ['outOfBounds']
+        else:
+            o = object
 
-        return super().checkLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
+        return super().checkLocation(o, newAnchorX, newAnchorY)
 
     ########################################################
     # SPEED MULTIPLIER MECHANIC

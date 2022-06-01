@@ -44,9 +44,9 @@ class ServerMap(demo.servermap.ServerMap):
         Also show speech and action text.
         """
         if "holding" in sprite and sprite['holding']['name'] == "magic wand":
-            self.setSpriteActionText(sprite, f"Available Action: Cast spell with {sprite['holding']['name']}.")
+            self.setSpriteActionText(sprite, f"Cast spell with {sprite['holding']['name']} (space)")
             if "action" in sprite:
-                self.triggerLever(self.findObject(name="lever"), sprite)
+                self.triggerLever(self.findObject(name="lever", objectList=self['triggers']), sprite)
         else:
             self.setSpriteSpeechText(
                 sprite, f"This place seems magical but I feel like I need something to help cast a spell.")
@@ -80,8 +80,7 @@ class ServerMap(demo.servermap.ServerMap):
         layers and objects on both the start and end map.
         """
         if trigger['name'] == "lever":
-            lever = trigger
-            self.setSpriteActionText(sprite, f"Available Action: Heave {sprite['name']}")
+            lever = trigger['doNotTrigger'][0]
             if "action" in sprite:
                 self.delSpriteAction(sprite)
                 start = engine.server.SERVER['maps']['start']
@@ -125,3 +124,5 @@ class ServerMap(demo.servermap.ServerMap):
                     b3ib = self.findObject(name="bridge3InBounds", objectList=self['reference'])
                     self.addObject(b3ib, objectList=self['inBounds'])
                     b3ib['collisionType'] = 'rect'
+            else:
+                self.setSpriteActionText(sprite, f"Heave {sprite['name']} (space)")

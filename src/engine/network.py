@@ -1,6 +1,7 @@
 """Send/Receive Messages Over Network"""
 
 import socket
+import zlib
 import random
 import engine.time as time
 import re
@@ -189,10 +190,10 @@ class Socket:
         self.destinationPort = destinationPort
 
     def serialize(self, msg):
-        return msgpack.packb(msg, use_bin_type=True)
+        return zlib.compress(msgpack.packb(msg, use_bin_type=True))
 
     def deserialize(self, b):
-        return msgpack.unpackb(b, raw=False)
+        return msgpack.unpackb(zlib.decompress(b), raw=False)
 
     def sendMessage(self, msg, destinationIP=None, destinationPort=None, packedAndChecked=False):
         """Send a msg over the network.

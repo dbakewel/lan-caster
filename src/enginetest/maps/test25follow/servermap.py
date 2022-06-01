@@ -6,6 +6,7 @@ import engine.server
 
 
 class ServerMap(engine.servermap.ServerMap):
+    """This servermap tests the follow mechanic."""
 
     def triggerAddFollow(self, trigger, sprite):
         """Add follows to follow player. 

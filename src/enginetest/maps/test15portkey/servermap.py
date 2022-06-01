@@ -39,4 +39,4 @@ class ServerMap(engine.servermap.ServerMap):
             self.delSpriteAction(sprite)
             self.triggerMapDoor(portkey, sprite)  # assume portkey has the properties required by a mapDoor trigger
         else:
-            self.setSpriteActionText(sprite, f"Available Action: Touch {portkey['name']}")
+            self.setSpriteActionText(sprite, f"Touch {portkey['name']} (space)")

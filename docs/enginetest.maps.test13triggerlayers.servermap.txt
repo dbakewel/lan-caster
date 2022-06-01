@@ -249,6 +249,9 @@ CLASSES
      |  getAllMethodsStr(self)
      |      Return a multi-line human readable string of all map init*, step*, and trigger* methods.
      |  
+     |  getStatsAvgMs(self)
+     |      Returns the avg ms to process each stepMap for this map.
+     |  
      |  getTriggerMethodName(self, trigger)
      |      Convert a trigger type  to method
      |      

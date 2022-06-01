@@ -1,0 +1,14 @@
+{ "columns":8,
+ "image":"..\/images\/fantasy-tileset64x64.png",
+ "imageheight":1664,
+ "imagewidth":512,
+ "margin":0,
+ "name":"fantasy-tileset64x64",
+ "spacing":0,
+ "tilecount":208,
+ "tiledversion":"1.7.2",
+ "tileheight":64,
+ "tilewidth":64,
+ "type":"tileset",
+ "version":"1.6"
+}

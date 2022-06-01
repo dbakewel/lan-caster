@@ -376,8 +376,11 @@ class Map(dict):
         if not isinstance(objectList, list):
             objectList = self['sprites']
 
-        objectList.remove(object)
-        self.setMapChanged()
+        try:  # ignore error is object is not in objectlist.
+            objectList.remove(object)
+            self.setMapChanged()
+        except:
+            pass
 
     def removeObjectFromAllLayers(self, object):
         """Remove a Tiled object from all layers of this map.
@@ -532,7 +535,7 @@ class Map(dict):
         # The original object has been edited but also return it so the function can be passed
         return object
 
-    def checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False):
+    def checkLocation(self, object, newAnchorX, newAnchorY):
         """Check if a location for an object is valid.
 
         Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
@@ -544,7 +547,7 @@ class Map(dict):
            Note, two objects with collisionType == 'anchor' are allowed in the same location.
         2) if object does not fully collide (overlap) with the map then it is NOT valid.
         3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
-        4) if the inBounds layer is empty or ignoreInBounds == True then it IS valid
+        4) if the inBounds layer is empty then it IS valid
         5) if object is fully inside an object or objects on the inBounds layer then it IS valid.
         6) else it is NOT valid.
 
@@ -552,7 +555,6 @@ class Map(dict):
             object (dict): A Tiled object.
             newAnchorX (float): x coordiate to check if valid
             newAnchorY (float): y coordiate to check if valid
-            ignoreInBounds (bool): if True then do not consider inBounds layers (default False)
 
         Returns:
             bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
@@ -563,6 +565,10 @@ class Map(dict):
         # if object is a player and player move checking has been turned off then return True
         if object['type'] == 'player' and not engine.server.SERVER['playerMoveCheck']:
             return True
+
+        checkLocationOn = ['outOfBounds','inBounds','sprites']
+        if 'checkLocationOn' in object:
+            checkLocationOn = object['checkLocationOn']
 
         newX = newAnchorX - (object['anchorX'] - object['x'])
         newY = newAnchorY - (object['anchorY'] - object['y'])
@@ -580,15 +586,16 @@ class Map(dict):
         # The next two lines were removed and replaced with the lines below to increase performance.
         #if self.findObject(collidesWith=collidesWith, exclude=object):
         #    return False
-        for o in self['sprites']:
-            # do a quick check to see if we can avoid collidesFast() function call.
-            if collidesWith['collisionType'] != 'line' and ((o['collisionType']!='rect' and o['collisionType']!='circle') or \
-                o['x'] > collidesWith['x']+collidesWith['width'] or o['y'] > collidesWith['y']+collidesWith['height'] or \
-                collidesWith['x'] > o['x']+o['width'] or collidesWith['y'] > o['y']+o['height']):
-                continue
-            # using collidesFast() assumes sprite objects have collision types of rect or circle. Others will return False
-            if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
-                return False
+        if 'sprites' in checkLocationOn:
+            for o in self['sprites']:
+                # do a quick check to see if we can avoid collidesFast() function call.
+                if collidesWith['collisionType'] != 'line' and ((o['collisionType']!='rect' and o['collisionType']!='circle') or \
+                    o['x'] > collidesWith['x']+collidesWith['width'] or o['y'] > collidesWith['y']+collidesWith['height'] or \
+                    collidesWith['x'] > o['x']+o['width'] or collidesWith['y'] > o['y']+o['height']):
+                    continue
+                # using collidesFast() assumes sprite objects have collision types of rect or circle. Others will return False
+                if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
+                    return False
 
         # if object does not fully collide (overlap) with the map then it is NOT valid.
         if not collidesFast(collidesWith,
@@ -609,19 +616,16 @@ class Map(dict):
         # The next two lines were removed and replaced with the lines below to increase performance.
         #if self.findObject(collidesWith=collidesWith, objectList=self['outOfBounds']):
         #    return False
-        for o in self['outOfBounds']:
-            # do a quick check to see if we can avoid collidesFast() function call.
-            if collidesWith['collisionType'] != 'line' and ((o['collisionType']!='rect' and o['collisionType']!='circle') or \
-                o['x'] > collidesWith['x']+collidesWith['width'] or o['y'] > collidesWith['y']+collidesWith['height'] or \
-                collidesWith['x'] > o['x']+o['width'] or collidesWith['y'] > o['y']+o['height']):
-                continue
-            # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
-            if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
-                return False
-
-        # if the inBounds layer is empty or explicitly ignoring inBounds then it IS valid
-        if len(self['inBounds']) == 0 or ignoreInBounds:
-            return True
+        if 'outOfBounds' in checkLocationOn:
+            for o in self['outOfBounds']:
+                # do a quick check to see if we can avoid collidesFast() function call.
+                if collidesWith['collisionType'] != 'line' and ((o['collisionType']!='rect' and o['collisionType']!='circle') or \
+                    o['x'] > collidesWith['x']+collidesWith['width'] or o['y'] > collidesWith['y']+collidesWith['height'] or \
+                    collidesWith['x'] > o['x']+o['width'] or collidesWith['y'] > o['y']+o['height']):
+                    continue
+                # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
+                if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType']) and o != object:
+                    return False
 
         # if object is fully inside an object or objects on the inBounds layer then it IS valid.
         # ============================================
@@ -630,15 +634,20 @@ class Map(dict):
         # The next two lines were removed and replaced with the lines below to increase performance.
         #if self.findObject(collidesWith=collidesWith, overlap='full', objectList=self['inBounds']):
         #    return True
-        for o in self['inBounds']:
-            # do a quick check to see if we can avoid collidesFast() function call.
-            if collidesWith['collisionType'] != 'line' and ((o['collisionType']!='rect' and o['collisionType']!='circle') or \
-                o['x'] > collidesWith['x']+collidesWith['width'] or o['y'] > collidesWith['y']+collidesWith['height'] or \
-                collidesWith['x'] > o['x']+o['width'] or collidesWith['y'] > o['y']+o['height']):
-                continue
-            # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
-            if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType'], overlap='full') and o != object:
+        if 'inBounds' in checkLocationOn:
+            if len(self['inBounds']) == 0:
                 return True
+            for o in self['inBounds']:
+                # do a quick check to see if we can avoid collidesFast() function call.
+                if collidesWith['collisionType'] != 'line' and ((o['collisionType']!='rect' and o['collisionType']!='circle') or \
+                    o['x'] > collidesWith['x']+collidesWith['width'] or o['y'] > collidesWith['y']+collidesWith['height'] or \
+                    collidesWith['x'] > o['x']+o['width'] or collidesWith['y'] > o['y']+o['height']):
+                    continue
+                # using collidesFast() assumes outOfBounds objects have collision types of rect or circle
+                if collidesFast(collidesWith,collidesWith['collisionType'], o,o['collisionType'], overlap='full') and o != object:
+                    return True
+        else:
+            return True
 
         # else it is NOT valid.
         return False

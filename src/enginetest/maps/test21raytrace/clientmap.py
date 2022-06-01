@@ -32,14 +32,4 @@ class ClientMap(engine.clientmap.ClientMap):
             return validUntil
         else:
             return super().blitObject(destImage, offset, object)
-
-    def blitPolyObject(self, destImage, offset, polyObject,
-                       lineColor=(0, 0, 0, 255), lineThickness=1):
-        """FLAT REFLECTOR MECHANIC: Extend blitPolyObject and add use of color and line thickness in polyObject."""
-
-        if 'lineColor' in polyObject:
-            lineColor = polyObject['lineColor']
-        if 'lineThickness' in polyObject:
-            lineThickness = polyObject['lineThickness']
-
-        return super().blitPolyObject(destImage, offset, polyObject, lineColor, lineThickness)
+            

@@ -1,0 +1,668 @@
+Help on module enginetest.maps.test26manysprites.servermap in enginetest.maps.test26manysprites:
+
+NAME
+    enginetest.maps.test26manysprites.servermap - ServerMap for Engine Test Map.
+
+CLASSES
+    engine.servermap.ServerMap(engine.stepmap.StepMap)
+        ServerMap
+    
+    class ServerMap(engine.servermap.ServerMap)
+     |  ServerMap(tilesets, mapDir)
+     |  
+     |  This servermap tests servers performance.
+     |  
+     |  Method resolution order:
+     |      ServerMap
+     |      engine.servermap.ServerMap
+     |      engine.stepmap.StepMap
+     |      engine.map.Map
+     |      builtins.dict
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  stepMapStartChase(self)
+     |      CHASE MECHANIC: stepMapStart method.
+     |      
+     |      Have the monster chast the player.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.servermap.ServerMap:
+     |  
+     |  addHoldableTrigger(self, holdable)
+     |      HOLDABLE MECHANIC: copy holdable sprite and make it a trigger.
+     |  
+     |  delMoveLinear(self, sprite)
+     |      MOVE LINEAR MECHANIC: Stop Sprite
+     |      
+     |      Remove attributes from sprite: move
+     |  
+     |  delSpriteAction(self, sprite)
+     |      ACTION MECHANIC: clear sprite flag from sprite.
+     |      
+     |      This should be called whenever some code does something
+     |      because of the action (the action is consumed). It
+     |      should also be called at the end of the step is nothing
+     |      could consume the action since action requests only
+     |      last one step.
+     |      
+     |      Remove attributes to sprite: action
+     |  
+     |  delSpriteActionText(self, sprite)
+     |      PLAYER ACTION TEXT MECHANIC: remove action text from player linked to sprite.
+     |  
+     |  delSpriteLabelText(self, sprite)
+     |      LABEL TEXT MECHANIC: remove labelText from sprite.
+     |      
+     |      Remove attributes to sprite: labelText
+     |  
+     |  delSpriteMarqueeText(self, sprite)
+     |      PLAYER MARQUEE TEXT MECHANIC: remove marquee text from player linked to sprite.
+     |  
+     |  delSpriteSpeechText(self, sprite)
+     |      SPEECH TEXT MECHANIC: remove speechText from sprite.
+     |      
+     |      Remove attributes to sprite: speechText, speechTextDelAfter
+     |  
+     |  dropHoldable(self, sprite)
+     |      HOLDABLE MECHANIC: sprite drops holding at sprite's location.
+     |      
+     |      Remove attributes from sprite: holding
+     |  
+     |  initAction(self)
+     |      ACTION MECHANIC: init method.
+     |      
+     |      Set priority of stepMapEndAction to be very low so all other
+     |      code has a chance to consume an action before it is removed.
+     |  
+     |  initHoldable(self)
+     |      HOLDABLE MECHANIC: init method.
+     |      
+     |      holdable sprites need to be included in Tiled data on
+     |      the sprites layer. This methods copies (by reference)
+     |      sprites of type == "holdable" to the triggers layer. They
+     |      are them on BOTH layers at the same time.
+     |  
+     |  initMapDoor(self)
+     |      MAPDOOR MECHANIC: init method.
+     |      
+     |      Set the priority of mapDoor trigger to 1 (very high).
+     |      This ensures a sprite goes through the mapDoor first
+     |      and other triggers are stopped after the sprite moves.
+     |  
+     |  pickupHoldable(self, holdableTrigger, sprite)
+     |      HOLDABLE MECHANIC: sprite picks up holdable.
+     |      
+     |      Add attributes to sprite: holding
+     |  
+     |  setMoveLinear(self, sprite, moveDestX, moveDestY, moveSpeed, slide=True)
+     |      MOVE LINEAR MECHANIC: Set sprites destination and speed.
+     |      
+     |      Add attributes to sprite: move
+     |  
+     |  setSpriteAction(self, sprite)
+     |      ACTION MECHANIC: flag sprite that it should perform one action.
+     |      
+     |      This is normally set in a player sprite after the server
+     |      receives a playerAction message from client. Other game
+     |      mechanics can look for an action request and perform
+     |      some action based on this.
+     |      
+     |      This should be set before a steps starts or very early
+     |      in a step since it will be removed at the end of the step
+     |      and all step code should have a chance to see the action
+     |      has been requested.
+     |      
+     |      Add attributes to sprite: action
+     |  
+     |  setSpriteActionText(self, sprite, actionText)
+     |      PLAYER ACTION TEXT MECHANIC: add action text to player linked to sprite.
+     |      
+     |      Note, this will only work if sprite action text has not
+     |      already been set during this step.
+     |  
+     |  setSpriteLabelText(self, sprite, labelText)
+     |      LABEL TEXT MECHANIC: add labelText to sprite.
+     |      
+     |      Adds attributes to sprite: labelText
+     |  
+     |  setSpriteMarqueeText(self, sprite, marqueeText)
+     |      PLAYER MARQUEE TEXT MECHANIC: add marquee text to player linked to sprite.
+     |  
+     |  setSpriteSpeechText(self, sprite, speechText, speechTextDelAfter=0)
+     |      SPEECH TEXT MECHANIC: add speechText to sprite.
+     |      
+     |      Add attributes to sprite:
+     |          speechText
+     |          speechTextDelAfter (optional)
+     |      
+     |      Args:
+     |          speechText (str): The text the sprite is speaking.
+     |          speechTextDelAfter (float): time after which speechText will be
+     |              removed. Default is to remove at start of next step.
+     |  
+     |  stepMapEndAction(self)
+     |      ACTION MECHANIC: stepMapEnd method.
+     |      
+     |      If an action was requested but no step method was able to consume
+     |      the action then simply delete the action (consume action it but do nothing).
+     |  
+     |  stepMapEndHoldable(self)
+     |      HOLDABLE MECHANIC: stepMapEnd method.
+     |      
+     |      Drop holdable if sprite has holding and action is requested by user.
+     |  
+     |  stepMapStartActionText(self)
+     |      PLAYER ACTION TEXT MECHANIC: delete action text from player linked to sprite.
+     |      
+     |      Each step the actions available may change so start each
+     |      step by removing all action text. The first game mechanic
+     |      that finds an action that could be performed can set a
+     |      new action text.
+     |  
+     |  stepMapStartSpeechText(self)
+     |      SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out.
+     |  
+     |  stepMoveLinear(self, sprite)
+     |      MOVE LINEAR MECHANIC: stepMove method.
+     |      
+     |      If the sprite is moving then move it towards it's destination. If it
+     |      can't move any longer (all movement would be invalid) or it has reached
+     |      it's destination then stop the sprite.
+     |      
+     |      Add attributes to sprite: direction
+     |  
+     |  triggerHoldable(self, holdableTrigger, sprite)
+     |      HOLDABLE MECHANIC: trigger method.
+     |      
+     |      The sprite's anchor is inside the trigger.
+     |      
+     |      if the sprite is not holding anything now then:
+     |          1) pick up holdable if the sprite has requested an action else
+     |          2) tell the sprite the pick up action is possible.
+     |  
+     |  triggerMapDoor(self, trigger, sprite)
+     |      MAPDOOR MECHANIC: trigger method
+     |      
+     |      Relocate sprite based on trigger properties.
+     |      
+     |      Trigger Properties:
+     |          destMapName: The map to move the player to. If missing then
+     |              do not change map.
+     |          destReference: The name of an object on the destination map
+     |              reference layer. This is the location the sprite will be
+     |              moved to.
+     |      
+     |      If the sprite is relocated then this method returns True which
+     |      stops other triggers from being processed for this sprite during
+     |      the rest of this step. This makes sense since the sprite is no
+     |      longer in the same location.
+     |      
+     |      Note, sprite will only be moved if destination is valid based
+     |      on calling checkLocation().
+     |      
+     |      Returns:
+     |          True: if sprite was moved.
+     |          None: if sprite did not move.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.stepmap.StepMap:
+     |  
+     |  __init__(self, tilesets, mapDir)
+     |      Extents engine.map.Map.__init__()
+     |      
+     |      Finds and calls the init<MechanicName>() methods.
+     |      Finds all methods that match each step method type format.
+     |      Sorts all methods by type and priority.
+     |  
+     |  addStepMethodPriority(self, stepMethodType, stepMethodName, priority)
+     |      Set the priority of a step method.
+     |      
+     |      This is normally used by subclass init* methods to prioritize step
+     |      methods before finding and sorting them.
+     |      
+     |      Args:
+     |          stepMethodType (str): One of self['stepMethodPriority']
+     |          stepMethodName (str): A method name that starts with stepMethodType
+     |          priority (int): The priority of stepMethodName.Lower number is
+     |              higher priority.
+     |  
+     |  getAllMethodsStr(self)
+     |      Return a multi-line human readable string of all map init*, step*, and trigger* methods.
+     |  
+     |  getStatsAvgMs(self)
+     |      Returns the avg ms to process each stepMap for this map.
+     |  
+     |  getTriggerMethodName(self, trigger)
+     |      Convert a trigger type  to method
+     |      
+     |      eg. trigger['type'] == "mapDoor" would return "triggerMapDoor"
+     |      
+     |      Args:
+     |          trigger (dict): Tiled object that is on this maps trigger layer.
+     |      
+     |      Returns:
+     |          str: The name of the method used to process the trigger.
+     |  
+     |  stepMap(self)
+     |      Move the map forward one step in time
+     |  
+     |  stepTriggers(self, sprite)
+     |      Process all triggers for a sprite.
+     |      
+     |      Find all triggers (objects on the trigger layer) that contain this
+     |      sprite's anchor and call the corresponding trigger* method.
+     |      
+     |      The search excludes the sprite itself from the search
+     |      since objects may be on the sprite and trigger layer at the
+     |      same time.
+     |      
+     |      A trigger may optionally contain an array of sprite references.
+     |      Sprites in that list will not set off the trigger:
+     |      e.g. trigger['doNotTrigger'] = [sprite1, sprite2, ...]
+     |      
+     |      Args:
+     |          sprite (dict): Tiled object from the sprite layer.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from engine.map.Map:
+     |  
+     |  __str__(self)
+     |      Return str(self).
+     |  
+     |  addFollower(self, leaderObject, followerObject)
+     |      Add leaderObject/followerObject relationship to self['follow']
+     |      This also records the relative position of the objects.
+     |      
+     |      This information is used by setObjectLocationByAnchor() and setObjectMap()
+     |      and causes the followerObject to follow the position of the leaderObject.
+     |      
+     |      Once a followerObject has been added it should not longer be used with
+     |      setObjectLocationByAnchor() or setObjectMap(), only the leaderObject
+     |      should.
+     |  
+     |  addObject(self, object, objectList=False)
+     |      Add a Tiled object to an object list.
+     |      
+     |      Used to add Tiled objects (e.g. sprites) to the object list of a layer.
+     |      The default objectList is self['sprites'].
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          objectList (dict): An objectList from a layer on this map.
+     |  
+     |  checkKeys(self, object, props)
+     |      Check if all props are keys in object.
+     |      
+     |      This can be used by a method to check if an object has all the
+     |      data required. If data is missing then a warning
+     |      is logged that suggests where the data may be missing from.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          props (list): A list of keys. e.g. ["prop-deltaX", "anchorX"]
+     |      
+     |      Returns:
+     |          bool: True if all props are in object else False
+     |  
+     |  checkLocation(self, object, newAnchorX, newAnchorY, ignoreInBounds=False)
+     |      Check if a location for an object is valid.
+     |      
+     |      Determines if (newAnchorX, newAnchorY) would be a valid anchor point for
+     |      object while taking several things into account, including map size, inBounds layer,
+     |      and outOfBounds layer, collision with other sprites.
+     |      
+     |      Note, the priority evaluation is as follows:
+     |      1) if object collides (overlaps) with another sprite then it is NOT valid.
+     |         Note, two objects with collisionType == 'anchor' are allowed in the same location.
+     |      2) if object does not fully collide (overlap) with the map then it is NOT valid.
+     |      3) if object collides (overlaps) with an object on the outOfBounds layer then it is NOT valid.
+     |      4) if the inBounds layer is empty or ignoreInBounds == True then it IS valid
+     |      5) if object is fully inside an object or objects on the inBounds layer then it IS valid.
+     |      6) else it is NOT valid.
+     |      
+     |      Args:
+     |          object (dict): A Tiled object.
+     |          newAnchorX (float): x coordiate to check if valid
+     |          newAnchorY (float): y coordiate to check if valid
+     |          ignoreInBounds (bool): if True then do not consider inBounds layers (default False)
+     |      
+     |      Returns:
+     |          bool: True if an anchor point of (newAnchorX, newAnchorY) would be a valid for object, else False
+     |  
+     |  checkObject(self, object)
+     |      Check that object has required keys.
+     |      
+     |      Ensure object meets all basic criteria that are required by the server.
+     |      If an empty object ({}) is passed then it is populated with default
+     |      values until it meets the minimum requirements of a Tiled object.
+     |      
+     |      The minimum object contains:
+     |      {
+     |          'name': (str)
+     |          'type': (str)
+     |          'x': (float)
+     |          'y': (float)
+     |          'width': (float)
+     |          'height': (float)
+     |          'anchorX': (float)
+     |          'anchorY': (float)
+     |          'collisionType': (str) One of 'none', 'anchor', 'rect', 'circle'
+     |          'mapName': (str) The last map the object was on (or is still on).
+     |      
+     |          Only for tile objects have the following:
+     |          'gid': (int) Map Global Tile ID.
+     |          'tilesetName': (str) Tile Tileset Name.
+     |          'tilesetTileNumber': (int) Tileset Tile Number.
+     |      }
+     |      
+     |      Args:
+     |          object (dict)
+     |      
+     |      Returns:
+     |          object (dict): Object is both edited in place and also returned.
+     |  
+     |  convertTiledColor(self, tiledColor)
+     |      Convert Tiled color HEX format to pygame format.
+     |      
+     |      Tiled hex colors with alpha are '#AARRGGBB' format but pygame
+     |      needs '#RRGGBBAA' so flip alpha to the end.
+     |  
+     |  convertTiledProps(self, object)
+     |      Convert Tiled properties to easy to use format.
+     |      
+     |      If 'properties' is in object then remove it and
+     |      add prop-<name> to object for each property in
+     |      'properties'.
+     |      
+     |      Args:
+     |          object (dict): An object to evaluate.
+     |  
+     |  findGid(self, tilesetSearchName, tilesetTileSearchNumber)
+     |      Converts a tileset specific tile number to a Gid of this map.
+     |      
+     |      This requires that tilesetSearchName is a tileset in this map!
+     |      
+     |      Args:
+     |          tilesetSearchName (str): The name of a tileset.
+     |          tilesetTileSearchNumber (int): A tile number from tilesetSearchName
+     |      
+     |      Returns:
+     |          tileGid (int): A map global tile number.
+     |  
+     |  findObject(self, name=False, type=False, collisionType=False, collidesWith=False, overlap='partial', objectList=False, exclude=False, returnAll=False)
+     |      Find a Tiled object that matches ALL criteria provided.
+     |      
+     |      Args:
+     |          name (str): Find object with object['name'] == name
+     |          type (str): Find object with object['type'] == type   
+     |          collisionType(str): Find object with object['collisionType'] == collisionType
+     |          collidesWith(dict): Find object which collides with object provided. See
+     |              geometry.collides() for details.
+     |          overlap(str): Only used if collidesWith is given. Passed to geometry.collides() 
+     |          objectList (dict): a list of objects to search. default is self['sprites']
+     |          exclude (dict): a Tiled object. Skip this object while searching. Normally used
+     |              to ensure an object does not find itself.
+     |          returnAll (bool): Return a list of all matching objects, else return only the first
+     |              matching object found.
+     |      
+     |      Returns: (one of the following)
+     |          object (dict): A single Tiled object if a matching object was found and returnAll==False.
+     |          False (bool): If no object was found and returnAll==False.
+     |          objects (list): A possibly empty list of matching Tiled objects if returnAll==True.
+     |  
+     |  findTile(self, tileGid)
+     |      Converts Tiled Gid for this map to a specific tileset name and tileset tile number.
+     |      
+     |      Args:
+     |          tileGid (int): a map global tile number.
+     |      
+     |      Returns:
+     |          tilesetName (str): name of tileset which contians tileGid
+     |          tilesetTileNumber (int): tileNumber relative to tilesetName
+     |  
+     |  getFollowers(self, leaderObject)
+     |      Returns array of objects that follow leaderObject: [object,object,object]
+     |  
+     |  getLayerVisablityMask(self)
+     |      LAYER VISABILITY MECHANIC: Return bit mask for the visibility of all layers in self['layers']
+     |      
+     |      Returns:
+     |          layerVisabilityMask (int): bitmask where left most bit relates
+     |              the visibility of layerIndex 0, the next bit relates to
+     |              layerIndex 1, and so on.
+     |  
+     |  getLayerVisablitybyIndex(self, layerIndex)
+     |      LAYER VISABILITY MECHANIC: Return true if layer is set to visible else return False.
+     |      
+     |      Args:
+     |          layerIndex (int)
+     |      
+     |      Returns:
+     |          bool
+     |  
+     |  getLayerVisablitybyName(self, layerName)
+     |      LAYER VISABILITY MECHANIC: Return true if layer is set to visible else return False.
+     |      
+     |      Args:
+     |          layerName (str)
+     |      
+     |      Returns:
+     |          bool
+     |  
+     |  logFollow(self, m)
+     |      log() a human readable version of m['follow'] (for debugging)
+     |  
+     |  removeFollower(self, leaderObject, followerObject)
+     |      Remove leaderObject/followerObject relationship from self['follow']
+     |  
+     |  removeObject(self, object, objectList=False)
+     |      Remove a Tiled object from an object list.
+     |      
+     |      Used to remove Tiled objects (e.g. sprites) from the object list of a layer.
+     |      The default objectList is self['sprites'].
+     |      
+     |      Note, this does not alter object['mapName'] since the object could be in
+     |      other objectLists on this map.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          objectList (dict): An objectList from a layer on this map.
+     |  
+     |  removeObjectFromAllLayers(self, object)
+     |      Remove a Tiled object from all layers of this map.
+     |      
+     |      Used to remove Tiled objects (e.g. sprites) from the object list
+     |      of all layers on this map.
+     |      
+     |      Note, this does not alter object['mapName'] since the object could
+     |      be in the middle of being processed by a step loop that needs that
+     |      data.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |  
+     |  setLayerVisablityMask(self, layerVisabilityMask)
+     |      LAYER VISABILITY MECHANIC: Set bit mask for the visibility of all layers in self['layers']
+     |      
+     |      Args:
+     |          layerVisabilityMask (int): bitmask where left most bit relates
+     |              the visibility of layerIndex 0, the next bit relates to
+     |              layerIndex 1, and so on.
+     |      
+     |      Returns:
+     |          bool: True if the layerVisabilityMask mask was different from
+     |              the mask that was already set.
+     |  
+     |  setLayerVisablitybyIndex(self, layerIndex, visable)
+     |      LAYER VISABILITY MECHANIC: Show/Hide layer by index.
+     |      
+     |      Args:
+     |          layerIndex (str): The index of a layer in self['layers'].
+     |          visable (bool): True == visible.
+     |  
+     |  setLayerVisablitybyName(self, layerName, visable)
+     |      LAYER VISABILITY MECHANIC: Show/Hide layer by name.
+     |      
+     |      Args:
+     |          layerName (str): The name of a layer as defined in Tiled.
+     |          visable (bool): True == visible.
+     |  
+     |  setMapChanged(self, changed=True)
+     |      flag the map has changed (True) or not changed (False).
+     |      
+     |      This is used to determine if the server needs to send an
+     |      update to clients.
+     |  
+     |  setObjectLocationByAnchor(self, object, anchorX, anchorY)
+     |      Set an objects location using its anchor point.
+     |      
+     |      Updates an object anchor point and then sets it x, y to match.
+     |      Also updates the relative position of any following objects.
+     |      
+     |      Args:
+     |          object (dict): A Tiled Object
+     |          x (float)
+     |          y (float)
+     |  
+     |  setObjectLocationByXY(self, object, x, y)
+     |      Set an objects location using its top/left corner.
+     |      
+     |      Updates an object x,y and then sets it anchor point to match.
+     |      
+     |      ***Do not use without good reason. Most objects should have their
+     |      location set by setObjectLocationByAnchor()***
+     |      
+     |      Args:
+     |          object (dict): A Tiled Object
+     |          x (float)
+     |          y (float)
+     |  
+     |  setObjectMap(self, object, destMap)
+     |      Move a Tiled object to a different map.
+     |      
+     |      Remove object from all known layers on this map and add
+     |      it to the same layers on destMap. Also move any following
+     |      objects to the new map.
+     |      
+     |      Args:
+     |          object (dict): Tiled object
+     |          destMap (engine.map.Map)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors inherited from engine.map.Map:
+     |  
+     |  __dict__
+     |      dictionary for instance variables (if defined)
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Methods inherited from builtins.dict:
+     |  
+     |  __contains__(self, key, /)
+     |      True if the dictionary has the specified key, else False.
+     |  
+     |  __delitem__(self, key, /)
+     |      Delete self[key].
+     |  
+     |  __eq__(self, value, /)
+     |      Return self==value.
+     |  
+     |  __ge__(self, value, /)
+     |      Return self>=value.
+     |  
+     |  __getattribute__(self, name, /)
+     |      Return getattr(self, name).
+     |  
+     |  __getitem__(...)
+     |      x.__getitem__(y) <==> x[y]
+     |  
+     |  __gt__(self, value, /)
+     |      Return self>value.
+     |  
+     |  __iter__(self, /)
+     |      Implement iter(self).
+     |  
+     |  __le__(self, value, /)
+     |      Return self<=value.
+     |  
+     |  __len__(self, /)
+     |      Return len(self).
+     |  
+     |  __lt__(self, value, /)
+     |      Return self<value.
+     |  
+     |  __ne__(self, value, /)
+     |      Return self!=value.
+     |  
+     |  __repr__(self, /)
+     |      Return repr(self).
+     |  
+     |  __reversed__(self, /)
+     |      Return a reverse iterator over the dict keys.
+     |  
+     |  __setitem__(self, key, value, /)
+     |      Set self[key] to value.
+     |  
+     |  __sizeof__(...)
+     |      D.__sizeof__() -> size of D in memory, in bytes
+     |  
+     |  clear(...)
+     |      D.clear() -> None.  Remove all items from D.
+     |  
+     |  copy(...)
+     |      D.copy() -> a shallow copy of D
+     |  
+     |  get(self, key, default=None, /)
+     |      Return the value for key if key is in the dictionary, else default.
+     |  
+     |  items(...)
+     |      D.items() -> a set-like object providing a view on D's items
+     |  
+     |  keys(...)
+     |      D.keys() -> a set-like object providing a view on D's keys
+     |  
+     |  pop(...)
+     |      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+     |      If key is not found, d is returned if given, otherwise KeyError is raised
+     |  
+     |  popitem(self, /)
+     |      Remove and return a (key, value) pair as a 2-tuple.
+     |      
+     |      Pairs are returned in LIFO (last-in, first-out) order.
+     |      Raises KeyError if the dict is empty.
+     |  
+     |  setdefault(self, key, default=None, /)
+     |      Insert key with a value of default if key is not in the dictionary.
+     |      
+     |      Return the value for key if key is in the dictionary, else default.
+     |  
+     |  update(...)
+     |      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+     |      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+     |      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+     |      In either case, this is followed by: for k in F:  D[k] = F[k]
+     |  
+     |  values(...)
+     |      D.values() -> an object providing a view on D's values
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods inherited from builtins.dict:
+     |  
+     |  fromkeys(iterable, value=None, /) from builtins.type
+     |      Create a new dictionary with keys from iterable and values set to value.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from builtins.dict:
+     |  
+     |  __new__(*args, **kwargs) from builtins.type
+     |      Create and return a new object.  See help(type) for accurate signature.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes inherited from builtins.dict:
+     |  
+     |  __hash__ = None
+
