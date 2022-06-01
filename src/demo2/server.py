@@ -310,6 +310,20 @@ class Server(engine.server.Server):
     # GAME LOGIC
     ########################################################
 
+    def stepServer(self):
+        """OVERRIDE stepServer()
+
+        Take the game one "step" forward in time. Unlike engine.server.Server.stepServer()
+        this function steps every map on every step, not just maps with players. This allows
+        monsters to chase players through map doors.
+        """
+        self.stepServerStart()
+
+        for mapName in self['maps']:
+            self['maps'][mapName].stepMap()
+
+        self.stepServerEnd()
+
     def updateWaiting(self):
         """Detect if all players are ready and switch mode to gameOn. Update players as each player becomes ready."""
 
