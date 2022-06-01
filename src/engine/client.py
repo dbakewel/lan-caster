@@ -450,7 +450,7 @@ class Client(dict):
     def blitActionText(self, actionText):
         """ Render actionText to screen. """
         text = self['ACTIONTEXT'].copy()
-        text['text'] = actionText + " (spacebar)"
+        text['text'] = actionText
         textObject = {
             'x': 0,
             'y': 0,

@@ -277,7 +277,7 @@ class ServerMap(engine.stepmap.StepMap):
                 self.delSpriteAction(sprite)
                 self.pickupHoldable(holdableTrigger, sprite)
             else:
-                self.setSpriteActionText(sprite, f"Available Action: Pick Up {holdableTrigger['holdableSprite']['name']}")
+                self.setSpriteActionText(sprite, f"Pick Up {holdableTrigger['holdableSprite']['name']} (space)")
 
     def stepMapEndHoldable(self):
         """HOLDABLE MECHANIC: stepMapEnd method.
@@ -290,7 +290,7 @@ class ServerMap(engine.stepmap.StepMap):
                     self.delSpriteAction(sprite)  # consume sprite action
                     self.dropHoldable(sprite)
                 else:
-                    self.setSpriteActionText(sprite, f"Available Action: Drop {sprite['holding']['name']}")
+                    self.setSpriteActionText(sprite, f"Drop {sprite['holding']['name']} (space)")
 
     def pickupHoldable(self, holdableTrigger, sprite):
         """HOLDABLE MECHANIC: sprite picks up holdable.

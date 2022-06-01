@@ -44,7 +44,7 @@ class ServerMap(demo.servermap.ServerMap):
         Also show speech and action text.
         """
         if "holding" in sprite and sprite['holding']['name'] == "magic wand":
-            self.setSpriteActionText(sprite, f"Available Action: Cast spell with {sprite['holding']['name']}.")
+            self.setSpriteActionText(sprite, f"Cast spell with {sprite['holding']['name']} (space)")
             if "action" in sprite:
                 self.triggerLever(self.findObject(name="lever"), sprite)
         else:

@@ -117,7 +117,7 @@ class ServerMap(engine.servermap.ServerMap):
                 under.addObject(under['bombLadder1MapDoor'], objectList=under['triggers'])
                 under.addObject(under['bombLadder1InBounds'], objectList=under['inBounds'])
             else:
-                self.setSpriteActionText(sprite, f"Available Action: Set off {sprite['holding']['name']}.")
+                self.setSpriteActionText(sprite, f"Set off {sprite['holding']['name']} (space)")
         elif sprite['type'] == "player":  # if sprite is a player
             # if the rock has not been blown up yet.
             start = engine.server.SERVER['maps']['start']
@@ -163,7 +163,7 @@ class ServerMap(engine.servermap.ServerMap):
                     self['THROWSPEED']
                     )
             else:
-                self.setSpriteActionText(sprite, f"Available Action: Throw {sprite['holding']['name']}")
+                self.setSpriteActionText(sprite, f"Throw {sprite['holding']['name']} (space)")
         elif sprite['type'] == "player":
             self.setSpriteSpeechText(sprite, f"I could throw something from here.")
 
