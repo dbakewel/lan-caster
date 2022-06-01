@@ -174,11 +174,13 @@ class ServerMap(engine.servermap.ServerMap):
         can be thrown over water. This will still stop an object that
         is thrown at an outOfBounds (such as a wall).
         """
-        ignoreInBounds = False
         if "move" in object and object['move']['type'] == "Linear" and object['move']['s'] == self['THROWSPEED']:
-            ignoreInBounds = True
+            o = object.copy()
+            o['checkLocationOn'] = ['outOfBounds']
+        else:
+            o = object
 
-        return super().checkLocation(object, newAnchorX, newAnchorY, ignoreInBounds)
+        return super().checkLocation(o, newAnchorX, newAnchorY)
 
     ########################################################
     # SPEED MULTIPLIER MECHANIC
