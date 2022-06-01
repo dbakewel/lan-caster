@@ -1,4 +1,4 @@
-"""Client for Demo Game"""
+"""Client for demo2 Game"""
 
 import pygame
 from pygame.locals import *
@@ -8,7 +8,7 @@ import engine.messages
 
 
 class Messages(engine.messages.Messages):
-    """Extends engine.messages"""
+    """Extends engine.messages.Messages"""
 
     def __init__(self):
         """Extends ___init__ and new flds and message types."""
@@ -22,7 +22,10 @@ class Messages(engine.messages.Messages):
             'endur': 'float',
             'timeRemaining': 'float'
             })
-        self['messageDefinitions']['readyRequest'] = {}
-        self['messageDefinitions']['readyReply'] = {}
-        self['messageDefinitions']['run'] = {}
-        self['messageDefinitions']['fire'] = {}
+        self['messageDefinitions']['readyRequest'] = {}  # player has read help text and is ready to play
+        self['messageDefinitions']['readyReply'] = {}  # server has reviced players ready message.
+        self['messageDefinitions']['run'] = {}  # player has requested to run.
+        self['messageDefinitions']['fire'] = {  # player has requested to fire.
+            'fireDestX': 'int',
+            'fireDestY': 'int'
+            }
