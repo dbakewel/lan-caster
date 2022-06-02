@@ -28,7 +28,7 @@ class ClientMap(engine.clientmap.ClientMap):
             "bgroundCorners": 4
             })
 
-        self['SPEACHTEXT'].update({
+        self['SPEECHTEXT'].update({
             "bgcolor": "#00000080",
             "bgbordercolor": "#00000080"
             })

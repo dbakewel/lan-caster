@@ -53,7 +53,7 @@ class ClientMap(engine.map.Map):
             }
 
         # speechText defaults that differ from DEFAULTTEXT
-        self['SPEACHTEXT'] = {
+        self['SPEECHTEXT'] = {
             "valign": "bottom",
             "halign": "center"
             }
@@ -381,7 +381,7 @@ class ClientMap(engine.map.Map):
         validUntil = sys.float_info.max
         # If speechText is present then render it above the tile.
         if "speechText" in object:
-            text = self['SPEACHTEXT'].copy()
+            text = self['SPEECHTEXT'].copy()
             text['text'] = object['speechText']
             textObject = {
                 'x': object['x'] + object['width'] / 2 - 64,

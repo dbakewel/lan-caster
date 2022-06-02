@@ -419,7 +419,7 @@ class ServerMap(engine.stepmap.StepMap):
                 removed. Default is to remove at start of next step.
         """
         old = False
-        if "speachText" in sprite:
+        if "speechText" in sprite:
             old = sprite['speechText']
 
         self.delSpriteSpeechText(sprite)
