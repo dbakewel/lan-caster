@@ -23,7 +23,7 @@ class ServerMap(engine.servermap.ServerMap):
         if sprite['type'] == 'player':
             # If the player has a key that unlocks the door
             if 'key' in sprite and sprite['key']['lockNumber'] == trigger['lockNumber']:
-                #remove door trigger
+                # remove door trigger
                 self.removeObject(trigger, self['triggers'])
                 # remove copy of door from other layers
                 for o in trigger['doNotTrigger']:
@@ -81,9 +81,11 @@ class ServerMap(engine.servermap.ServerMap):
                             if distance < s2['width'] / 2:
                                 self.removeObject(s1)
                                 if s1['type'] == 'arrow':
-                                    engine.server.SERVER['playersByNum'][s2['playerNumber']]['health'] -= self['ARROWDAMAGE']
+                                    engine.server.SERVER['playersByNum'][s2['playerNumber']
+                                                                         ]['health'] -= self['ARROWDAMAGE']
                                 elif s1['type'] == 'star':
-                                    engine.server.SERVER['playersByNum'][s2['playerNumber']]['health'] -= self['STARDAMAGE']
+                                    engine.server.SERVER['playersByNum'][s2['playerNumber']
+                                                                         ]['health'] -= self['STARDAMAGE']
 
             elif s1['type'] == 'ray':
                 # is is time to remove ray?
@@ -95,87 +97,86 @@ class ServerMap(engine.servermap.ServerMap):
                     for s2 in self['sprites']:
                         if s2['type'] == 'player':
                             if geo.intersectLineCircle(
-                                s1['x'] + s1['polyline'][0]['x'], 
-                                s1['y'] + s1['polyline'][0]['y'], 
-                                s1['x'] + s1['polyline'][1]['x'], 
-                                s1['y'] + s1['polyline'][1]['y'],
-                                s2['anchorX'], s2['anchorY'], s2['width']/2):
+                                    s1['x'] + s1['polyline'][0]['x'],
+                                    s1['y'] + s1['polyline'][0]['y'],
+                                    s1['x'] + s1['polyline'][1]['x'],
+                                    s1['y'] + s1['polyline'][1]['y'],
+                                    s2['anchorX'], s2['anchorY'], s2['width'] / 2):
                                 engine.server.SERVER['playersByNum'][s2['playerNumber']]['health'] -= self['RAYDAMAGE']
 
-
-    def createArrow(self, x,y,angle,startDistance,color):
+    def createArrow(self, x, y, angle, startDistance, color):
         """Add an arrow to the map"""
-        anchorX, anchorY = geo.project(x,y,angle,startDistance)
-        endX, endY = geo.project(anchorX,anchorY,angle-math.pi,12)
+        anchorX, anchorY = geo.project(x, y, angle, startDistance)
+        endX, endY = geo.project(anchorX, anchorY, angle - math.pi, 12)
 
         arrow = {
             "lineColor": color,
             "lineThickness": 1,
-             "polyline":[
-                    {
-                     "x":0,
-                     "y":0
-                    }, 
-                    {
-                     "x":endX - anchorX,
-                     "y":endY - anchorY
+            "polyline": [
+                {
+                    "x": 0,
+                    "y": 0
+                    },
+                {
+                    "x": endX - anchorX,
+                    "y": endY - anchorY
                     }],
-             "type":"arrow",
-             "x":anchorX,
-             "y":anchorY,
-             "checkLocationOn": ['outOfBounds'] # only consider outOfBounds layer
+            "type": "arrow",
+            "x": anchorX,
+            "y": anchorY,
+            "checkLocationOn": ['outOfBounds']  # only consider outOfBounds layer
             }
         self.checkObject(arrow)
         self.addObject(arrow)
-        moveDestX, moveDestY = geo.project(anchorX,anchorY,angle,self['ARROWRANGE'])
+        moveDestX, moveDestY = geo.project(anchorX, anchorY, angle, self['ARROWRANGE'])
         self.setMoveLinear(arrow, moveDestX, moveDestY, self['ARROWSPEED'], slide=False, easeIn=False)
 
-    def createStars(self, x,y,angle,startDistance,color):
+    def createStars(self, x, y, angle, startDistance, color):
         """Add a throwing stars to the game"""
         angle = angle - (self['STARSPRED'] * self['STARCOUNT'] / 2)
         for i in range(self['STARCOUNT']):
-            anchorX, anchorY = geo.project(x,y,angle,startDistance)
+            anchorX, anchorY = geo.project(x, y, angle, startDistance)
             star = {
-                "ellipse":True,
+                "ellipse": True,
                 "borderColor": color,
                 "borderThickness": 1,
-                "type":"star",
+                "type": "star",
                 "anchorX": anchorX,
                 "anchorY": anchorY,
                 "width": 5.0,
                 "height": 5.0,
-                "x":anchorX-2.5,
-                "y":anchorY-2.5,
-                "checkLocationOn": ['outOfBounds'] # only consider outOfBounds layer
+                "x": anchorX - 2.5,
+                "y": anchorY - 2.5,
+                "checkLocationOn": ['outOfBounds']  # only consider outOfBounds layer
                 }
             self.checkObject(star)
             self.addObject(star)
-            moveDestX, moveDestY = geo.project(anchorX,anchorY,angle,self['STARRANGE'])
+            moveDestX, moveDestY = geo.project(anchorX, anchorY, angle, self['STARRANGE'])
             self.setMoveLinear(star, moveDestX, moveDestY, self['STARSPEED'], slide=False, easeIn=False)
 
             angle += self['STARSPRED']
 
-    def createRay(self, x,y,angle,startDistance,color):
+    def createRay(self, x, y, angle, startDistance, color):
         """Add ray to the game"""
-        x1, y1 = geo.project(x,y,angle,startDistance)
-        x2, y2 = geo.project(x1,y1,angle,self['RAYRANGE'])
+        x1, y1 = geo.project(x, y, angle, startDistance)
+        x2, y2 = geo.project(x1, y1, angle, self['RAYRANGE'])
 
         arrow = {
             "lineColor": color,
             "lineThickness": 4,
-            "polyline":[
-                    {
-                     "x":0,
-                     "y":0
-                    }, 
-                    {
-                     "x":x2 - x1,
-                     "y":y2 - y1
+            "polyline": [
+                {
+                    "x": 0,
+                    "y": 0
+                    },
+                {
+                    "x": x2 - x1,
+                    "y": y2 - y1
                     }],
-             "type":"ray",
-             "x":x1,
-             "y":y1,
-             "delAfter": time.perf_counter() + self['RAYSECS']
+            "type": "ray",
+            "x": x1,
+            "y": y1,
+            "delAfter": time.perf_counter() + self['RAYSECS']
             }
         self.checkObject(arrow)
         self.addObject(arrow)
@@ -217,7 +218,8 @@ class ServerMap(engine.servermap.ServerMap):
                             player['anchorX'], player['anchorY'],
                             other['anchorX'], other['anchorY'],
                             )
-                        if distance < (player['width'] / 2 + other['width'] / 2)*1.1:  # 1.1 required since monsters cannot overlap other sprites
+                        if distance < (player['width'] / 2 + other['width'] / 2) * \
+                                1.1:  # 1.1 required since monsters cannot overlap other sprites
                             engine.server.SERVER['playersByNum'][player['playerNumber']]['health'] -= 1
                             self.setSpriteSpeechText(player, "Fight!!!")
                             self.setSpriteSpeechText(other, "Kill!!!")

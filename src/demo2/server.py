@@ -65,7 +65,6 @@ class Server(engine.server.Server):
                 elif o['type'] == 'monster':
                     o['collisionType'] = 'circle'
 
- 
     def randomizeWeapons(self):
         """Move weapons from the hidden map to random weaponlocaion points. Then set them up as holdables"""
         # find all weapons
@@ -75,7 +74,8 @@ class Server(engine.server.Server):
             if holdable['type'] == 'holdable' and holdable['prop-holdable-type'] == 'weapon':
                 weapons.append(holdable)
 
-        # remove weapons from current locations. (Don't really need to this since the hidden map is used but doing it to be very clean)
+        # remove weapons from current locations. (Don't really need to this since
+        # the hidden map is used but doing it to be very clean)
         for weapon in weapons:
             map.removeObjectFromAllLayers(weapon)
 
@@ -93,7 +93,7 @@ class Server(engine.server.Server):
             location = weaponLocations.pop()
             map = self['maps'][location['mapName']]
             map.addObject(weapon)
-            map.setObjectLocationByAnchor(weapon,location['anchorX'],location['anchorY'])
+            map.setObjectLocationByAnchor(weapon, location['anchorX'], location['anchorY'])
             map.addHoldableTrigger(weapon)
 
     def createDoors(self):
@@ -117,7 +117,7 @@ class Server(engine.server.Server):
                     doorTrigger['lockNumber'] = lockNumbers.pop()
 
                     doorCopy = doorTrigger.copy()
-                    doorCopy['fillColor']="#008800"
+                    doorCopy['fillColor'] = "#008800"
                     # Add to outOfBounds so it blocks players
                     map.addObject(doorCopy, map['outOfBounds'])
                     # Add to spries adn color it so players can see it
@@ -134,9 +134,8 @@ class Server(engine.server.Server):
                     door = doorTile.copy()
                     map.addObject(door)
                     # add 0.1 so tile render on top of door rect on sprite layer.
-                    map.setObjectLocationByAnchor(door, doorCopy['anchorX']+0.1, doorCopy['anchorY']+0.1)
+                    map.setObjectLocationByAnchor(door, doorCopy['anchorX'] + 0.1, doorCopy['anchorY'] + 0.1)
                     doorTrigger['doNotTrigger'] = [doorCopy, door]
-                    
 
     def createKeys(self):
         """Create a key for each door and put them in keylocaions."""
@@ -168,7 +167,6 @@ class Server(engine.server.Server):
             map.addObject(key)
             map.setObjectLocationByAnchor(key, keyLocation['anchorX'], keyLocation['anchorY'])
             map.addHoldableTrigger(key)
-
 
     ########################################################
     # Networking - GAME MESSAGES
@@ -237,15 +235,15 @@ class Server(engine.server.Server):
             sprite = player['sprite']
             map = self['maps'][sprite['mapName']]
 
-            #player must have weapon and can only fire once per second
-            if 'weapon' not in sprite or player['lastFired'] > time.perf_counter() -1:
+            # player must have weapon and can only fire once per second
+            if 'weapon' not in sprite or player['lastFired'] > time.perf_counter() - 1:
                 return
-            
+
             # ensure player is not firing at themselves
             if geo.distance(sprite['anchorX'], sprite['anchorY'], msg['fireDestX'], msg['fireDestY']) < sprite['width']:
                 return
 
-            angle = geo.angle(sprite['anchorX'],sprite['anchorY'],msg['fireDestX'],msg['fireDestY'])
+            angle = geo.angle(sprite['anchorX'], sprite['anchorY'], msg['fireDestX'], msg['fireDestY'])
 
             if sprite['prop-team'] == 'blue':
                 color = "#4444ff"
@@ -253,11 +251,11 @@ class Server(engine.server.Server):
                 color = "#ff4444"
 
             if sprite['weapon']['name'] == "Bow":
-                map.createArrow(sprite['anchorX'],sprite['anchorY'],angle,sprite['width'],color)
+                map.createArrow(sprite['anchorX'], sprite['anchorY'], angle, sprite['width'], color)
             elif sprite['weapon']['name'].startswith("Throwing "):
-                map.createStars(sprite['anchorX'],sprite['anchorY'],angle,sprite['width'],color)
+                map.createStars(sprite['anchorX'], sprite['anchorY'], angle, sprite['width'], color)
             elif sprite['weapon']['name'] == "Magic Wand":
-                map.createRay(sprite['anchorX'],sprite['anchorY'],angle,sprite['width'],color)
+                map.createRay(sprite['anchorX'], sprite['anchorY'], angle, sprite['width'], color)
             else:
                 log(f"Unrecognized weapon type: {sprite['weapon']['name']}", ERROR)
 
@@ -351,7 +349,6 @@ class Server(engine.server.Server):
 
         for playerNumber in self['playersByNum']:
             self.setPlayerMarqueeText(playerNumber, marqueeText)
-
 
     def stepServerStart(self):
         """Extends stepServerStart()"""

@@ -59,8 +59,8 @@ class ClientMap(engine.clientmap.ClientMap):
                 now = time.perf_counter()
                 if round(now * 10) % 2:
                     validUntil.append(
-                        self.blitHeldObject(destImage, offset, object, object['idol'], 
-                            math.pi * 0.5, object['width'] / 8))
+                        self.blitHeldObject(destImage, offset, object, object['idol'],
+                                            math.pi * 0.5, object['width'] / 8))
                 validUntil.append(now + 0.1)
             return min(validUntil)
         else:

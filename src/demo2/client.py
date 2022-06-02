@@ -12,7 +12,7 @@ class Client(engine.client.Client):
     """Extends engine.client.Client"""
 
     def __init__(self, args):
-        """Extends ___init__ 
+        """Extends ___init__
 
         updates text defaults and has help text.
         """
@@ -38,7 +38,7 @@ class Client(engine.client.Client):
 
 LMB=Walk   R=Run   F=Fire   Space=Pick Up
 
-WINNING: You win if your team has the most points when the time runs out. Your team gets points when: 
+WINNING: You win if your team has the most points when the time runs out. Your team gets points when:
 
 Player on the other team dies (1 pt)
 Player on your team opens a door (3 pts)
