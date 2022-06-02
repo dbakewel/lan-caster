@@ -135,8 +135,6 @@ class Server(engine.server.Server):
                     map.addObject(door)
                     # add 0.1 so tile render on top of door rect on sprite layer.
                     map.setObjectLocationByAnchor(door, doorCopy['anchorX']+0.1, doorCopy['anchorY']+0.1)
-                    doorTrigger['doorTile'] = door
-
                     doorTrigger['doNotTrigger'] = [doorCopy, door]
                     
 
