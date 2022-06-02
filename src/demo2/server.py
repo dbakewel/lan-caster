@@ -54,13 +54,17 @@ class Server(engine.server.Server):
         log(f"Server __init__ complete. Server Attributes:{engine.log.dictToStr(self, 1)}", "VERBOSE")
 
     def setCollsion(self):
-        """Change collision type of monsters and players to be circle and only to collide with outOfBounds layer while moving"""
+        """Change collision type of monsters and players to be circle.
+        also, players only collide with outOfBounds layer while moving"""
         for mapName in self['maps']:
             map = self['maps'][mapName]
             for o in map['sprites']:
-                if o['type'] == 'player' or o['type'] == 'monster':
+                if o['type'] == 'player':
                     o['collisionType'] = 'circle'
                     o['checkLocationOn'] = ['outOfBounds']
+                elif o['type'] == 'monster':
+                    o['collisionType'] = 'circle'
+
  
     def randomizeWeapons(self):
         """Move weapons from the hidden map to random weaponlocaion points. Then set them up as holdables"""

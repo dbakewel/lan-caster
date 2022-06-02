@@ -217,7 +217,7 @@ class ServerMap(engine.servermap.ServerMap):
                             player['anchorX'], player['anchorY'],
                             other['anchorX'], other['anchorY'],
                             )
-                        if distance < (player['width'] / 2 + other['width'] / 2):
+                        if distance < (player['width'] / 2 + other['width'] / 2)*1.1:  # 1.1 required since monsters cannot overlap other sprites
                             engine.server.SERVER['playersByNum'][player['playerNumber']]['health'] -= 1
                             self.setSpriteSpeechText(player, "Fight!!!")
                             self.setSpriteSpeechText(other, "Kill!!!")
