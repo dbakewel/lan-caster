@@ -31,6 +31,8 @@ class Tileset(dict):
         # Tileset name is based on tilesetFile with .json removed
         self['name'] = tilesetFile.split("/")[-1].split(".")[0]
 
+        log(f"Loading Tileset '{self['name']}' from '{tilesetFile}'", "VERBOSE")
+
         with open(self['tilesetFile']) as f:
             ts = json.load(f)
 

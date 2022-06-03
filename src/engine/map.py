@@ -68,7 +68,7 @@ class Map(dict):
         if not mapfile:
             log(f"Mapfile for map {self['name']} not found.", "FAILURE")
             quit()
-        log(f"Loading mapfile {mapfile}", "VERBOSE")
+        log(f"Loading Map '{self['name']}' from '{mapfile}'", "VERBOSE")
 
         # read tiled map file.
         with open(mapfile) as f:
@@ -109,6 +109,8 @@ class Map(dict):
         for ts in mapfiledata['tilesets']:
             name = ts['source'].split("/")[-1].split(".")[0]
             self['tsFirstGid'][name] = ts['firstgid']
+
+        log(f"Map '{self['name']}' contains tilesets: {list(self['tsFirstGid'].keys())}", "VERBOSE")
 
         # convert layer visibility data into a more compact form that is better for sending over network.
         self['layerVisabilityMask'] = 0
