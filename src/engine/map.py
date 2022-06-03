@@ -110,7 +110,12 @@ class Map(dict):
             name = ts['source'].split("/")[-1].split(".")[0]
             self['tsFirstGid'][name] = ts['firstgid']
 
+        # Do some error checking to make sure all tilesets in map actually exist.
         log(f"Map '{self['name']}' contains tilesets: {list(self['tsFirstGid'].keys())}", "VERBOSE")
+        for tilesetName in self['tsFirstGid']:
+            if  tilesetName not in self['tilesets']:
+                log(f"Map '{self['name']}' uses a tileset '{tilesetName}', which does not exist!", "FAILURE")
+                exit()
 
         # convert layer visibility data into a more compact form that is better for sending over network.
         self['layerVisabilityMask'] = 0
