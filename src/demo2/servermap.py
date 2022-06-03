@@ -161,7 +161,7 @@ class ServerMap(engine.servermap.ServerMap):
         x1, y1 = geo.project(x, y, angle, startDistance)
         x2, y2 = geo.project(x1, y1, angle, self['RAYRANGE'])
 
-        arrow = {
+        ray = {
             "lineColor": color,
             "lineThickness": 4,
             "polyline": [
@@ -178,8 +178,8 @@ class ServerMap(engine.servermap.ServerMap):
             "y": y1,
             "delAfter": time.perf_counter() + self['RAYSECS']
             }
-        self.checkObject(arrow)
-        self.addObject(arrow)
+        self.checkObject(ray)
+        self.addObject(ray)
 
     ########################################################
     # BRAWL MECHANIC
