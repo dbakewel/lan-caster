@@ -399,14 +399,16 @@ class ServerMap(engine.stepmap.StepMap):
     # SPEECH TEXT MECHANIC
     ########################################################
 
-    def stepMapStartSpeechText(self):
+    def stepMapEndSpeechText(self):
         """SPEECH TEXT MECHANIC: Remove speechText from sprite if it has timed out."""
         for sprite in self['sprites']:
-            if "speechTextDelAfter" not in sprite or (
-                    "speechTextDelAfter" in sprite and sprite['speechTextDelAfter'] < time.perf_counter()):
-                self.delSpriteSpeechText(sprite)
+            if 'speechText' in sprite:
+                if 'updatedThisStep' not in sprite['speechText'] and ("delAfter" not in sprite['speechText'] or sprite['speechText']['delAfter'] < time.perf_counter()):
+                    self.delSpriteSpeechText(sprite)
+                elif 'updatedThisStep' in sprite['speechText']:
+                    del sprite['speechText']['updatedThisStep']
 
-    def setSpriteSpeechText(self, sprite, speechText, speechTextDelAfter=0):
+    def setSpriteSpeechText(self, sprite, speechText, delAfter=0, easeIn=0.5):
         """SPEECH TEXT MECHANIC: add speechText to sprite.
 
         Add attributes to sprite:
@@ -415,30 +417,38 @@ class ServerMap(engine.stepmap.StepMap):
 
         Args:
             speechText (str): The text the sprite is speaking.
-            speechTextDelAfter (float): time after which speechText will be
+            delAfter (float): time after which speechText will be
                 removed. Default is to remove at start of next step.
+            easeIn (float): time after which speechText will be fully
+                displayed. The text will appear between now and easeIn time.
         """
-        old = False
-        if "speechText" in sprite:
-            old = sprite['speechText']
 
-        self.delSpriteSpeechText(sprite)
-        sprite['speechText'] = speechText
-        if speechTextDelAfter > 0:
-            sprite['speechTextDelAfter'] = speechTextDelAfter
+        if 'speechText' not in sprite or sprite['speechText']['text'] != speechText:
+            sprite['speechText'] = {'text': speechText}
 
-        if old != sprite['speechText']:
             self.setMapChanged()
+
+            if delAfter > 0:
+                sprite['speechText']['delAfter'] = delAfter
+
+            if easeIn > 0 and 'speechTextAppearStart' not in sprite:
+                # add time to start and end appearance of text.
+                now = time.perf_counter()
+                # start showing text at this time
+                sprite['speechText']['added'] = now
+                # text should be fully shown by this time.
+                sprite['speechText']['easeIn'] = now + easeIn
+
+        sprite['speechText']['updatedThisStep'] = True
 
     def delSpriteSpeechText(self, sprite):
         """SPEECH TEXT MECHANIC: remove speechText from sprite.
 
-        Remove attributes to sprite: speechText, speechTextDelAfter
+        Remove attributes from sprite: speechText
         """
         if "speechText" in sprite:
             del sprite['speechText']
-        if "speechTextDelAfter" in sprite:
-            del sprite['speechTextDelAfter']
+
 
     ########################################################
     # LABEL TEXT MECHANIC

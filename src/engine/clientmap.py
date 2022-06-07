@@ -1,11 +1,12 @@
 """Render (blit) Tiled Map Data"""
 import pygame
 from pygame.locals import *
-import engine.time as time
+import math
 import os
 import sys
 import re
 
+import engine.time as time
 from engine.log import log
 import engine.map
 import engine.geometry as geo
@@ -378,11 +379,27 @@ class ClientMap(engine.map.Map):
             offset (int, int): Render entire map offset by (x, y) onto destImage
             object (dict): Tiled Object
         """
-        validUntil = sys.float_info.max
+        validUntil1 = validUntil2 = sys.float_info.max
+
         # If speechText is present then render it above the tile.
         if "speechText" in object:
             text = self['SPEECHTEXT'].copy()
-            text['text'] = object['speechText']
+            text['text'] = object['speechText']['text']
+
+            # if object has speechText and that text should be animated
+            if 'easeIn' in object['speechText']:
+                now = time.perf_counter()
+                # if the text should not be fully shown yet
+                if now < object['speechText']['easeIn']:
+                    # percentToShow is the value (betwen 0.0 and 1.0) of how far 'now' is between start and end time.
+                    percentToShow = (now - object['speechText']['added']) / (object['speechText']['easeIn'] - object['speechText']['added'])
+                    # find how many of the total number of letters to show.
+                    lettersToShow = math.ceil(len(object['speechText']['text']) * percentToShow)
+                    # truncate speechText to the correct number of letters and render it.
+                    text['text'] = object['speechText']['text'][:lettersToShow]
+                    # at what time should the next letter appear. This is how long the updated display is valid until.
+                    validUntil2 = now + (object['speechText']['easeIn'] - object['speechText']['added']) / len(object['speechText']['text'])
+
             textObject = {
                 'x': object['x'] + object['width'] / 2 - 64,
                 'y': object['y'],
@@ -391,8 +408,8 @@ class ClientMap(engine.map.Map):
                 'text': text
                 }
 
-            validUntil = self.blitTextObject(destImage, offset, textObject)
-        return validUntil
+            validUntil1 = self.blitTextObject(destImage, offset, textObject)
+        return min(validUntil1,validUntil2)
 
     def blitObjectListLabelText(self, destImage, offset, objectList):
         """Call blitLabelText() for all objects in objectList."""
