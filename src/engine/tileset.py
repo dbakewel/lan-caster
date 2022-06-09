@@ -45,10 +45,7 @@ class Tileset(dict):
 
         self['tileheight'] = ts['tileheight']
         self['tilewidth'] = ts['tilewidth']
-        self['imageheight'] = ts['imageheight']
-        self['imagewidth'] = ts['imagewidth']
         self['tilecount'] = ts['tilecount']
-        self['imagefile'] = ts['image']
 
         # convert tiled object properties
         if "properties" in ts:
@@ -63,14 +60,6 @@ class Tileset(dict):
                     for prop in tile['properties']:
                         tile["prop-" + prop['name']] = prop['value']
                     del tile['properties']
-
-                # compute total length of animation
-                if "animation" in tile:
-                    tile['animationDuration'] = 0
-                    for t in tile['animation']:
-                        tile['animationDuration'] += t['duration']
-                    # convert to seconds
-                    tile['animationDuration'] /= 1000
 
                 self['tiles'][tile['id']] = tile
 

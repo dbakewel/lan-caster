@@ -18,7 +18,7 @@ class ClientMap(engine.clientmap.ClientMap):
         if tileObject['type'] == "player":
             textObject = {
                 'x': 0, 'y': 32,
-                'width': self['pixelWidth'], 'height': self['pixelHeight'],
+                'width': self['mapWidth'], 'height': self['mapHeight'],
                 'text': {
                     'text': engine.log.dictToStr(tileObject),
                     'pixelsize': 12,

@@ -29,9 +29,27 @@ class ClientTileset(engine.tileset.Tileset):
         """
         super().__init__(tilesetFile)
 
-        # load the tileset image file
+        # load the tileset image file(s)
         tilesetDir = '/'.join(tilesetFile.split('/')[0:-1])
-        self['image'] = pygame.image.load(f"{tilesetDir}/{self['imagefile']}")
+        if 'image' in self['tilesetfiledata']:
+            # this is a single tilesheet image
+            self['image'] = pygame.image.load(f"{tilesetDir}/{self['tilesetfiledata']['image']}")
+            self['imageheight'] = self['tilesetfiledata']['imageheight']
+            self['imagewidth'] = self['tilesetfiledata']['imagewidth']
+        else:
+            # this tileset is a collection of images, one for each tile.
+            for tileNumber, tile in self['tiles'].items():
+                tile['image'] = pygame.image.load(f"{tilesetDir}/{tile['image']}")
+
+        # compute total length of animation for animated tiles
+        for tileNumber, tile in self['tiles'].items():
+            if "animation" in tile:
+                tile['animationDuration'] = 0
+                for t in tile['animation']:
+                    tile['animationDuration'] += t['duration']
+                # convert to seconds
+                tile['animationDuration'] /= 1000
+
 
     def blitTile(self, tileNumber, destImage, destX, destY, tileObject=False):
         """blit tileNumber's pixels into destImage.
@@ -48,26 +66,30 @@ class ClientTileset(engine.tileset.Tileset):
             validUntil (float): time after which graphic of tile will change.
         """
 
-        if not self['image']:
-            log("Tried to blit a tile when images were not loaded!", "FAILURE")
-            exit()
-
         # check to see what the actual tileNumber is to be blited.
         tileNumber, validUntil = self.effectiveTileNumber(tileNumber, tileObject)
 
-        # width of tileset image in tiles
-        width = int(self['imagewidth'] / self['tilewidth'])
 
-        tileX = tileNumber % width
-        tileY = int(tileNumber / width)
+        if 'image' in self:
+            # use single tilesheet image
 
-        srcPixelX = tileX * self['tilewidth']
-        srcPixelY = tileY * self['tileheight']
+            # width of tileset image in tiles
+            width = int(self['imagewidth'] / self['tilewidth'])
 
-        destImage.blit(self['image'],
-                       (destX, destY),
-                       (srcPixelX, srcPixelY, self['tilewidth'], self['tileheight'])
-                       )
+            tileX = tileNumber % width
+            tileY = int(tileNumber / width)
+
+            srcPixelX = tileX * self['tilewidth']
+            srcPixelY = tileY * self['tileheight']
+
+            destImage.blit(self['image'],
+                           (destX, destY),
+                           (srcPixelX, srcPixelY, self['tilewidth'], self['tileheight'])
+                           )
+        else:
+            # use tile specific image
+            tile = self['tiles'][tileNumber]
+            destImage.blit(tile['image'], (destX, destY))
 
         return validUntil
 

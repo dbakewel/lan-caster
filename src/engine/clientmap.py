@@ -68,27 +68,34 @@ class ClientMap(engine.map.Map):
         # sort object layers for right-down rendering
         for layer in self['layers']:
             if layer['type'] == "objectgroup":
-                geo.sortRightDown(layer['objects'], self['pixelWidth'])
+                geo.sortRightDown(layer['objects'], self['mapWidth'])
+
+        if self['orientation'] = 'orthogonal':
+            self['pixelWidth'] = self['mapWidth']
+            self['pixelHeight'] = self['mapHeight']
+        elif self['orientation'] = 'isometric':
+            self['pixelWidth'] = math.ceil(math.sqrt(self['mapWidth']^^2 + self['mapHeight']^^2))
+            self['pixelHeight'] = math.ceil(self['pixelWidth'] / 2)
 
         # allocate image for each layer (exclude hidden layers since we will never need the image)
         for layer in self['layers']:
             if layer['name'] not in self['HIDELAYERS']:
                 layer['image'] = pygame.Surface(
-                    (self['width'] * self['tilewidth'], self['height'] * self['tileheight']),
+                    (self['pixelWidth'], self['pixelHeight']),
                     pygame.SRCALPHA,
                     32)
                 layer['image'] = layer['image'].convert_alpha()
                 layer['imageValidUntil'] = 0  # invalid and needs to be rendered.
 
         self['bottomImage'] = pygame.Surface(
-            (self['width'] * self['tilewidth'], self['height'] * self['tileheight']),
+            (self['pixelWidth'], self['pixelHeight']),
             pygame.SRCALPHA,
             32)
         self['bottomImage'] = self['bottomImage'].convert_alpha()
         self['bottomImageValidUntil'] = 0  # invalid and needs to be rendered.
 
         self['topImage'] = pygame.Surface(
-            (self['width'] * self['tilewidth'], self['height'] * self['tileheight']),
+            (self['pixelWidth'], self['pixelHeight']),
             pygame.SRCALPHA,
             32)
         self['topImage'] = self['topImage'].convert_alpha()
@@ -121,7 +128,7 @@ class ClientMap(engine.map.Map):
                 each step.
         """
         # sort sprites for right-down render order.
-        geo.sortRightDown(sprites, self['pixelWidth'])
+        geo.sortRightDown(sprites, self['mapWidth'])
 
         destImage.fill(self['backgroundcolor'])
 
@@ -497,7 +504,7 @@ class ClientMap(engine.map.Map):
         if textObject['text']['wrap']:
             #words = textObject['text']['text'].split()
             words = re.split('([ \n])', textObject['text']['text'])
-            pixelWidth = 0
+            mapWidth = 0
             maxLineHeight = 0
             while len(words) > 0:
                 # get as many words as will fit within allowed_width
@@ -521,22 +528,22 @@ class ClientMap(engine.map.Map):
 
                 # add a line consisting of those words
                 line = lineWords
-                if pixelWidth < fw:
-                    pixelWidth = fw
+                if mapWidth < fw:
+                    mapWidth = fw
                 if maxLineHeight < fh:
                     maxLineHeight = fh
                 # add line to lines
                 lines.append((fw, fh, line))
         else:
             r = font.get_rect(text)
-            pixelWidth = r.width
+            mapWidth = r.width
             maxLineHeight = r.height
             lines.append((r.width, r.height, textObject['text']['text']))
 
-        pixelHeight = maxLineHeight * len(lines)
-        pixelWidth += 4
-        pixelHeight += 4
-        image = pygame.Surface((pixelWidth, pixelHeight), pygame.SRCALPHA, 32)
+        mapHeight = maxLineHeight * len(lines)
+        mapWidth += 4
+        mapHeight += 4
+        image = pygame.Surface((mapWidth, mapHeight), pygame.SRCALPHA, 32)
         image = image.convert_alpha()
         image.fill((0, 0, 0, 0))
 
@@ -545,18 +552,18 @@ class ClientMap(engine.map.Map):
             if textObject['text']['halign'] == "left":
                 tx = 2
             elif textObject['text']['halign'] == "center":
-                tx = pixelWidth / 2 - line[0] / 2
+                tx = mapWidth / 2 - line[0] / 2
             elif textObject['text']['halign'] == "right":
-                tx = pixelWidth - line[0] - 2
+                tx = mapWidth - line[0] - 2
             font.render_to(image, (tx, ty), line[2])
             ty += maxLineHeight
 
         if textObject['text']['halign'] == "left":
             destX = textObject['x']
         elif textObject['text']['halign'] == "center":
-            destX = textObject['x'] + textObject['width'] / 2 - pixelWidth / 2
+            destX = textObject['x'] + textObject['width'] / 2 - mapWidth / 2
         elif textObject['text']['halign'] == "right":
-            destX = textObject['x'] + textObject['width'] - pixelWidth
+            destX = textObject['x'] + textObject['width'] - mapWidth
         else:
             log(f"halign == {textObject['text']['halign']} is not supported", 'FAILURE')
             exit()
@@ -564,9 +571,9 @@ class ClientMap(engine.map.Map):
         if textObject['text']['valign'] == "top":
             destY = textObject['y']
         elif textObject['text']['valign'] == "center":
-            destY = textObject['y'] + textObject['height'] / 2 - pixelHeight / 2
+            destY = textObject['y'] + textObject['height'] / 2 - mapHeight / 2
         elif textObject['text']['valign'] == "bottom":
-            destY = textObject['y'] + textObject['height'] - pixelHeight
+            destY = textObject['y'] + textObject['height'] - mapHeight
         else:
             log(f"valign == {textObject['text']['valign']} is not supported", 'FAILURE')
             exit()
@@ -574,8 +581,8 @@ class ClientMap(engine.map.Map):
         buffer = textObject['text']['bgborderThickness'] + textObject['text']['bgroundCorners']
 
         if mapRelative:
-            destWidth = self['pixelWidth']
-            destHeight = self['pixelHeight']
+            destWidth = self['mapWidth']
+            destHeight = self['mapHeight']
         else:
             destWidth = destImage.get_width()
             destHeight = destImage.get_height()
@@ -584,10 +591,10 @@ class ClientMap(engine.map.Map):
             destX = buffer
         if destY - buffer < 0:
             destY = buffer
-        if destX + pixelWidth + buffer * 2 > destWidth:
-            destX = destWidth - pixelWidth - buffer
-        if destY + pixelHeight + buffer * 2 > destHeight:
-            destY = destHeight - pixelHeight - buffer
+        if destX + mapWidth + buffer * 2 > destWidth:
+            destX = destWidth - mapWidth - buffer
+        if destY + mapHeight + buffer * 2 > destHeight:
+            destY = destHeight - mapHeight - buffer
 
         destX += offset[0]
         destY += offset[1]
@@ -595,8 +602,8 @@ class ClientMap(engine.map.Map):
         self.blitRectObject(destImage, (0, 0), {
             'x': destX - buffer,
             'y': destY - buffer,
-            'width': pixelWidth + buffer * 2,
-            'height': pixelHeight + buffer * 2
+            'width': mapWidth + buffer * 2,
+            'height': mapHeight + buffer * 2
             },
             fillColor=textObject['text']['bgcolor'],
             borderColor=textObject['text']['bgbordercolor'],

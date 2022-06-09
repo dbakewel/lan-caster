@@ -76,9 +76,9 @@ class Map(dict):
 
         # ensure tiled map file is correct format.
         if mapfiledata['type'] != "map" or \
-           mapfiledata['orientation'] != "orthogonal" or \
+           (mapfiledata['orientation'] != "orthogonal" and mapfiledata['orientation'] != "isometric") or \
            mapfiledata['renderorder'] != "right-down":
-            log(f"{mapDir} does not appear to be an orthogonal map!", "FAILURE")
+            log(f"{mapDir} does not appear to be an orthogonal or isometric map!", "FAILURE")
             exit()
 
         # store for later use in case needed by a subclass.
@@ -89,8 +89,8 @@ class Map(dict):
         self['width'] = mapfiledata['width']
         self['tileheight'] = mapfiledata['tileheight']
         self['tilewidth'] = mapfiledata['tilewidth']
-        self['pixelHeight'] = self['height'] * self['tileheight']
-        self['pixelWidth'] = self['width'] * self['tilewidth']
+        self['mapHeight'] = self['height'] * self['tileheight']
+        self['mapWidth'] = self['width'] * self['tilewidth']
         self['layers'] = mapfiledata['layers']
 
         self['backgroundcolor'] = (32, 32, 32, 255)
@@ -610,10 +610,10 @@ class Map(dict):
                 {
                     'x':0,
                     'y':0,
-                    'anchorX':self['pixelWidth']/2,
-                    'anchorY':self['pixelHeight']/2,
-                    'width':self['pixelWidth'],
-                    'height':self['pixelHeight']
+                    'anchorX':self['mapWidth']/2,
+                    'anchorY':self['mapHeight']/2,
+                    'width':self['mapWidth'],
+                    'height':self['mapHeight']
                 },
                 'rect',
                 overlap='full'):

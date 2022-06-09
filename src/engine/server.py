@@ -33,13 +33,13 @@ def quit(signal=None, frame=None):
     except BaseException:
         pass
 
-    #try:
-    str="\n\n          ==== Average Map Step Time ====\n"
-    for mapName in SERVER['maps']:
-        str += f"\n    {mapName:>20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
-    log(str + "\n", "VERBOSE")
-    #except BaseException:
-    # #   pass
+    try:
+        str="\n\n          ==== Average Map Step Time ====\n"
+        for mapName in SERVER['maps']:
+            str += f"\n    {mapName:>20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
+        log(str + "\n", "VERBOSE")
+    except BaseException:
+        pass
 
     global profiler
     if profiler:
@@ -460,8 +460,8 @@ class Server(dict):
                 map.setObjectMap(sprite, destMap)
                 # make sure player is still inside the map bounds.
                 # This can be a problem is player jumped to smaller map.
-                if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
-                    destMap.setObjectLocationByAnchor(sprite, destMap['pixelWidth'] / 2, destMap['pixelHeight'] / 2)
+                if sprite['anchorX'] > destMap['mapWidth'] or sprite['anchorY'] > destMap['mapHeight']:
+                    destMap.setObjectLocationByAnchor(sprite, destMap['mapWidth'] / 2, destMap['mapHeight'] / 2)
                 destMap.delMoveLinear(sprite)
                 log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 
@@ -502,8 +502,8 @@ class Server(dict):
                 map.setObjectMap(sprite, destMap)
                 # make sure player is still inside the map bounds.
                 # This can be a problem is player jumped to smaller map.
-                if sprite['anchorX'] > destMap['pixelWidth'] or sprite['anchorY'] > destMap['pixelHeight']:
-                    destMap.setObjectLocationByAnchor(sprite, destMap['pixelWidth'] / 2, destMap['pixelHeight'] / 2)
+                if sprite['anchorX'] > destMap['mapWidth'] or sprite['anchorY'] > destMap['mapHeight']:
+                    destMap.setObjectLocationByAnchor(sprite, destMap['mapWidth'] / 2, destMap['mapHeight'] / 2)
                 destMap.delMoveLinear(sprite)
                 log(f"TEST: Player Changed Maps: {self['players'][ipport]['sprite']['labelText']} {ipport}")
 

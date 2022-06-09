@@ -47,9 +47,32 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"sprites",
+         "objects":[
+                {
+                 "gid":88,
+                 "height":64,
+                 "id":7,
+                 "name":"",
+                 "rotation":0,
+                 "type":"player",
+                 "visible":true,
+                 "width":64,
+                 "x":742.557970708648,
+                 "y":650.94863461782
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":4,
- "nextobjectid":7,
+ "nextlayerid":5,
+ "nextobjectid":8,
  "orientation":"isometric",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -58,6 +81,10 @@
         {
          "firstgid":1,
          "source":"..\/..\/tilesets\/roadTiles.json"
+        }, 
+        {
+         "firstgid":70,
+         "source":"..\/..\/tilesets\/soldier.json"
         }],
  "tilewidth":100,
  "type":"map",

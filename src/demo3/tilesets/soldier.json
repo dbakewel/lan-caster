@@ -1,0 +1,14 @@
+{ "columns":9,
+ "image":"..\/images\/soldier.png",
+ "imageheight":256,
+ "imagewidth":576,
+ "margin":0,
+ "name":"soldier",
+ "spacing":0,
+ "tilecount":36,
+ "tiledversion":"1.7.2",
+ "tileheight":64,
+ "tilewidth":64,
+ "type":"tileset",
+ "version":"1.6"
+}

@@ -88,7 +88,7 @@ class ServerMap(engine.servermap.ServerMap):
             return False
 
         reflextion = False
-        x2, y2 = geo.project(x1, y1, r, self['pixelWidth'] * self['pixelHeight'])
+        x2, y2 = geo.project(x1, y1, r, self['mapWidth'] * self['mapHeight'])
 
         """
         intersections is an array of tules that contain points of intersection between the ray
@@ -105,10 +105,10 @@ class ServerMap(engine.servermap.ServerMap):
 
         # find all intersections with map edges
         for l in (
-                (0, 0, self['pixelWidth'], 0),  # top
-                (0, 0, 0, self['pixelHeight']),  # left
-                (self['pixelWidth'], 0, self['pixelWidth'], self['pixelHeight']),  # right
-                (0, self['pixelHeight'], self['pixelWidth'], self['pixelHeight'])  # bottom
+                (0, 0, self['mapWidth'], 0),  # top
+                (0, 0, 0, self['mapHeight']),  # left
+                (self['mapWidth'], 0, self['mapWidth'], self['mapHeight']),  # right
+                (0, self['mapHeight'], self['mapWidth'], self['mapHeight'])  # bottom
                 ):
             ipt = geo.intersectLineLine(x1, y1, x2, y2, l[0], l[1], l[2], l[3],)
             if ipt:

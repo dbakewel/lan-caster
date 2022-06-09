@@ -401,30 +401,30 @@ class Client(dict):
         mapOffsetX = 0
         mapOffsetY = 0
 
-        if map['pixelWidth'] < self['screen'].get_width():
-            mapOffsetX = round((self['screen'].get_width() - map['pixelWidth']) / 2)
-        if map['pixelHeight'] < self['screen'].get_height():
-            mapOffsetY = round((self['screen'].get_height() - map['pixelHeight']) / 2)
+        if map['mapWidth'] < self['screen'].get_width():
+            mapOffsetX = round((self['screen'].get_width() - map['mapWidth']) / 2)
+        if map['mapHeight'] < self['screen'].get_height():
+            mapOffsetY = round((self['screen'].get_height() - map['mapHeight']) / 2)
 
-        if map['pixelWidth'] > self['screen'].get_width() or map['pixelHeight'] > self['screen'].get_height():
+        if map['mapWidth'] > self['screen'].get_width() or map['mapHeight'] > self['screen'].get_height():
             # find the player.
             for sprite in self['step']['sprites']:
                 if "playerNumber" in sprite and self['playerNumber'] == sprite['playerNumber']:
                     break
 
-            if map['pixelWidth'] > self['screen'].get_width():
+            if map['mapWidth'] > self['screen'].get_width():
                 mapOffsetX = self['screen'].get_width() / 2 - sprite['anchorX']
                 if mapOffsetX > 0:
                     mapOffsetX = 0
-                if map['pixelWidth'] + mapOffsetX < self['screen'].get_width():
-                    mapOffsetX = self['screen'].get_width() - map['pixelWidth']
+                if map['mapWidth'] + mapOffsetX < self['screen'].get_width():
+                    mapOffsetX = self['screen'].get_width() - map['mapWidth']
 
-            if map['pixelHeight'] > self['screen'].get_height():
+            if map['mapHeight'] > self['screen'].get_height():
                 mapOffsetY = self['screen'].get_height() / 2 - sprite['anchorY']
                 if mapOffsetY > 0:
                     mapOffsetY = 0
-                if map['pixelHeight'] + mapOffsetY < self['screen'].get_height():
-                    mapOffsetY = self['screen'].get_height() - map['pixelHeight']
+                if map['mapHeight'] + mapOffsetY < self['screen'].get_height():
+                    mapOffsetY = self['screen'].get_height() - map['mapHeight']
 
         mapOffsetX = round(mapOffsetX)
         mapOffsetY = round(mapOffsetY)
