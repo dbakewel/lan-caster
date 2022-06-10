@@ -33,13 +33,13 @@ def quit(signal=None, frame=None):
     except BaseException:
         pass
 
-    #try:
-    str="\n\n          ==== Average Map Step Time ====\n"
-    for mapName in SERVER['maps']:
-        str += f"\n    {mapName:>20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
-    log(str + "\n", "VERBOSE")
-    #except BaseException:
-    # #   pass
+    try:
+        str="\n\n          ==== Average Map Step Time ====\n"
+        for mapName in SERVER['maps']:
+            str += f"\n    {mapName:>20} {round(SERVER['maps'][mapName].getStatsAvgMs(),2)} ms"
+        log(str + "\n", "VERBOSE")
+    except BaseException:
+        pass
 
     global profiler
     if profiler:
