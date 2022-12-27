@@ -85,6 +85,7 @@ class Map(dict):
         self['mapfiledata'] = mapfiledata
 
         # extract basic data from map file
+        self['orientation'] = mapfiledata['orientation']
         self['height'] = mapfiledata['height']
         self['width'] = mapfiledata['width']
         self['tileheight'] = mapfiledata['tileheight']

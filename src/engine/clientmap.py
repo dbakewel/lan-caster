@@ -70,12 +70,18 @@ class ClientMap(engine.map.Map):
             if layer['type'] == "objectgroup":
                 geo.sortRightDown(layer['objects'], self['mapWidth'])
 
-        if self['orientation'] = 'orthogonal':
-            self['pixelWidth'] = self['mapWidth']
-            self['pixelHeight'] = self['mapHeight']
-        elif self['orientation'] = 'isometric':
-            self['pixelWidth'] = math.ceil(math.sqrt(self['mapWidth']^^2 + self['mapHeight']^^2))
+        self['borderWidth'] = 50
+
+        if self['orientation'] == 'orthogonal':
+            self['pixelWidth'] = self['mapWidth'] + self['borderWidth']*2
+            self['pixelHeight'] = self['mapHeight'] + self['borderWidth']*2
+            self['orginX'] = self['borderWidth']
+            self['orginY'] = self['borderWidth']
+        elif self['orientation'] == 'isometric':
+            self['pixelWidth'] = math.ceil(math.sqrt(self['mapWidth']**2 + self['mapHeight']**2))
             self['pixelHeight'] = math.ceil(self['pixelWidth'] / 2)
+            self['orginX'] = self['borderWidth'] + self['pixelHeight']
+            self['orginY'] = self['borderWidth']
 
         # allocate image for each layer (exclude hidden layers since we will never need the image)
         for layer in self['layers']:
@@ -171,11 +177,11 @@ class ClientMap(engine.map.Map):
             # Start with transparent background and a black border. The border will normally not be seen it other
             # graphics go on top of it.
             self['bottomImage'].fill((0, 0, 0, 0))
-            self.blitRectObject(self['bottomImage'], (0, 0), {
+            self.blitRectObject(self['bottomImage'], (self['borderWidth'], self['borderWidth']), {
                 'x': 0,
                 'y': 0,
-                'width': self['pixelWidth'],
-                'height': self['pixelHeight']
+                'width': self['mapWidth'],
+                'height': self['mapHeight']
                 },
                 fillColor=(0, 0, 0, 0),
                 borderColor=(0, 0, 0, 255))
@@ -188,7 +194,7 @@ class ClientMap(engine.map.Map):
                     continue
                 # if the layer is visible then add it to the destImage
                 if self.getLayerVisablitybyIndex(layerNumber):
-                    vu = self.blitLayer(self['bottomImage'], (0, 0), self['layers'][layerNumber])
+                    vu = self.blitLayer(self['bottomImage'], (self['borderWidth'], self['borderWidth']), self['layers'][layerNumber])
                     if self['bottomImageValidUntil'] > vu:
                         self['bottomImageValidUntil'] = vu
 
@@ -227,7 +233,7 @@ class ClientMap(engine.map.Map):
                 if passedSpriteLayer == True:
                     # if the layer is visible then add it to the destImage
                     if self.getLayerVisablitybyIndex(layerNumber):
-                        vu = self.blitLayer(self['topImage'], (0, 0), self['layers'][layerNumber])
+                        vu = self.blitLayer(self['topImage'], (self['borderWidth'], self['borderWidth']), self['layers'][layerNumber])
                         if self['topImageValidUntil'] > vu:
                             self['topImageValidUntil'] = vu
 
@@ -253,9 +259,9 @@ class ClientMap(engine.map.Map):
             layer['image'].fill((0, 0, 0, 0))
 
             if layer['type'] == "tilelayer":
-                layer['imageValidUntil'] = self.blitTileGrid(layer['image'], (0, 0), layer['data'])
+                layer['imageValidUntil'] = self.blitTileGrid(layer['image'], (self['borderWidth'], self['borderWidth']), layer['data'])
             elif layer['type'] == "objectgroup":
-                layer['imageValidUntil'] = self.blitObjectList(layer['image'], (0, 0), layer['objects'])
+                layer['imageValidUntil'] = self.blitObjectList(layer['image'], (self['borderWidth'], self['borderWidth']), layer['objects'])
 
         destImage.blit(layer['image'], offset)
         return layer['imageValidUntil']
